@@ -36,16 +36,16 @@ Extend the `Cobalt` class to use it in your own API client.
 import Cobalt
 
 class APIClient: Cobalt {
-    static let `default` = APIClient()
+   static let `default` = APIClient()
     
-    private init() {
-	    let config = APIConfig {
-	        $0.clientID = "my_oauth_client_id"
-	        $0.clientSecret = "my_oauth_client_secret"
-	        $0.host = "https://api.domain.com"
-	    }
-	    super.init(config: config)
-    }
+   private init() {
+      let config = APIConfig {
+         $0.clientID = "my_oauth_client_id"
+         $0.clientSecret = "my_oauth_client_secret"
+         $0.host = "https://api.domain.com"
+      }
+      super.init(config: config)
+   }
 }
 
 ```
@@ -59,6 +59,7 @@ APIClient uses [Promises by google](https://github.com/google/promises) internal
 ```swift
 class APIClient: Cobalt {
    // ...
+   
    func users() -> Promise<[User]> {
 		let request = APIRequest {
 		    $0.path = "/users"
@@ -67,13 +68,14 @@ class APIClient: Cobalt {
 		    ]
 		}
 		
-		return self.request(request).then { json: JSON -> Promise<[User]> in
-            let users = try json.map(to: [User].self)
-            return Promise(users)
-		}.catch { error in
-		    print("Error: \(error)")
+    return self.request(request).then { json: JSON -> Promise<[User]> in
+        let users = try json.map(to: [User].self)
+        return Promise(users)
+    }.catch { error in
+        print("Error: \(error)")
 		}
 	}
+}
 ```
 
 ### RxSwift
@@ -83,9 +85,10 @@ Extend the above class with:
 ```swift
 class APIClient: Cobalt {
    // ...
+   
    func users() -> Observable<[User]> {
-		return self.users().asObservable()
-	}
+      return self.users().asObservable()
+   }
 }
 ```
 
@@ -108,6 +111,7 @@ If the access_token is expired, Cobalt will automatically refresh it, using the 
 ```swift
 class APIClient: Cobalt {
    // ...
+   
    func profile() -> Promise<User> {
         let request = APIRequest({
             $0.authentication = .oauth2(.password)
