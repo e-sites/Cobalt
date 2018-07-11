@@ -61,20 +61,20 @@ class APIClient: Cobalt {
    // ...
    
    func users() -> Promise<[User]> {
-		let request = APIRequest {
-		    $0.path = "/users"
-		    $0.parameters = [
-		        "per_page": 10
-		    ]
-		}
+      let request = APIRequest {
+         $0.path = "/users"
+         $0.parameters = [
+            "per_page": 10
+         ]
+      }
 		
-    return self.request(request).then { json: JSON -> Promise<[User]> in
-        let users = try json.map(to: [User].self)
-        return Promise(users)
-    }.catch { error in
-        print("Error: \(error)")
-		}
-	}
+      return self.request(request).then { json: JSON -> Promise<[User]> in
+         let users = try json.map(to: [User].self)
+         return Promise(users)
+      }.catch { error in
+         print("Error: \(error)")
+      }
+   }
 }
 ```
 
