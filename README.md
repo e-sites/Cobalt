@@ -162,3 +162,20 @@ To remove the access_token from its memory and keychain, use:
 ```swift
 func clearAccessToken()
 ```
+
+# Logging
+If you want to use (debug) logging, create a custom logger class which implements `CobaltLogger`:
+
+```swift
+public protocol CobaltLogger {
+    func verbose(_ items: Any...)
+    func warning(_ items: Any...)
+    func debug(_ items: Any...)
+    func success(_ items: Any...)
+    func error(_ items: Any...)
+    func request(_ items: Any...)
+    func response(_ items: Any...)
+}
+```
+
+And then use the `APIConfig.logger` property to assign your logged to the `Cobalt` configuration.
