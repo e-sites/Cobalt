@@ -6,5 +6,155 @@
 
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 
-[![Platforms](https://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat)](https://github.com/apple/swift-package-manager)
-[![CocoaPods compatible](https://img.shields.io/badge/cocoapods-compatible-brightgreen.svg?style=flat)](https://github.com/CocoaPods/CocoaPods)
+[![Platform](https://img.shields.io/cocoapods/p/Cobalt.svg?style=flat)](http://cocoadocs.org/docsets/Cobalt)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svh)](http://cocoadocs.org/docsets/Palladium)
+[![Quality](https://apps.e-sites.nl/cocoapodsquality/Cobalt/badge.svg?004)](https://cocoapods.org/pods/Cobalt/quality)
+[![Travis-ci](https://travis-ci.org/e-sites/Cobalt.svg?branch=master&001)](https://travis-ci.org/e-sites/Cobalt)
+
+
+# Installation
+
+Podfile:
+
+```ruby
+pod 'Cobalt'
+```
+
+And then
+
+```
+pod install
+```
+
+# Implementation
+
+Extend the `Cobalt` class to use it in your own API client.
+
+## Initialization
+
+```swift
+import Cobalt
+
+class APIClient: Cobalt {
+    static let `default` = APIClient()
+    
+    private init() {
+	    let config = APIConfig {
+	        $0.clientID = "my_oauth_client_id"
+	        $0.clientSecret = "my_oauth_client_secret"
+	        $0.host = "https://api.domain.com"
+	    }
+	    super.init(config: config)
+    }
+}
+
+```
+
+## Making requests
+
+APIClient uses [Promises by google](https://github.com/google/promises) internally for handling the responses for a request
+
+### Promises
+
+```swift
+class APIClient: Cobalt {
+   // ...
+   func users() -> Promise<[User]> {
+		let request = APIRequest {
+		    $0.path = "/users"
+		    $0.parameters = [
+		        "per_page": 10
+		    ]
+		}
+		
+		return self.request(request).then { json: JSON -> Promise<[User]> in
+            let users = try json.map(to: [User].self)
+            return Promise(users)
+		}.catch { error in
+		    print("Error: \(error)")
+		}
+	}
+```
+
+### RxSwift
+
+Extend the above class with:
+
+```swift
+class APIClient: Cobalt {
+   // ...
+   func users() -> Observable<[User]> {
+		return self.users().asObservable()
+	}
+}
+```
+
+## OAuth2
+
+If you want to login a user using the OAuth2 protocol, use the `login()` function from the `Cobalt` class.
+Internally it will handle the retrieval and refreshing of the provided `access_token`:
+
+```swift
+func login(email: String, password: String) -> Promise<Void>
+```
+
+You can also use other options of authentication
+
+### `password`
+
+If you want to retrieve the user profile, you need the `.oauth2(.password)` authenication, that way the request will only succeed if the user has requested an access_token through the `login()` function.   
+If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token
+
+```swift
+class APIClient: Cobalt {
+   // ...
+   func profile() -> Promise<User> {
+        let request = APIRequest({
+            $0.authentication = .oauth2(.password)
+            $0.path = "/user/profile"
+        })
+
+        return request(request).then { json -> Promise<User> in
+            let user = try json["data"].map(to: User.self)
+            return Promise(user)
+        }
+    }
+}
+
+```
+### `client_credentials`
+
+You have to provide the `.oauth2(.clientCredentials)` authentication for the `APIRequest`
+
+```swift
+class APIClient: Cobalt {
+   // ...
+   
+   func register(email: String, password: String) -> Promise<Void> {
+      let request = APIRequest({
+            $0.httpMethod = .post
+            $0.path = "/register"
+            $0.authentication = .oauth2(.clientCredentials)
+            $0.parameters = [
+                "email": email,
+                "password": password
+            ]
+        })
+
+        return request(request).then { json -> Promise<Void> in
+            return Promise(())
+        }
+    }
+```
+
+This way Cobalt will know that the request needs a `client_credentials` grant_type with an access-token.    
+If the user already has an access_token with that grant_type, Cobalt will use it. Else it will request a new access_token for you
+
+
+### Clearing the access_token
+
+To remove the access_token from its memory and keychain, use:
+
+```swift
+func clearAccessToken()
+```
