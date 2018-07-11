@@ -1,0 +1,49 @@
+PODS:
+  - Alamofire (4.7.2)
+  - KeychainAccess (3.1.1)
+  - Nimble (7.1.1)
+  - PromisesObjC (1.1.1)
+  - PromisesSwift (1.1.1):
+    - PromisesObjC (= 1.1.1)
+  - RxCocoa (4.1.2):
+    - RxSwift (~> 4.0)
+  - RxSwift (4.1.2)
+  - SwiftyJSON (4.1.0)
+  - SwiftyUserDefaults (3.0.1)
+
+DEPENDENCIES:
+  - Alamofire
+  - KeychainAccess
+  - Nimble
+  - PromisesSwift
+  - RxCocoa
+  - RxSwift
+  - SwiftyJSON
+  - SwiftyUserDefaults
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - KeychainAccess
+    - Nimble
+    - PromisesObjC
+    - PromisesSwift
+    - RxCocoa
+    - RxSwift
+    - SwiftyJSON
+    - SwiftyUserDefaults
+
+SPEC CHECKSUMS:
+  Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  KeychainAccess: 7bd430028059754a3debab3cfc0bd1fc7fb85df3
+  Nimble: 391f07782af4b37914f9bd7b2ffbb952731b8202
+  PromisesObjC: c6ea89661f018e55cd83dd7d0b5a7751f5e63c23
+  PromisesSwift: 23ae4ad1c81963d35a37a98b83dd1e63403c54b8
+  RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
+  RxSwift: e49536837d9901277638493ea537394d4b55f570
+  SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
+  SwiftyUserDefaults: 3d273b1739b68ada3145dc754a70ec775bc5c8be
+
+PODFILE CHECKSUM: 2d9c6582d8c63076b42b19ab374a6b22b47f13b7
+
+COCOAPODS: 1.5.3
