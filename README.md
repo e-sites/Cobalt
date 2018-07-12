@@ -2,6 +2,10 @@
 
 ![Cobalt](Assets/logo.png)
 
+Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite)**.
+
+---
+
 **The** E-sites Swift iOS API Client used for standard restful API's with default support for OAuth2.
 
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
