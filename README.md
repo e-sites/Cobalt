@@ -83,12 +83,41 @@ class APIClient: Cobalt {
 Extend the above class with:
 
 ```swift
-class APIClient: Cobalt {
-   // ...
-   
+import RxSwift
+
+extension Reactive where Base: APIClient {
    func users() -> Observable<[User]> {
       return self.users().asObservable()
    }
+}
+```
+And use it like so:
+
+```swift
+APIClient.default.rx.users() // ... rxswift etc.
+```
+
+### Regular closures
+
+Not in the need for Promises or RxSwift, you can also use regular closures:
+
+```swift
+extension Promise {
+    func closure(_ handler: @escaping ((Value?, Error?) -> Void)) {
+        self.then { value in
+            handler(value, nil)
+        }.catch { error in
+            handler(nil, error)
+        }
+    }
+}
+```
+
+And then use it like this:
+
+```swift
+APIClient.default.users().closure { users, error 
+    // ... Handle it
 }
 ```
 

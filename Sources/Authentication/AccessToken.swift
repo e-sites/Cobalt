@@ -7,17 +7,8 @@
 //
 
 import Foundation
+#if !targetEnvironment(simulator)
 import KeychainAccess
-
-#if targetEnvironment(simulator)
-
-import SwiftyUserDefaults
-extension DefaultsKeys {
-    fileprivate static let accessToken = DefaultsKey<String?>(AccessToken.Constant.accessTokenKey)
-    fileprivate static let refreshToken = DefaultsKey<String?>(AccessToken.Constant.refreshTokenKey)
-    fileprivate static let expireDate = DefaultsKey<Date?>(AccessToken.Constant.expireDateKey)
-    fileprivate static let grantType = DefaultsKey<String?>(AccessToken.Constant.grantTypeKey)
-}
 #endif
 
 class AccessToken: Decodable, CustomStringConvertible {
@@ -31,9 +22,12 @@ class AccessToken: Decodable, CustomStringConvertible {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
         case expiresIn = "expires_in"
+        case host
     }
 
-    private let keychain = Keychain(service: "com.esites.Cobalt-accesstoken")
+    #if !targetEnvironment(simulator)
+    private let keychain: Keychain
+    #endif
 
     var accessToken: String?
     var refreshToken: String?
@@ -47,6 +41,7 @@ class AccessToken: Decodable, CustomStringConvertible {
         }
     }
     private var _grantType: APIOAuthenticationGrantType?
+    var host: String = ""
 
     static private func _transform(grantType: APIOAuthenticationGrantType?) -> APIOAuthenticationGrantType? {
         if grantType == .refreshToken {
@@ -55,8 +50,8 @@ class AccessToken: Decodable, CustomStringConvertible {
         return grantType
     }
 
-    static func get(grantType: APIOAuthenticationGrantType) -> AccessToken? {
-        let accessToken = AccessToken()
+    static func get(host: String, grantType: APIOAuthenticationGrantType) -> AccessToken? {
+        let accessToken = AccessToken(host: host)
         let accessTokenLevel = accessToken.grantType?.level ?? 0
         if accessTokenLevel < grantType.level {
             return nil
@@ -67,15 +62,19 @@ class AccessToken: Decodable, CustomStringConvertible {
         return accessToken
     }
 
-    init() {
+    init(host: String) {
+        self.host = host
         #if targetEnvironment(simulator)
-        accessToken = Defaults[.accessToken]
-        refreshToken = Defaults[.refreshToken]
-        expireDate = Defaults[.expireDate]
-        if let grantType = Defaults[.grantType] {
-            self.grantType = APIOAuthenticationGrantType(rawValue: grantType)
+        accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
+        refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
+        if let rawValue = UserDefaults.standard.string(forKey: "\(host):\(Constant.grantTypeKey)") {
+            self.grantType = APIOAuthenticationGrantType(rawValue: rawValue)
         }
+        let timeInterval = UserDefaults.standard.double(forKey: "\(host):\(Constant.expireDateKey)")
+        expireDate = Date(timeIntervalSince1970: timeInterval)
+
         #else
+        self.keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
         accessToken = keychain[Constant.accessTokenKey]
         refreshToken = keychain[Constant.refreshTokenKey]
         if let timeString = keychain[Constant.expireDateKey], let timeInterval = TimeInterval(timeString) {
@@ -105,10 +104,11 @@ class AccessToken: Decodable, CustomStringConvertible {
 
     func store() {
         #if targetEnvironment(simulator)
-        Defaults[.accessToken] = accessToken
-        Defaults[.refreshToken] = refreshToken
-        Defaults[.expireDate] = expireDate
-        Defaults[.grantType] = grantType?.rawValue
+        UserDefaults.standard.set(accessToken, forKey: "\(host):\(Constant.accessTokenKey)")
+        UserDefaults.standard.set(refreshToken, forKey: "\(host):\(Constant.refreshTokenKey)")
+        UserDefaults.standard.set(grantType?.rawValue, forKey: "\(host):\(Constant.grantTypeKey)")
+        UserDefaults.standard.set(expireDate?.timeIntervalSince1970, forKey: "\(host):\(Constant.expireDateKey)")
+        _ = UserDefaults.standard.synchronize()
         #else
         keychain[Constant.accessTokenKey] = accessToken
         keychain[Constant.refreshTokenKey] = refreshToken
@@ -140,7 +140,8 @@ class AccessToken: Decodable, CustomStringConvertible {
         if let expireDate = expireDate {
             expiresIn = Int(expireDate.timeIntervalSinceNow)
         }
-        return "<AccessToken> [ accessToken: \(optionalDescription(accessToken)), " +
+        return "<AccessToken> [ server: \(host), " +
+            "accessToken: \(optionalDescription(accessToken)), " +
             "refreshToken: \(optionalDescription(refreshToken)), " +
         "grantType: \(optionalDescription(grantType)), expires in: \(expiresIn)s ]"
     }

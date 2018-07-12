@@ -10,7 +10,6 @@ target 'Cobalt' do
   pod 'RxCocoa'
   pod 'PromisesSwift'
   pod 'KeychainAccess'
-  pod 'SwiftyUserDefaults'
 
   target 'CobaltTests' do
     inherit! :search_paths

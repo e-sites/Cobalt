@@ -40,6 +40,7 @@ open class Cobalt: ReactiveCompatible {
         return config.logger
     }
 
+    
     // MARK: - Constructor
     // --------------------------------------------------------
 
@@ -192,9 +193,12 @@ open class Cobalt: ReactiveCompatible {
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
 
-    public func clearAccessToken() {
+    public func clearAccessToken(forHost host: String? = nil) {
         authorizationGrantTypeSubject.onNext(nil)
-        AccessToken().clear()
+        guard let host = (host ?? config.host) else {
+            fatalError("No host given, nor a valid host set in the APIConfig")
+        }
+        AccessToken(host: host).clear()
     }
 }
 

@@ -64,7 +64,8 @@ class APIAuthenticationProvider {
         var parameters: Parameters = [:]
         var grantType = grantType
 
-        if let accessTokenObj = AccessToken.get(grantType: grantType),
+        let host = (request.host ?? self.client.config.host) ?? ""
+        if let accessTokenObj = AccessToken.get(host: host, grantType: grantType),
             let accessToken = accessTokenObj.accessToken {
 
             if !accessTokenObj.isExpired {
@@ -106,6 +107,7 @@ class APIAuthenticationProvider {
 
         return client.request(request).then { json in
             let accessToken = try json.map(to: AccessToken.self)
+            accessToken.host = (request.host ?? self.client.config.host) ?? ""
             accessToken.grantType = grantType
             accessToken.store()
             self.client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
@@ -140,7 +142,7 @@ class APIAuthenticationProvider {
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
-            let accessToken = AccessToken()
+            let accessToken = AccessToken(host: (request.host ?? self.client.config.host) ?? "")
             self.client.logger?.warning("Access-token expired; invalidating access-token")
             accessToken.invalidate()
             return self.client.request(request)
