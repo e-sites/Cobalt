@@ -1,5 +1,5 @@
 //
-//  APIConfig.swift
+//  Config.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -8,10 +8,10 @@
 
 import Foundation
 
-public class APIConfig {
+public class Config {
     public var clientID: String?
     public var clientSecret: String?
-    public var logger: CobaltLogger?
+    public var logger: Logger?
     public var host: String?
 
     var authorizationBasicBase64: String? {
@@ -23,7 +23,7 @@ public class APIConfig {
         return base64
     }
 
-    public init(_ builder: ((APIConfig) -> Void)) {
+    public init(_ builder: ((Config) -> Void)) {
         builder(self)
     }
 }

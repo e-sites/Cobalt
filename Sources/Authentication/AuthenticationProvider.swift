@@ -1,5 +1,5 @@
 //
-//  APIAuthenticationProvider.swift
+//  AuthenticationProvider.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -11,21 +11,21 @@ import Alamofire
 import Promises
 import SwiftyJSON
 
-class APIAuthenticationProvider {
-    private weak var client: Cobalt!
+class AuthenticationProvider {
+    private weak var client: Client!
     private(set) var isAuthenticating = false
 
-    required init(client: Cobalt) {
+    required init(client: Client) {
         self.client = client
     }
 
     /// This function is to authorize the request
     ///
     /// - Parameters:
-    ///   - request: `APIRequest`
+    ///   - request: `Request`
     ///
-    /// - Returns: `Promise<APIRequest>`
-    func authorize(request: APIRequest) throws -> Promise<APIRequest> {
+    /// - Returns: `Promise<Request>`
+    func authorize(request: Request) throws -> Promise<Request> {
         // Define headers
         var headers = request.headers ?? [:]
 
@@ -36,7 +36,7 @@ class APIAuthenticationProvider {
         // Just add an `Authorization` header
         case .client:
             guard let base64 = client.config.authorizationBasicBase64 else {
-                throw APIError.missingClientAuthentication
+                throw Error.missingClientAuthentication
             }
 
             headers["Authorization"] = "Basic \(base64)"
@@ -51,7 +51,7 @@ class APIAuthenticationProvider {
         }
 
         request.useHeaders = headers
-        return Promise<APIRequest>(request)
+        return Promise<Request>(request)
     }
 
     /// Here we're going to do either of the following:
@@ -59,8 +59,8 @@ class APIAuthenticationProvider {
     /// 1. If the user has a valid access-token and it's not expired, use it.
     /// 2. If the user has an expired `password` access-token, refresh it
     /// 3. If you need a `client_credentials` grantType and the access-token is expired. Create a new one
-    private func _authorizeOAuth(request: APIRequest,
-                                 grantType: APIOAuthenticationGrantType) throws -> Promise<APIRequest> {
+    private func _authorizeOAuth(request: Request,
+                                 grantType: OAuthenticationGrantType) throws -> Promise<Request> {
         var parameters: Parameters = [:]
         var grantType = grantType
 
@@ -72,7 +72,7 @@ class APIAuthenticationProvider {
                 let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
                 client.logger?.verbose("[?] Access token expires in: \(expiresIn)s")
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
-                return Promise<APIRequest>(request)
+                return Promise<Request>(request)
             }
 
             client.logger?.warning("Access-token expired, refreshing ...")
@@ -83,7 +83,7 @@ class APIAuthenticationProvider {
         }
 
         if grantType == .password {
-            throw APIError.missingClientAuthentication
+            throw Error.missingClientAuthentication
         }
 
         return sendOAuthRequest(grantType: grantType,parameters: parameters).then { _ in
@@ -91,11 +91,11 @@ class APIAuthenticationProvider {
         }
     }
 
-    func sendOAuthRequest(grantType: APIOAuthenticationGrantType, parameters: Parameters? = nil) -> Promise<Void> {
+    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> Promise<Void> {
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
-        let request = APIRequest {
+        let request = Request {
             $0.path = "oauth/v2/token"
             $0.httpMethod = .post
             $0.encoding = URLEncoding.default
@@ -116,7 +116,7 @@ class APIAuthenticationProvider {
 
         }.recover { error -> Promise<Void> in
 
-            guard error == APIError.invalidGrant, grantType == .refreshToken else {
+            guard error == Error.invalidGrant, grantType == .refreshToken else {
                 throw error
             }
 
@@ -125,7 +125,7 @@ class APIAuthenticationProvider {
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             self.client.logger?.warning("Clearing access-token; invalid refresh-token")
             self.client.clearAccessToken()
-            throw APIError.refreshTokenInvalidated
+            throw Error.refreshTokenInvalidated
         }.always {
             self.isAuthenticating = false
         }
@@ -134,11 +134,11 @@ class APIAuthenticationProvider {
     // MARK: - Recover
     // --------------------------------------------------------
 
-    func recover(from error: Error, request: APIRequest) throws -> Promise<JSON> {
+    func recover(from error: Swift.Error, request: Request) throws -> Promise<JSON> {
         // If we receive an 'invalid_grant' error and we tried to do a refresh_token authentication
         // The access-token and underlying refresh-token is invalid
         // So we can revoke the access-token
-        if error == APIError.invalidGrant,
+        if error == Error.invalidGrant,
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 

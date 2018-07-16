@@ -1,5 +1,5 @@
 //
-//  APIAuthentication.swift
+//  Authentication.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -8,13 +8,13 @@
 
 import Foundation
 
-public enum APIAuthentication {
+public enum Authentication {
     case none
     case client
-    case oauth2(APIOAuthenticationGrantType)
+    case oauth2(OAuthenticationGrantType)
 }
 
-public enum APIOAuthenticationGrantType: String {
+public enum OAuthenticationGrantType: String {
     case clientCredentials = "client_credentials"
     case password
     case refreshToken = "refresh_token"

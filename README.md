@@ -39,11 +39,11 @@ Extend the `Cobalt` class to use it in your own API client.
 ```swift
 import Cobalt
 
-class APIClient: Cobalt {
+class APIClient: Cobalt.Client {
    static let `default` = APIClient()
     
    private init() {
-      let config = APIConfig {
+      let config = Cobalt.Config {
          $0.clientID = "my_oauth_client_id"
          $0.clientSecret = "my_oauth_client_secret"
          $0.host = "https://api.domain.com"
@@ -61,11 +61,11 @@ APIClient uses [Promises by google](https://github.com/google/promises) internal
 ### Promises
 
 ```swift
-class APIClient: Cobalt {
+class APIClient: Cobalt.Client {
    // ...
    
    func users() -> Promise<[User]> {
-      let request = APIRequest {
+      let request = Cobalt.Request {
          $0.path = "/users"
          $0.parameters = [
             "per_page": 10
@@ -89,7 +89,7 @@ Extend the above class with:
 ```swift
 import RxSwift
 
-extension Reactive where Base: APIClient {
+extension Reactive where Base: Cobalt.Client {
    func users() -> Observable<[User]> {
       return self.users().asObservable()
    }
@@ -142,11 +142,11 @@ If you want to retrieve the user profile, you need the `.oauth2(.password)` auth
 If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token
 
 ```swift
-class APIClient: Cobalt {
+class APIClient: Cobalt.Client {
    // ...
    
    func profile() -> Promise<User> {
-        let request = APIRequest({
+        let request = Cobalt.Request({
             $0.authentication = .oauth2(.password)
             $0.path = "/user/profile"
         })
@@ -161,14 +161,14 @@ class APIClient: Cobalt {
 ```
 ### `client_credentials`
 
-You have to provide the `.oauth2(.clientCredentials)` authentication for the `APIRequest`
+You have to provide the `.oauth2(.clientCredentials)` authentication for the `Cobalt.Request`
 
 ```swift
-class APIClient: Cobalt {
+class APIClient: Cobalt.Client {
    // ...
    
    func register(email: String, password: String) -> Promise<Void> {
-      let request = APIRequest({
+      let request = Cobalt.Request({
             $0.httpMethod = .post
             $0.path = "/register"
             $0.authentication = .oauth2(.clientCredentials)
@@ -197,10 +197,10 @@ func clearAccessToken()
 ```
 
 # Logging
-If you want to use (debug) logging, create a custom logger class which implements `CobaltLogger`:
+If you want to use (debug) logging, create a custom logger class which implements `Cobalt.Logger`:
 
 ```swift
-public protocol CobaltLogger {
+public protocol Cobalt.Logger {
     func verbose(_ items: Any...)
     func warning(_ items: Any...)
     func debug(_ items: Any...)
@@ -211,4 +211,4 @@ public protocol CobaltLogger {
 }
 ```
 
-And then use the `APIConfig.logger` property to assign your logged to the `Cobalt` configuration.
+And then use the `Cobalt.Config.logger` property to assign your logged to the `Cobalt` configuration.

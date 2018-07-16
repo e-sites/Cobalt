@@ -1,5 +1,5 @@
 //
-//  APIRequestQueue.swift
+//  RequestQueue.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 02/05/2018.
@@ -11,20 +11,20 @@ import Promises
 import Alamofire
 import SwiftyJSON
 
-class APIRequestQueue {
-    private weak var apiClient: Cobalt!
-    private(set) var requests: [APIRequest] = []
-    private var _promiseMap: [APIRequest: Promise<JSON>] = [:]
+class RequestQueue {
+    private weak var apiClient: Client!
+    private(set) var requests: [Request] = []
+    private var _promiseMap: [Request: Promise<JSON>] = [:]
 
     var count: Int {
         return requests.count
     }
 
-    init(client: Cobalt) {
+    init(client: Client) {
         self.apiClient = client
     }
 
-    func add(_ request: APIRequest) {
+    func add(_ request: Request) {
         if requests.contains(request) {
             return
         }
@@ -52,11 +52,11 @@ class APIRequestQueue {
         requests.removeAll()
     }
 
-    func promise(of request: APIRequest) -> Promise<JSON>? {
+    func promise(of request: Request) -> Promise<JSON>? {
         return _promiseMap[request]
     }
 
-    func handle(request: APIRequest) {
+    func handle(request: Request) {
         let promise = self.promise(of: request)
         removeFirst()
         if promise == nil {

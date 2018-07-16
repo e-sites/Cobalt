@@ -1,5 +1,5 @@
 //
-//  APIError.swift
+//  Error.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -10,12 +10,13 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
-public class APIError: Error {
+
+public class Error: Swift.Error {
 
     private(set) public var code: Int = 0
     private(set) public var json: JSON?
     private(set) public var message: String?
-    private(set) public var underlyingError: Error?
+    private(set) public var underlyingError: Swift.Error?
 
     public var domain: String {
         return "com.esites.Cobalt"
@@ -24,36 +25,36 @@ public class APIError: Error {
     // MARK: - Errors
     // --------------------------------------------------------
 
-    public static var empty: APIError {
-        return APIError(code: 101)
+    public static var empty: Error {
+        return Error(code: 101)
     }
 
-    public static var invalidGrant: APIError {
-        return APIError(code: 201, message: "invalid_grant")
+    public static var invalidGrant: Error {
+        return Error(code: 201, message: "invalid_grant")
     }
 
-    public static var invalidClient: APIError {
-        return APIError(code: 202, message: "invalid_client")
+    public static var invalidClient: Error {
+        return Error(code: 202, message: "invalid_client")
     }
 
-    public static var refreshTokenInvalidated: APIError {
-        return APIError(code: 203, message: "Refresh token is invalidated")
+    public static var refreshTokenInvalidated: Error {
+        return Error(code: 203, message: "Refresh token is invalidated")
     }
 
-    public static var missingClientAuthentication: APIError {
-        return APIError(code: 204, message: "Missing client authentication")
+    public static var missingClientAuthentication: Error {
+        return Error(code: 204, message: "Missing client authentication")
     }
 
-    public static func unknown(_ json: JSON? = nil) -> APIError {
-        return APIError(code: 100, json: json)
+    public static func unknown(_ json: JSON? = nil) -> Error {
+        return Error(code: 100, json: json)
     }
 
-    public static func invalidRequest(_ message: String) -> APIError {
-        return APIError(code: 301, message: message)
+    public static func invalidRequest(_ message: String) -> Error {
+        return Error(code: 301, message: message)
     }
 
-    public static func underlying(_ error: Error) -> APIError {
-        let apiError = APIError(code: 601)
+    public static func underlying(_ error: Swift.Error) -> Error {
+        let apiError = Error(code: 601)
         apiError.underlyingError = error
         return apiError
     }
@@ -67,31 +68,31 @@ public class APIError: Error {
         self.message = message
     }
 
-    init(from error: Error, json: JSON? = nil) {
-        if error is APIError {
-            _clone(from: error as! APIError)
+    init(from error: Swift.Error, json: JSON? = nil) {
+        if error is Error {
+            _clone(from: error as! Error)
 
         } else if let json = json, json != .null {
             switch json["error"].stringValue {
             case "invalid_grant":
-                _clone(from: APIError.invalidGrant)
+                _clone(from: Error.invalidGrant)
                 return
 
             case "invalid_client":
-                _clone(from: APIError.invalidClient)
+                _clone(from: Error.invalidClient)
                 return
 
             default:
                 break
             }
-            _clone(from: APIError.unknown(json))
+            _clone(from: Error.unknown(json))
 
         } else {
-            _clone(from: APIError.underlying(error))
+            _clone(from: Error.underlying(error))
         }
     }
 
-    private func _clone(from error: APIError) {
+    private func _clone(from error: Error) {
         self.code = error.code
         self.message = error.message
         self.underlyingError = error.underlyingError
@@ -99,13 +100,13 @@ public class APIError: Error {
     }
 }
 
-extension APIError: CustomStringConvertible {
+extension Error: CustomStringConvertible {
     public var description: String {
         var jsonString = "nil"
         if let json = self.json {
             jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "nil"
         }
-        return "<APIError> [ code: \(code), " +
+        return "<Error> [ code: \(code), " +
             "json: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
             "underlying: \(optionalDescription(underlyingError)) " +
@@ -114,16 +115,16 @@ extension APIError: CustomStringConvertible {
 }
 
 
-extension APIError: Equatable {
-    public static func == (lhs: APIError, rhs: APIError) -> Bool {
+extension Error: Equatable {
+    public static func == (lhs: Error, rhs: Error) -> Bool {
         return lhs.code == rhs.code
     }
 
-    public static func == (lhs: APIError, rhs: Error) -> Bool {
-        return lhs == APIError(from: rhs)
+    public static func == (lhs: Error, rhs: Swift.Error) -> Bool {
+        return lhs == Error(from: rhs)
     }
 
-    public static func == (lhs: Error, rhs: APIError) -> Bool {
+    public static func == (lhs: Swift.Error, rhs: Error) -> Bool {
         return rhs == lhs
     }
 }

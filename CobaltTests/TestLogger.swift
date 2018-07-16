@@ -9,7 +9,7 @@
 import Foundation
 @testable import Cobalt
 
-class TestLogger: CobaltLogger {
+class TestLogger: Cobalt.Logger {
     func verbose(_ items: Any...) {
         print("[VER]", items.map { "\($0)" }.joined(separator: " "))
     }

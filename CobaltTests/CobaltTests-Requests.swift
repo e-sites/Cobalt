@@ -16,7 +16,7 @@ import Foundation
 class CobaltTestsRequests: CobaltTests {
     func testRequestGET() {
         waitUntil { done in
-            let request = APIRequest {
+            let request = Request {
                 $0.path = "/api/users"
                 $0.parameters = [
                     "per_page": 10
@@ -36,18 +36,18 @@ class CobaltTestsRequests: CobaltTests {
 
     func testRequestGET404() {
         waitUntil { done in
-            let request = APIRequest {
+            let request = Request {
                 $0.path = "/some_strange_request"
             }
 
             self.client.request(request).then { json in
                 XCTAssert(false, "Should not get here")
             }.catch { error in
-                if !(error is APIError) {
-                    XCTAssert(false, "Expect to be a APIError, got: \(error)")
+                if !(error is Cobalt.Error) {
+                    XCTAssert(false, "Expect to be a Error, got: \(error)")
                     return
                 }
-                let apiError = error as! APIError
+                let apiError = error as! Cobalt.Error
                 if let underlyingError = apiError.underlyingError {
                     if !(underlyingError is AFError) {
                         XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")

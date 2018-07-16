@@ -32,7 +32,7 @@ class AccessToken: Decodable, CustomStringConvertible {
     var accessToken: String?
     var refreshToken: String?
     var expireDate: Date?
-    var grantType: APIOAuthenticationGrantType? {
+    var grantType: OAuthenticationGrantType? {
         set {
             _grantType = AccessToken._transform(grantType: newValue)
         }
@@ -40,17 +40,17 @@ class AccessToken: Decodable, CustomStringConvertible {
             return _grantType
         }
     }
-    private var _grantType: APIOAuthenticationGrantType?
+    private var _grantType: OAuthenticationGrantType?
     var host: String = ""
 
-    static private func _transform(grantType: APIOAuthenticationGrantType?) -> APIOAuthenticationGrantType? {
+    static private func _transform(grantType: OAuthenticationGrantType?) -> OAuthenticationGrantType? {
         if grantType == .refreshToken {
             return .password
         }
         return grantType
     }
 
-    static func get(host: String, grantType: APIOAuthenticationGrantType) -> AccessToken? {
+    static func get(host: String, grantType: OAuthenticationGrantType) -> AccessToken? {
         let accessToken = AccessToken(host: host)
         let accessTokenLevel = accessToken.grantType?.level ?? 0
         if accessTokenLevel < grantType.level {
@@ -68,7 +68,7 @@ class AccessToken: Decodable, CustomStringConvertible {
         accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
         refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
         if let rawValue = UserDefaults.standard.string(forKey: "\(host):\(Constant.grantTypeKey)") {
-            self.grantType = APIOAuthenticationGrantType(rawValue: rawValue)
+            self.grantType = OAuthenticationGrantType(rawValue: rawValue)
         }
         let timeInterval = UserDefaults.standard.double(forKey: "\(host):\(Constant.expireDateKey)")
         expireDate = Date(timeIntervalSince1970: timeInterval)
@@ -81,7 +81,7 @@ class AccessToken: Decodable, CustomStringConvertible {
             expireDate = Date(timeIntervalSince1970: timeInterval)
         }
         if let grantType = keychain[Constant.grantTypeKey] {
-            self.grantType = APIOAuthenticationGrantType(rawValue: grantType)
+            self.grantType = OAuthenticationGrantType(rawValue: grantType)
         }
         #endif
     }

@@ -1,5 +1,5 @@
 //
-//  CobaltLogger.swift
+//  Logger.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 11/07/2018.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol CobaltLogger {
+public protocol Logger {
     func verbose(_ items: Any...)
     func warning(_ items: Any...)
     func debug(_ items: Any...)

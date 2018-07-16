@@ -1,5 +1,5 @@
 //
-//  APIRequest.swift
+//  Request.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -9,7 +9,7 @@
 import Foundation
 import Alamofire
 
-public class APIRequest {
+public class Request {
     fileprivate let uuid = UUID().uuidString
 
     public var path: String = "/"
@@ -18,13 +18,13 @@ public class APIRequest {
     public var parameters: Parameters?
     public var headers: HTTPHeaders?
     public var encoding: ParameterEncoding?
-    public var authentication: APIAuthentication = .none
+    public var authentication: Authentication = .none
 
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = [:]
     var urlString: String = ""
 
-    public init(_ builder: ((APIRequest) -> Void)) {
+    public init(_ builder: ((Request) -> Void)) {
         builder(self)
     }
 
@@ -36,22 +36,22 @@ public class APIRequest {
     }
 }
 
-extension APIRequest: CustomStringConvertible {
+extension Request: CustomStringConvertible {
     public var description: String {
-        return "<APIRequest> [ uuid: \(uuid), " +
+        return "<Request> [ uuid: \(uuid), " +
             "path: \(path), " +
             "httpMethod: \(httpMethod), " +
         "authentication: \(authentication) ]"
     }
 }
 
-extension APIRequest: Hashable {
+extension Request: Hashable {
 
     public var hashValue: Int {
         return uuid.hashValue
     }
 
-    public static func == (lhs: APIRequest, rhs: APIRequest) -> Bool {
+    public static func == (lhs: Request, rhs: Request) -> Bool {
         return lhs.uuid == rhs.uuid
     }
 }

@@ -13,22 +13,22 @@ import Promises
 import SwiftyJSON
 import Alamofire
 
-open class Cobalt: ReactiveCompatible {
+open class Client: ReactiveCompatible {
 
     // MARK: - Variables
     // --------------------------------------------------------
 
     fileprivate var requestID = 1
 
-    public let config: APIConfig
+    public let config: Config
 
-    fileprivate lazy var authProvider = APIAuthenticationProvider(client: self)
+    fileprivate lazy var authProvider = AuthenticationProvider(client: self)
 
-    fileprivate lazy var queue = APIRequestQueue(client: self)
+    fileprivate lazy var queue = RequestQueue(client: self)
 
-    var authorizationGrantTypeSubject = BehaviorSubject<APIOAuthenticationGrantType?>(value: nil)
+    var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
 
-    var authorizationGrantType: APIOAuthenticationGrantType? {
+    var authorizationGrantType: OAuthenticationGrantType? {
         do {
             return try authorizationGrantTypeSubject.value()
         } catch {
@@ -36,7 +36,7 @@ open class Cobalt: ReactiveCompatible {
         }
     }
 
-    var logger: CobaltLogger? {
+    var logger: Logger? {
         return config.logger
     }
 
@@ -44,7 +44,7 @@ open class Cobalt: ReactiveCompatible {
     // MARK: - Constructor
     // --------------------------------------------------------
 
-    required public init(config: APIConfig) {
+    required public init(config: Config) {
         self.config = config
     }
 
@@ -54,10 +54,10 @@ open class Cobalt: ReactiveCompatible {
     /// Make a request using a 'simple' `Result` handler closure
     ///
     /// - Parameters:
-    ///   - `request`: The `APIRequest` object
+    ///   - `request`: The `Request` object
     ///   - `handler`: The closure to call when the request is finished
 
-    public func request(_ request: APIRequest, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
+    public func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
         self.request(request).then { json in
             handler(.success(json))
         }.catch { error in
@@ -68,21 +68,21 @@ open class Cobalt: ReactiveCompatible {
     /// Make a promise requst
     ///
     /// - Parameters:
-    ///   - `request`: The `APIRequest` object
+    ///   - `request`: The `Request` object
     ///
     /// - Returns: `Promise<JSON>`
-    public func request(_ request: APIRequest) -> Promise<JSON> {
+    public func request(_ request: Request) -> Promise<JSON> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
-            return Promise(APIError.invalidRequest("Missing 'host'"))
+            return Promise(Error.invalidRequest("Missing 'host'"))
         }
 
         // If the client is authenticating with OAuth.
         // We need to wait for it to finish, and then continue with the original requests
-        // So we add it to the `APIRequestQueue`
+        // So we add it to the `RequestQueue`
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
-            return queue.promise(of: request) ?? Promise(APIError.unknown())
+            return queue.promise(of: request) ?? Promise(Error.unknown())
         }
         
         if host.hasSuffix("/") {
@@ -130,7 +130,7 @@ open class Cobalt: ReactiveCompatible {
         }
     }
 
-    private func _request(_ request: APIRequest) -> Promise<JSON> {
+    private func _request(_ request: Request) -> Promise<JSON> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
@@ -165,14 +165,14 @@ open class Cobalt: ReactiveCompatible {
 
             if let error = response.error {
                 self?.logger?.error("#\(requestID) Original: \(error)")
-                let apiError = APIError(from: error, json: json)
-                self?.logger?.error("#\(requestID) APIError: \(apiError)")
+                let apiError = Error(from: error, json: json)
+                self?.logger?.error("#\(requestID) Error: \(apiError)")
                 promise.reject(apiError)
                 return
             }
 
             guard let responseJSON = json else {
-                promise.reject(APIError.empty)
+                promise.reject(Error.empty)
                 return
             }
 
@@ -196,7 +196,7 @@ open class Cobalt: ReactiveCompatible {
     public func clearAccessToken(forHost host: String? = nil) {
         authorizationGrantTypeSubject.onNext(nil)
         guard let host = (host ?? config.host) else {
-            fatalError("No host given, nor a valid host set in the APIConfig")
+            fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
         AccessToken(host: host).clear()
     }
@@ -205,7 +205,7 @@ open class Cobalt: ReactiveCompatible {
 // MARK: - Helpers
 // --------------------------------------------------------
 
-extension Cobalt {
+extension Client {
 
     fileprivate func _maskSecrets(parameters: Parameters?) -> Parameters? {
         guard let parameters = parameters else {
@@ -225,8 +225,8 @@ extension Cobalt {
     }
 }
 
-extension Reactive where Base: Cobalt {
-    public var authorizationGrantType: Observable<APIOAuthenticationGrantType?> {
+extension Reactive where Base: Client {
+    public var authorizationGrantType: Observable<OAuthenticationGrantType?> {
         return self.base.authorizationGrantTypeSubject.distinctUntilChanged().asObservable()
     }
 }

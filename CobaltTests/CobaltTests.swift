@@ -14,13 +14,13 @@ import Alamofire
 
 
 class CobaltTests: XCTestCase {
-    lazy var config = APIConfig {
+    lazy var config = Config {
         $0.clientID = "id"
         $0.clientSecret = "secret"
         $0.host = "https://reqres.in"
         $0.logger = TestLogger()
     }
-    lazy var client = Cobalt(config: self.config)
+    lazy var client = Cobalt.Client(config: self.config)
 
     override func setUp() {
         super.setUp()
