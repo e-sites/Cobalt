@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.2.1 (19-07-2018)
+- Removed `SwiftyUserDefaults` dependency
+
 ## v5.2.0 (16-07-2018)
 - `Cobalt` -> `Cobalt.Client`
 

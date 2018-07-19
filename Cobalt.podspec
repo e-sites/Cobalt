@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Cobalt"
-  s.version      = "5.2.0"
+  s.version      = "5.2.1"
   s.author       = { "Bas van Kuijck" => "bas@e-sites.nl" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.homepage     = "http://www.e-sites.nl"
@@ -18,7 +18,6 @@ Pod::Spec.new do |s|
   	ss.dependency 'RxCocoa'
   	ss.dependency 'PromisesSwift'
     ss.dependency 'KeychainAccess'
-    ss.dependency 'SwiftyUserDefaults'
   end
 
   s.default_subspec = 'Core'
