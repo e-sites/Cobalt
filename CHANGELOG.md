@@ -1,7 +1,7 @@
 # Changelog Cobalt
 
 ## v5.2.2 (20-07-2018)
-- Added `log(_)` to `Logger` protocol
+- Added `log(_:)` and `info(_:)` to `Logger` protocol
 
 ## v5.2.1 (19-07-2018)
 - Removed `SwiftyUserDefaults` dependency
