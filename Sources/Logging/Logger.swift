@@ -16,4 +16,5 @@ public protocol Logger {
     func error(_ items: Any...)
     func request(_ items: Any...)
     func response(_ items: Any...)
+    func log(_ items: Any...)
 }

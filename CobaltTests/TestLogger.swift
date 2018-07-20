@@ -18,10 +18,6 @@ class TestLogger: Cobalt.Logger {
         print("[WAR]", items.map { "\($0)" }.joined(separator: " "))
     }
 
-    func log(_ items: Any...) {
-        print("[LOG]", items.map { "\($0)" }.joined(separator: " "))
-    }
-
     func debug(_ items: Any...) {
         print("[DEB]", items.map { "\($0)" }.joined(separator: " "))
     }
@@ -32,6 +28,10 @@ class TestLogger: Cobalt.Logger {
 
     func error(_ items: Any...) {
         print("[ERR]", items.map { "\($0)" }.joined(separator: " "))
+    }
+
+    func log(_ items: Any...) {
+        print("[LOG]", items.map { "\($0)" }.joined(separator: " "))
     }
 
     func info(_ items: Any...) {
