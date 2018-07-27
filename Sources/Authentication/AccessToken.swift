@@ -41,12 +41,17 @@ class AccessToken: Decodable, CustomStringConvertible {
         }
     }
     private var _grantType: OAuthenticationGrantType?
+
     var host: String = "" {
         didSet {
-            #if !targetEnvironment(simulator)
-            self.keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
-            #endif
+            _setKeychain()
         }
+    }
+
+    private func _setKeychain() {
+        #if !targetEnvironment(simulator)
+        keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
+        #endif
     }
 
     static private func _transform(grantType: OAuthenticationGrantType?) -> OAuthenticationGrantType? {
@@ -70,6 +75,7 @@ class AccessToken: Decodable, CustomStringConvertible {
 
     init(host: String) {
         self.host = host
+        _setKeychain()
         #if targetEnvironment(simulator)
         accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
         refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
