@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.2.3 (27-07-2018)
+- Fixed a bug with unitialized KeyChain
+
 ## v5.2.2 (20-07-2018)
 - Added `log(_:)` and `info(_:)` to `Logger` protocol
 

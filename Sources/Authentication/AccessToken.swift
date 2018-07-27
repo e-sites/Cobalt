@@ -26,7 +26,7 @@ class AccessToken: Decodable, CustomStringConvertible {
     }
 
     #if !targetEnvironment(simulator)
-    private let keychain: Keychain
+    private var keychain: Keychain!
     #endif
 
     var accessToken: String?
@@ -41,7 +41,13 @@ class AccessToken: Decodable, CustomStringConvertible {
         }
     }
     private var _grantType: OAuthenticationGrantType?
-    var host: String = ""
+    var host: String = "" {
+        didSet {
+            #if !targetEnvironment(simulator)
+            self.keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
+            #endif
+        }
+    }
 
     static private func _transform(grantType: OAuthenticationGrantType?) -> OAuthenticationGrantType? {
         if grantType == .refreshToken {
@@ -74,7 +80,6 @@ class AccessToken: Decodable, CustomStringConvertible {
         expireDate = Date(timeIntervalSince1970: timeInterval)
 
         #else
-        self.keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
         accessToken = keychain[Constant.accessTokenKey]
         refreshToken = keychain[Constant.refreshTokenKey]
         if let timeString = keychain[Constant.expireDateKey], let timeInterval = TimeInterval(timeString) {
