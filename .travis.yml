@@ -7,4 +7,3 @@ before_install:
 
 script:
   - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test
-  - carthage build --cache-builds --platform iOS
