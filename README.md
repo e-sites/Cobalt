@@ -11,12 +11,15 @@ Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 
 [![Platform](https://img.shields.io/cocoapods/p/Cobalt.svg?style=flat)](http://cocoadocs.org/docsets/Cobalt)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svh)](http://cocoadocs.org/docsets/Palladium)
-[![Quality](https://apps.e-sites.nl/cocoapodsquality/Cobalt/badge.svg?004)](https://cocoapods.org/pods/Cobalt/quality)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svg)](http://cocoadocs.org/docsets/Palladium)
 [![Travis-ci](https://travis-ci.org/e-sites/Cobalt.svg?branch=master&001)](https://travis-ci.org/e-sites/Cobalt)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 
 
 # Installation
+
+## CocoaPods
 
 Podfile:
 
@@ -28,6 +31,21 @@ And then
 
 ```
 pod install
+```
+
+
+## Carthage
+
+Cartfile:
+
+```ruby
+github "e-sites/Cobalt"
+```
+
+And then
+
+```
+carthage update
 ```
 
 # Implementation

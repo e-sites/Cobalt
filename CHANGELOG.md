@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.2.4 (17-08-2018)
+- Carthage compatible
+
 ## v5.2.3 (27-07-2018)
 - Fixed a bug with unitialized KeyChain
 
