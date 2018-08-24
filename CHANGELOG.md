@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.2.5 (24-08-2018)
+- Improved `AccessToken` local (keychain) storage
+
 ## v5.2.4 (17-08-2018)
 - Carthage compatible
 

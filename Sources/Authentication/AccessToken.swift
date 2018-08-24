@@ -17,6 +17,7 @@ class AccessToken: Decodable, CustomStringConvertible {
         fileprivate static let refreshTokenKey = "AccessToken._refreshToken"
         fileprivate static let expireDateKey = "AccessToken._expireDate"
         fileprivate static let grantTypeKey = "AccessToken._grantType"
+        fileprivate static let stored = "AccessToken._stored"
     }
     private enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
@@ -76,6 +77,10 @@ class AccessToken: Decodable, CustomStringConvertible {
     init(host: String) {
         self.host = host
         _setKeychain()
+        if !UserDefaults.standard.bool(forKey: "\(host):\(Constant.stored)") {
+            return
+        }
+
         #if targetEnvironment(simulator)
         accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
         refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
@@ -114,12 +119,17 @@ class AccessToken: Decodable, CustomStringConvertible {
     }
 
     func store() {
+        if accessToken == nil {
+            UserDefaults.standard.removeObject(forKey: "\(host):\(Constant.stored)")
+        } else {
+            UserDefaults.standard.set(true, forKey: "\(host):\(Constant.stored)")
+        }
+
         #if targetEnvironment(simulator)
         UserDefaults.standard.set(accessToken, forKey: "\(host):\(Constant.accessTokenKey)")
         UserDefaults.standard.set(refreshToken, forKey: "\(host):\(Constant.refreshTokenKey)")
         UserDefaults.standard.set(grantType?.rawValue, forKey: "\(host):\(Constant.grantTypeKey)")
         UserDefaults.standard.set(expireDate?.timeIntervalSince1970, forKey: "\(host):\(Constant.expireDateKey)")
-        _ = UserDefaults.standard.synchronize()
         #else
         keychain[Constant.accessTokenKey] = accessToken
         keychain[Constant.refreshTokenKey] = refreshToken
@@ -131,6 +141,7 @@ class AccessToken: Decodable, CustomStringConvertible {
         keychain[Constant.grantTypeKey] = grantType?.rawValue
 
         #endif
+        _ = UserDefaults.standard.synchronize()
     }
 
     func clear() {
