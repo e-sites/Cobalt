@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.3.0 (30-08-2018)
+- Add `parametersLoggingOptions` to control the way parameters are logged in the request
+
 ## v5.2.5 (24-08-2018)
 - Improved `AccessToken` local (keychain) storage
 

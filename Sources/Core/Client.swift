@@ -139,9 +139,12 @@ open class Client: ReactiveCompatible {
         if !request.useHeaders.keys.isEmpty {
             logger?.verbose("#\(requestID) Headers: \(request.useHeaders)")
         }
+        let loggingParameters = _parametersForLogging(request.parameters,
+                                                            options: request.parametersLoggingOptions)
+
         logger?.request("#\(requestID) " + request.httpMethod.rawValue,
                         request.urlString,
-                        _maskSecrets(parameters: request.parameters)?.flatJSONString ?? "")
+                        loggingParameters?.flatJSONString ?? "")
         
         let promise = Promise<JSON>.pending()
         Alamofire.request(request.urlString,
@@ -207,18 +210,38 @@ open class Client: ReactiveCompatible {
 
 extension Client {
 
-    fileprivate func _maskSecrets(parameters: Parameters?) -> Parameters? {
-        guard let parameters = parameters else {
-            return nil
-        }
-        var logParameters: Parameters = [:]
 
-        let maskedKeys = [ "password" ]
-        for (key, value) in parameters {
-            if maskedKeys.contains(key) {
+    fileprivate func _parametersForLogging(_ parameters: Parameters?,
+                                           options: [String: ParameterLoggingOption]?) -> Parameters? {
+        guard let theParameters = parameters, var options = options else {
+            return parameters
+        }
+
+        var logParameters: Parameters = [:]
+        options["password"] = .masked
+
+        for (key, value) in theParameters {
+            let type = options[key] ?? .default
+
+            switch type {
+            case .ignore:
+                continue
+            case .masked:
                 logParameters[key] = "***"
-            } else {
+            case .shortened:
+                guard let stringValue = value as? String else {
+                    fallthrough
+                }
+                if stringValue.count > 128 {
+                    let startIndex = stringValue.startIndex
+                    let endIndex = stringValue.index(startIndex, offsetBy: 128)
+                    logParameters[key] = stringValue[startIndex...endIndex] + "..."
+                } else {
+                    logParameters[key] = value
+                }
+            default:
                 logParameters[key] = value
+
             }
         }
         return logParameters

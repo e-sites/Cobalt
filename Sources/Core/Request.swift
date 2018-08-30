@@ -9,6 +9,13 @@
 import Foundation
 import Alamofire
 
+public enum ParameterLoggingOption {
+    case masked
+    case shortened
+    case `default`
+    case ignore
+}
+
 public class Request {
     fileprivate let uuid = UUID().uuidString
 
@@ -19,10 +26,12 @@ public class Request {
     public var headers: HTTPHeaders?
     public var encoding: ParameterEncoding?
     public var authentication: Authentication = .none
+    public var parametersLoggingOptions: [String: ParameterLoggingOption]?
 
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = [:]
     var urlString: String = ""
+
 
     public init(_ builder: ((Request) -> Void)) {
         builder(self)
