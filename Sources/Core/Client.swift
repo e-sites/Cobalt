@@ -213,12 +213,15 @@ extension Client {
 
     fileprivate func _parametersForLogging(_ parameters: Parameters?,
                                            options: [String: ParameterLoggingOption]?) -> Parameters? {
-        guard let theParameters = parameters, var options = options else {
+        guard let theParameters = parameters else {
             return parameters
         }
 
+        var options = options ?? [:]
         var logParameters: Parameters = [:]
-        options["password"] = .masked
+        if options["password"] == nil {
+            options["password"] = .masked
+        }
 
         for (key, value) in theParameters {
             let type = options[key] ?? .default

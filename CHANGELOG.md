@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.3.1 (04-09-2018)
+- Fixed a bug where `parametersLoggingOptions` would not mask the password field by default.
+
 ## v5.3.0 (30-08-2018)
 - Add `parametersLoggingOptions` to control the way parameters are logged in the request
 
