@@ -139,8 +139,8 @@ open class Client: ReactiveCompatible {
         if !request.useHeaders.keys.isEmpty {
             logger?.verbose("#\(requestID) Headers: \(request.useHeaders)")
         }
-        let loggingParameters = _parametersForLogging(request.parameters,
-                                                            options: request.parametersLoggingOptions)
+        let loggingParameters = parametersForLogging(request.parameters,
+                                                     options: request.parametersLoggingOptions)
 
         logger?.request("#\(requestID) " + request.httpMethod.rawValue,
                         request.urlString,
@@ -211,21 +211,29 @@ open class Client: ReactiveCompatible {
 extension Client {
 
 
-    fileprivate func _parametersForLogging(_ parameters: Parameters?,
+    func parametersForLogging(_ parameters: Parameters?,
                                            options: [String: ParameterLoggingOption]?) -> Parameters? {
+        var options = options ?? [:]
         guard let theParameters = parameters else {
             return parameters
         }
 
-        var options = options ?? [:]
+        options["password"] = .masked
+        let logParameters = _mask(parameters: theParameters , options: options)
+
+        return logParameters
+    }
+
+    fileprivate func _mask(parameters: Parameters,
+                           options: [String: ParameterLoggingOption],
+                           path: String = "") -> Parameters {
         var logParameters: Parameters = [:]
-        if options["password"] == nil {
-            options["password"] = .masked
-        }
-
-        for (key, value) in theParameters {
-            let type = options[key] ?? .default
-
+        for (key, value) in parameters {
+            let type = options["\(path)\(key)"] ?? .default
+            if let dictionary = value as? Parameters {
+                logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
+                continue
+            }
             switch type {
             case .ignore:
                 continue
@@ -238,7 +246,7 @@ extension Client {
                 if stringValue.count > 128 {
                     let startIndex = stringValue.startIndex
                     let endIndex = stringValue.index(startIndex, offsetBy: 128)
-                    logParameters[key] = stringValue[startIndex...endIndex] + "..."
+                    logParameters[key] = String(describing: stringValue[startIndex...endIndex] + "...")
                 } else {
                     logParameters[key] = value
                 }

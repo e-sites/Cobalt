@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.3.2 (05-09-2018)
+- Allow nested objects in `parametersLoggingOptions`
+
 ## v5.3.1 (04-09-2018)
 - Fixed a bug where `parametersLoggingOptions` would not mask the password field by default.
 
