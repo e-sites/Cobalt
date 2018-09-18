@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.4.0 (05-09-2018)
+- Update to Swift 4.2 / Xcode10
+
 ## v5.3.2 (05-09-2018)
 - Allow nested objects in `parametersLoggingOptions`
 
