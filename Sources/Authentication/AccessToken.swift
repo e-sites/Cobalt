@@ -11,7 +11,7 @@ import Foundation
 import KeychainAccess
 #endif
 
-class AccessToken: Decodable, CustomStringConvertible {
+public class AccessToken: Decodable, CustomStringConvertible {
     fileprivate struct Constant {
         fileprivate static let accessTokenKey = "AccessToken._accessToken"
         fileprivate static let refreshTokenKey = "AccessToken._refreshToken"
@@ -30,10 +30,10 @@ class AccessToken: Decodable, CustomStringConvertible {
     private var keychain: Keychain!
     #endif
 
-    var accessToken: String?
-    var refreshToken: String?
-    var expireDate: Date?
-    var grantType: OAuthenticationGrantType? {
+    public internal(set) var accessToken: String?
+    public internal(set) var refreshToken: String?
+    public internal(set) var expireDate: Date?
+    public internal(set) var grantType: OAuthenticationGrantType? {
         set {
             _grantType = AccessToken._transform(grantType: newValue)
         }
@@ -102,14 +102,14 @@ class AccessToken: Decodable, CustomStringConvertible {
         #endif
     }
 
-    var isExpired: Bool {
+    public var isExpired: Bool {
         guard let expireDate = self.expireDate else {
             return true
         }
         return expireDate < Date()
     }
 
-    required init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         accessToken = try container.decode(String.self, forKey: .accessToken)
         refreshToken = try container.decodeIfPresent(String.self, forKey: .refreshToken)
@@ -157,7 +157,7 @@ class AccessToken: Decodable, CustomStringConvertible {
         store()
     }
 
-    var description: String {
+    public var description: String {
         var expiresIn = 0
         if let expireDate = expireDate {
             expiresIn = Int(expireDate.timeIntervalSinceNow)

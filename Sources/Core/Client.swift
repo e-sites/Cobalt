@@ -36,6 +36,13 @@ open class Client: ReactiveCompatible {
         }
     }
 
+    public var accessToken: AccessToken? {
+        guard let host = config.host else {
+            return nil
+        }
+        return AccessToken(host: host)
+    }
+
     var logger: Logger? {
         return config.logger
     }

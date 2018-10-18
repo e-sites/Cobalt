@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.5.0 (05-09-2018)
+- Make `AccessToken` public
+
 ## v5.4.0 (05-09-2018)
 - Update to Swift 4.2 / Xcode10
 
