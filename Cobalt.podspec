@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.swift_version = '4.2'
 
   s.subspec 'Core' do |ss|
-    ss.source_files = "Sources/**/*.{h,swift}"
+    ss.source_files = "Sources/Core/**/*.{h,swift}"
   	ss.dependency 'Alamofire'
   	ss.dependency 'SwiftyJSON'
   	ss.dependency 'RxSwift'
