@@ -11,6 +11,7 @@ import Alamofire
 
 public enum ParameterLoggingOption {
     case masked
+    case halfMasked
     case shortened
     case `default`
     case ignore
@@ -30,7 +31,7 @@ public class Request {
 
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = [:]
-    var urlString: String = ""
+    internal(set) public var urlString: String = ""
 
 
     public init(_ builder: ((Request) -> Void)) {

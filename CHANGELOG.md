@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.5.1 (24-10-2018)
+- Allow masking of access-, and refresh-tokens
+
 ## v5.5.0 (05-09-2018)
 - Make `AccessToken` public
 

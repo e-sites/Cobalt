@@ -7,21 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C3072F562099B7E400DF9402 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F492099B7E400DF9402 /* SwiftyJSON+Extension.swift */; };
-		C3072F572099B7E400DF9402 /* Promises+rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F4A2099B7E400DF9402 /* Promises+rx.swift */; };
-		C3072F582099B7E400DF9402 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F4B2099B7E400DF9402 /* Optional.swift */; };
-		C3072F592099B7E400DF9402 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F4D2099B7E400DF9402 /* Error.swift */; };
-		C3072F5A2099B7E400DF9402 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F4E2099B7E400DF9402 /* Client.swift */; };
-		C3072F5B2099B7E400DF9402 /* RequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F4F2099B7E400DF9402 /* RequestQueue.swift */; };
-		C3072F5C2099B7E400DF9402 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F502099B7E400DF9402 /* Config.swift */; };
-		C3072F5D2099B7E400DF9402 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F512099B7E400DF9402 /* Request.swift */; };
-		C3072F5E2099B7E400DF9402 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F532099B7E400DF9402 /* AccessToken.swift */; };
-		C3072F5F2099B7E400DF9402 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F542099B7E400DF9402 /* Authentication.swift */; };
-		C3072F602099B7E400DF9402 /* AuthenticationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3072F552099B7E400DF9402 /* AuthenticationProvider.swift */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
+		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
+		C37900252181DD1F00926793 /* Promises+rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900132181DD1F00926793 /* Promises+rx.swift */; };
+		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
+		C37900272181DD1F00926793 /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = C37900152181DD1F00926793 /* Cobalt.h */; };
+		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
+		C37900292181DD1F00926793 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900182181DD1F00926793 /* AccessToken.swift */; };
+		C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900192181DD1F00926793 /* AuthenticationProvider.swift */; };
+		C379002B2181DD1F00926793 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001B2181DD1F00926793 /* Logger.swift */; };
+		C379002C2181DD1F00926793 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001D2181DD1F00926793 /* Error.swift */; };
+		C379002D2181DD1F00926793 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001E2181DD1F00926793 /* Config.swift */; };
+		C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001F2181DD1F00926793 /* RequestQueue.swift */; };
+		C379002F2181DD1F00926793 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900202181DD1F00926793 /* Client.swift */; };
+		C37900302181DD1F00926793 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900212181DD1F00926793 /* Request.swift */; };
 		C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
 		C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
-		C38B33BE20F6315800232170 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38B33BD20F6315800232170 /* Logger.swift */; };
 		C38B33C020F6343F00232170 /* TestLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38B33BF20F6343F00232170 /* TestLogger.swift */; };
 		C3FF3B0E2126A72500DB75D2 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FF3B072126A72500DB75D2 /* Alamofire.framework */; };
 		C3FF3B0F2126A72500DB75D2 /* Promises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FF3B082126A72500DB75D2 /* Promises.framework */; };
@@ -37,7 +38,6 @@
 		C3FF3B1A2126A86D00DB75D2 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FF3B0A2126A72500DB75D2 /* SwiftyJSON.framework */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
-		DFDA22161D6741C200683D7D /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = DFDA22101D6741C200683D7D /* Cobalt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,21 +51,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C3072F492099B7E400DF9402 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
-		C3072F4A2099B7E400DF9402 /* Promises+rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promises+rx.swift"; sourceTree = "<group>"; };
-		C3072F4B2099B7E400DF9402 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
-		C3072F4D2099B7E400DF9402 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		C3072F4E2099B7E400DF9402 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
-		C3072F4F2099B7E400DF9402 /* RequestQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestQueue.swift; sourceTree = "<group>"; };
-		C3072F502099B7E400DF9402 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		C3072F512099B7E400DF9402 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
-		C3072F532099B7E400DF9402 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
-		C3072F542099B7E400DF9402 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
-		C3072F552099B7E400DF9402 /* AuthenticationProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationProvider.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
+		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
+		C37900132181DD1F00926793 /* Promises+rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promises+rx.swift"; sourceTree = "<group>"; };
+		C37900142181DD1F00926793 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
+		C37900152181DD1F00926793 /* Cobalt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cobalt.h; sourceTree = "<group>"; };
+		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
+		C37900182181DD1F00926793 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
+		C37900192181DD1F00926793 /* AuthenticationProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationProvider.swift; sourceTree = "<group>"; };
+		C379001B2181DD1F00926793 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		C379001D2181DD1F00926793 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		C379001E2181DD1F00926793 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		C379001F2181DD1F00926793 /* RequestQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestQueue.swift; sourceTree = "<group>"; };
+		C37900202181DD1F00926793 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		C37900212181DD1F00926793 /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Requests.swift"; sourceTree = "<group>"; };
 		C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Authentication.swift"; sourceTree = "<group>"; };
-		C38B33BD20F6315800232170 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		C38B33BF20F6343F00232170 /* TestLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLogger.swift; sourceTree = "<group>"; };
 		C3FF3B072126A72500DB75D2 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		C3FF3B082126A72500DB75D2 /* Promises.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Promises.framework; path = Carthage/Build/iOS/Promises.framework; sourceTree = "<group>"; };
@@ -79,7 +80,6 @@
 		DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobaltTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA22031D6741AE00683D7D /* CobaltTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobaltTests.swift; sourceTree = "<group>"; };
 		DFDA22051D6741AE00683D7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DFDA22101D6741C200683D7D /* Cobalt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cobalt.h; sourceTree = "<group>"; };
 		DFDA22131D6741C200683D7D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -114,44 +114,56 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C3072F482099B7E400DF9402 /* Extensions */ = {
+		C37900102181DD1F00926793 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				C3072F492099B7E400DF9402 /* SwiftyJSON+Extension.swift */,
-				C3072F4A2099B7E400DF9402 /* Promises+rx.swift */,
-				C3072F4B2099B7E400DF9402 /* Optional.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		C3072F4C2099B7E400DF9402 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				C3072F4D2099B7E400DF9402 /* Error.swift */,
-				C3072F4E2099B7E400DF9402 /* Client.swift */,
-				C3072F4F2099B7E400DF9402 /* RequestQueue.swift */,
-				C3072F502099B7E400DF9402 /* Config.swift */,
-				C3072F512099B7E400DF9402 /* Request.swift */,
+				C37900112181DD1F00926793 /* Extensions */,
+				C37900152181DD1F00926793 /* Cobalt.h */,
+				C37900162181DD1F00926793 /* Authentication */,
+				C379001A2181DD1F00926793 /* Logging */,
+				C379001C2181DD1F00926793 /* Base */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		C3072F522099B7E400DF9402 /* Authentication */ = {
+		C37900112181DD1F00926793 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				C3072F532099B7E400DF9402 /* AccessToken.swift */,
-				C3072F542099B7E400DF9402 /* Authentication.swift */,
-				C3072F552099B7E400DF9402 /* AuthenticationProvider.swift */,
+				C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */,
+				C37900132181DD1F00926793 /* Promises+rx.swift */,
+				C37900142181DD1F00926793 /* Optional.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		C37900162181DD1F00926793 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				C37900172181DD1F00926793 /* Authentication.swift */,
+				C37900182181DD1F00926793 /* AccessToken.swift */,
+				C37900192181DD1F00926793 /* AuthenticationProvider.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
 		};
-		C38B33BC20F6314F00232170 /* Logging */ = {
+		C379001A2181DD1F00926793 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
-				C38B33BD20F6315800232170 /* Logger.swift */,
+				C379001B2181DD1F00926793 /* Logger.swift */,
 			);
 			path = Logging;
+			sourceTree = "<group>";
+		};
+		C379001C2181DD1F00926793 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				C379001D2181DD1F00926793 /* Error.swift */,
+				C379001E2181DD1F00926793 /* Config.swift */,
+				C379001F2181DD1F00926793 /* RequestQueue.swift */,
+				C37900202181DD1F00926793 /* Client.swift */,
+				C37900212181DD1F00926793 /* Request.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		C3CF88072126A6DB00DB29AD /* Frameworks */ = {
@@ -204,12 +216,8 @@
 		DFDA220E1D6741C200683D7D /* Cobalt */ = {
 			isa = PBXGroup;
 			children = (
-				C38B33BC20F6314F00232170 /* Logging */,
-				C3072F522099B7E400DF9402 /* Authentication */,
-				C3072F4C2099B7E400DF9402 /* Core */,
-				C3072F482099B7E400DF9402 /* Extensions */,
-				DFDA22101D6741C200683D7D /* Cobalt.h */,
 				DFDA22131D6741C200683D7D /* Info.plist */,
+				C37900102181DD1F00926793 /* Core */,
 			);
 			name = Cobalt;
 			path = Sources;
@@ -222,7 +230,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DFDA22161D6741C200683D7D /* Cobalt.h in Headers */,
+				C37900272181DD1F00926793 /* Cobalt.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,18 +334,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3072F562099B7E400DF9402 /* SwiftyJSON+Extension.swift in Sources */,
-				C3072F592099B7E400DF9402 /* Error.swift in Sources */,
-				C38B33BE20F6315800232170 /* Logger.swift in Sources */,
-				C3072F5E2099B7E400DF9402 /* AccessToken.swift in Sources */,
-				C3072F5B2099B7E400DF9402 /* RequestQueue.swift in Sources */,
-				C3072F572099B7E400DF9402 /* Promises+rx.swift in Sources */,
-				C3072F5A2099B7E400DF9402 /* Client.swift in Sources */,
-				C3072F582099B7E400DF9402 /* Optional.swift in Sources */,
-				C3072F602099B7E400DF9402 /* AuthenticationProvider.swift in Sources */,
-				C3072F5D2099B7E400DF9402 /* Request.swift in Sources */,
-				C3072F5F2099B7E400DF9402 /* Authentication.swift in Sources */,
-				C3072F5C2099B7E400DF9402 /* Config.swift in Sources */,
+				C37900302181DD1F00926793 /* Request.swift in Sources */,
+				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
+				C379002F2181DD1F00926793 /* Client.swift in Sources */,
+				C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */,
+				C37900252181DD1F00926793 /* Promises+rx.swift in Sources */,
+				C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */,
+				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
+				C37900262181DD1F00926793 /* Optional.swift in Sources */,
+				C37900292181DD1F00926793 /* AccessToken.swift in Sources */,
+				C379002D2181DD1F00926793 /* Config.swift in Sources */,
+				C379002C2181DD1F00926793 /* Error.swift in Sources */,
+				C379002B2181DD1F00926793 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

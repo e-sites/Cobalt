@@ -13,6 +13,11 @@ import Promises
 import SwiftyJSON
 import Alamofire
 
+protocol ClientMetricDelegate: class {
+    func startRequest(_ request: Request)
+    func finishRequest(_ request: Request, statusCode: Int)
+}
+
 open class Client: ReactiveCompatible {
 
     // MARK: - Variables
@@ -27,6 +32,8 @@ open class Client: ReactiveCompatible {
     fileprivate lazy var queue = RequestQueue(client: self)
 
     var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
+
+    var metricDelegate: ClientMetricDelegate?
 
     var authorizationGrantType: OAuthenticationGrantType? {
         do {
@@ -143,16 +150,23 @@ open class Client: ReactiveCompatible {
         if self.requestID == 100 {
             self.requestID = 1
         }
-        if !request.useHeaders.keys.isEmpty {
-            logger?.verbose("#\(requestID) Headers: \(request.useHeaders)")
+        var loggingOptions: [String: ParameterLoggingOption] = [:]
+        if config.maskTokens {
+            loggingOptions["Authorization"] = .halfMasked
         }
-        let loggingParameters = parametersForLogging(request.parameters,
+
+        if !request.useHeaders.keys.isEmpty {
+            let headersDictionary = dictionaryForLogging(request.useHeaders, options: loggingOptions)
+            logger?.verbose("#\(requestID) Headers: \(headersDictionary ?? [:])")
+        }
+
+        let loggingParameters = dictionaryForLogging(request.parameters,
                                                      options: request.parametersLoggingOptions)
 
         logger?.request("#\(requestID) " + request.httpMethod.rawValue,
                         request.urlString,
                         loggingParameters?.flatJSONString ?? "")
-        
+        metricDelegate?.startRequest(request)
         let promise = Promise<JSON>.pending()
         Alamofire.request(request.urlString,
                           method: request.httpMethod,
@@ -163,14 +177,23 @@ open class Client: ReactiveCompatible {
         .responseJSON { [weak self] response in
 
             let statusCode = response.response?.statusCode ?? 500
+            self?.metricDelegate?.finishRequest(request, statusCode: statusCode)
             let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
             self?.logger?.verbose("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
             var json: JSON?
             if let data = response.data {
                 json = JSON(data)
+
+                var loggingOptions: [String: ParameterLoggingOption] = [:]
+                if self?.config.maskTokens == true {
+                    loggingOptions["access_token"] = .halfMasked
+                    loggingOptions["refresh_token"] = .halfMasked
+                }
+
+                let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: loggingOptions)
                 self?.logger?.response("#\(requestID) " + request.httpMethod.rawValue,
                                       request.urlString,
-                                      json?.flatString ?? "")
+                                      dictionary?.flatJSONString ?? "")
             }
 
             if let error = response.error {
@@ -218,51 +241,71 @@ open class Client: ReactiveCompatible {
 extension Client {
 
 
-    func parametersForLogging(_ parameters: Parameters?,
-                                           options: [String: ParameterLoggingOption]?) -> Parameters? {
+    func dictionaryForLogging(_ parameters: [String: Any]?,
+                              options: [String: ParameterLoggingOption]?) -> [String: Any]? {
         var options = options ?? [:]
         guard let theParameters = parameters else {
             return parameters
         }
 
+        if config.maskTokens {
+            options["refresh_token"] = .halfMasked
+        }
         options["password"] = .masked
         let logParameters = _mask(parameters: theParameters , options: options)
 
         return logParameters
     }
 
-    fileprivate func _mask(parameters: Parameters,
+    fileprivate func _mask(parameters: [String: Any],
                            options: [String: ParameterLoggingOption],
-                           path: String = "") -> Parameters {
-        var logParameters: Parameters = [:]
+                           path: String = "") -> [String: Any] {
+        var logParameters: [String: Any] = [:]
         for (key, value) in parameters {
             let type = options["\(path)\(key)"] ?? .default
-            if let dictionary = value as? Parameters {
+            if let dictionary = value as? [String: Any] {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
                 continue
             }
-            switch type {
-            case .ignore:
+            guard let string = Client.mask(string: value, type: type) else {
                 continue
-            case .masked:
-                logParameters[key] = "***"
-            case .shortened:
-                guard let stringValue = value as? String else {
-                    fallthrough
-                }
-                if stringValue.count > 128 {
-                    let startIndex = stringValue.startIndex
-                    let endIndex = stringValue.index(startIndex, offsetBy: 128)
-                    logParameters[key] = String(describing: stringValue[startIndex...endIndex] + "...")
-                } else {
-                    logParameters[key] = value
-                }
-            default:
-                logParameters[key] = value
-
             }
+            logParameters[key] = string
         }
         return logParameters
+    }
+
+    class func mask(string value: Any?, type: ParameterLoggingOption) -> Any? {
+        guard let value = value else {
+            return nil
+        }
+        switch type {
+        case .halfMasked:
+            guard let stringValue = value as? String, !stringValue.isEmpty else {
+                return value
+            }
+            let length = Int(floor(Double(stringValue.count) / 2.0))
+            let startIndex = stringValue.startIndex
+            let midIndex = stringValue.index(startIndex, offsetBy: length)
+            return String(describing: stringValue[startIndex..<midIndex]) + "***"
+        case .ignore:
+            return nil
+        case .masked:
+            return "***"
+        case .shortened:
+            guard let stringValue = value as? String else {
+                fallthrough
+            }
+            if stringValue.count > 128 {
+                let startIndex = stringValue.startIndex
+                let endIndex = stringValue.index(startIndex, offsetBy: 128)
+                return String(describing: stringValue[startIndex..<endIndex]) + "..."
+            } else {
+                return value
+            }
+        default:
+            return value
+        }
     }
 }
 

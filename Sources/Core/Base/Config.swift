@@ -13,6 +13,7 @@ public class Config {
     public var clientSecret: String?
     public var logger: Logger?
     public var host: String?
+    public var maskTokens = false
 
     var authorizationBasicBase64: String? {
         guard let id = clientID,

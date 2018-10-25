@@ -163,8 +163,8 @@ public class AccessToken: Decodable, CustomStringConvertible {
             expiresIn = Int(expireDate.timeIntervalSinceNow)
         }
         return "<AccessToken> [ server: \(host), " +
-            "accessToken: \(optionalDescription(accessToken)), " +
-            "refreshToken: \(optionalDescription(refreshToken)), " +
+            "accessToken: \(optionalDescription(Client.mask(string: accessToken, type: .halfMasked))), " +
+            "refreshToken: \(optionalDescription(Client.mask(string: refreshToken, type: .halfMasked))), " +
         "grantType: \(optionalDescription(grantType)), expires in: \(expiresIn)s ]"
     }
 }

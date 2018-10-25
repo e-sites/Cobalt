@@ -24,19 +24,21 @@ class CobaltTestsLogging: CobaltTests {
                     "username": "basvankuijck"
                 ]
             ],
+            "halfMasked_token": "123456",
             "password": "Test123"
         ]
 
-        guard let logParams = client.parametersForLogging(dictionary, options: [
+        guard let logParams = client.dictionaryForLogging(dictionary, options: [
             "some": .shortened,
-            "path.to.token": .masked
+            "path.to.token": .masked,
+            "halfMasked_token": .halfMasked
             ]) else {
                 XCTAssert(false, "'logParams' should not be nil")
             return
         }
 
         if let string = logParams["some"] as? String {
-            XCTAssertEqual(string, "Aliquam tincidunt quis mi in blandit. Sed augue eros, consectetur sed facilisis eget, ultricies in ex. Suspendisse sagittis, veli...")
+            XCTAssertEqual(string, "Aliquam tincidunt quis mi in blandit. Sed augue eros, consectetur sed facilisis eget, ultricies in ex. Suspendisse sagittis, vel...")
         } else {
             XCTAssert(false, "Expected 'some' in dictionary")
         }
@@ -45,6 +47,12 @@ class CobaltTestsLogging: CobaltTests {
             XCTAssertEqual(string, "***")
         } else {
             XCTAssert(false, "Expected 'password' in dictionary")
+        }
+
+        if let string = logParams["halfMasked_token"] as? String {
+            XCTAssertEqual(string, "123***")
+        } else {
+            XCTAssert(false, "Expected 'halfMasked_token' in dictionary")
         }
 
         if let dic1 = logParams["path"] as? [String: Any], let dic2 = dic1["to"] as? [String: String] {
