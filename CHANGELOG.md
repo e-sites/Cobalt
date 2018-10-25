@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.6.0 (25-10-2018)
+- Start / finish request for metrics
+
 ## v5.5.1 (24-10-2018)
 - Allow masking of access-, and refresh-tokens
 

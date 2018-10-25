@@ -13,11 +13,6 @@ import Promises
 import SwiftyJSON
 import Alamofire
 
-protocol ClientMetricDelegate: class {
-    func startRequest(_ request: Request)
-    func finishRequest(_ request: Request, statusCode: Int)
-}
-
 open class Client: ReactiveCompatible {
 
     // MARK: - Variables
@@ -32,8 +27,6 @@ open class Client: ReactiveCompatible {
     fileprivate lazy var queue = RequestQueue(client: self)
 
     var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
-
-    var metricDelegate: ClientMetricDelegate?
 
     var authorizationGrantType: OAuthenticationGrantType? {
         do {
@@ -144,6 +137,14 @@ open class Client: ReactiveCompatible {
         }
     }
 
+    open func startRequest(_ request: Request) {
+
+    }
+
+    open func finishRequest(_ request: Request, response: HTTPURLResponse?) {
+
+    }
+
     private func _request(_ request: Request) -> Promise<JSON> {
         let requestID = self.requestID
         self.requestID += 1
@@ -166,7 +167,7 @@ open class Client: ReactiveCompatible {
         logger?.request("#\(requestID) " + request.httpMethod.rawValue,
                         request.urlString,
                         loggingParameters?.flatJSONString ?? "")
-        metricDelegate?.startRequest(request)
+        startRequest(request)
         let promise = Promise<JSON>.pending()
         Alamofire.request(request.urlString,
                           method: request.httpMethod,
@@ -177,7 +178,7 @@ open class Client: ReactiveCompatible {
         .responseJSON { [weak self] response in
 
             let statusCode = response.response?.statusCode ?? 500
-            self?.metricDelegate?.finishRequest(request, statusCode: statusCode)
+            self?.finishRequest(request, response: response.response)
             let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
             self?.logger?.verbose("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
             var json: JSON?
@@ -243,18 +244,10 @@ extension Client {
 
     func dictionaryForLogging(_ parameters: [String: Any]?,
                               options: [String: ParameterLoggingOption]?) -> [String: Any]? {
-        var options = options ?? [:]
-        guard let theParameters = parameters else {
+        guard let theParameters = parameters, let options = options else {
             return parameters
         }
-
-        if config.maskTokens {
-            options["refresh_token"] = .halfMasked
-        }
-        options["password"] = .masked
-        let logParameters = _mask(parameters: theParameters , options: options)
-
-        return logParameters
+        return _mask(parameters: theParameters, options: options)
     }
 
     fileprivate func _mask(parameters: [String: Any],

@@ -101,6 +101,10 @@ class AuthenticationProvider {
             $0.encoding = URLEncoding.default
             $0.authentication = .client
             $0.parameters = parameters
+            $0.parametersLoggingOptions = [
+                "password": .masked,
+                "refresh_token": .halfMasked
+            ]
         }
 
         isAuthenticating = true
