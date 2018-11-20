@@ -29,6 +29,7 @@ class CobaltTestsLogging: CobaltTests {
         ]
 
         guard let logParams = client.dictionaryForLogging(dictionary, options: [
+            "password": .masked,
             "some": .shortened,
             "path.to.token": .masked,
             "halfMasked_token": .halfMasked
