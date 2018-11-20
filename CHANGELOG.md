@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.6.1 (20-11-2018)
+- Make oauth2 endpoint path configurable
+
 ## v5.6.0 (25-10-2018)
 - Start / finish request for metrics
 

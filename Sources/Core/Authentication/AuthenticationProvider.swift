@@ -96,7 +96,7 @@ class AuthenticationProvider {
         parameters["grant_type"] = grantType.rawValue
 
         let request = Request {
-            $0.path = "oauth/v2/token"
+            $0.path = client.config.oauthEndpointPath
             $0.httpMethod = .post
             $0.encoding = URLEncoding.default
             $0.authentication = .client

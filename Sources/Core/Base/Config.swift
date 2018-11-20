@@ -14,6 +14,7 @@ public class Config {
     public var logger: Logger?
     public var host: String?
     public var maskTokens = false
+    public var oauthEndpointPath = "/oauth/v2/token"
 
     var authorizationBasicBase64: String? {
         guard let id = clientID,
