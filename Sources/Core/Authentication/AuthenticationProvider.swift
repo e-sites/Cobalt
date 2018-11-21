@@ -29,17 +29,49 @@ class AuthenticationProvider {
         // Define headers
         var headers = request.headers ?? [:]
 
+        // Regular client_id / client_secret
+        guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
+            throw Error.missingClientAuthentication
+        }
+
+
         // How should the request be authorized?
         switch request.authentication {
-
-        // Regular client_id / client_secret
-        // Just add an `Authorization` header
         case .client:
-            guard let base64 = client.config.authorizationBasicBase64 else {
-                throw Error.missingClientAuthentication
-            }
+            switch client.config.clientAuthorization {
+            case .basicHeader:
+                // Just add an `Authorization` header
+                guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
+                    throw Error.missingClientAuthentication
+                }
+                headers["Authorization"] = "Basic \(base64)"
 
-            headers["Authorization"] = "Basic \(base64)"
+            case .requestBody:
+                // Alternatively, the authorization server MAY support including the
+                // client credentials in the request-body using the following
+
+                var parameters = request.parameters ?? [:]
+                if parameters["client_id"] == nil {
+                    parameters["client_id"] = clientID
+                }
+
+                if parameters["client_secret"] == nil {
+                    parameters["client_secret"] = clientSecret
+                }
+
+                if !parameters.keys.isEmpty {
+                    request.parameters = parameters
+                }
+            
+                var parametersLoggingOptions = request.parametersLoggingOptions ?? [:]
+                if parametersLoggingOptions["client_secret"] == nil {
+                    parametersLoggingOptions["client_secret"] = .halfMasked
+                }
+
+                if !parametersLoggingOptions.keys.isEmpty {
+                    request.parametersLoggingOptions = parametersLoggingOptions
+                }
+            }
 
         // If the client requires an OAuth2 authorization;
         // continue to `_authorizeOAuth(request:, grantType:)`
@@ -86,7 +118,7 @@ class AuthenticationProvider {
             throw Error.missingClientAuthentication
         }
 
-        return sendOAuthRequest(grantType: grantType,parameters: parameters).then { _ in
+        return sendOAuthRequest(grantType: grantType, parameters: parameters).then { _ in
             return try self._authorizeOAuth(request: request, grantType: grantType)
         }
     }
@@ -103,7 +135,8 @@ class AuthenticationProvider {
             $0.parameters = parameters
             $0.parametersLoggingOptions = [
                 "password": .masked,
-                "refresh_token": .halfMasked
+                "refresh_token": .halfMasked,
+                "client_secret": .halfMasked
             ]
         }
 

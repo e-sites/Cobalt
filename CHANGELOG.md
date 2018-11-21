@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.7.0 (21-11-2018)
+- Use `Config.clientAuthorization` to allow `requestBody` client authentication instead of default through the `.basicHeader`.
+
 ## v5.6.1 (20-11-2018)
 - Make oauth2 endpoint path configurable
 

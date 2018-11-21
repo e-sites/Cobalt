@@ -17,6 +17,7 @@ class CobaltTestsRequests: CobaltTests {
     func testRequestGET() {
         waitUntil { done in
             let request = Request {
+                $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
                     "per_page": 10
