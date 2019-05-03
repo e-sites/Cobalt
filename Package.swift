@@ -22,7 +22,7 @@ let package = Package(
                 "SwiftyJSON",
                 "RxSwift",
                 "RxCocoa",
-                "PromisesSwift",
+                "Promises",
                 "KeychainAccess"
 
             ],
