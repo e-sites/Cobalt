@@ -9,7 +9,6 @@ Pod::Spec.new do |s|
   s.source_files = "Sources/*.h"
   s.platform     = :ios, '9.0'
   s.requires_arc  = true
-  s.swift_version = '5.0'
 
   s.subspec 'Core' do |ss|
     ss.source_files = "Sources/Core/**/*.{h,swift}"
