@@ -1,4 +1,4 @@
-github "Alamofire/Alamofire"
+github "Alamofire/Alamofire" "5.0.0-beta.4"
 github "SwiftyJSON/SwiftyJSON"
 github "ReactiveX/RxSwift"
 github "google/promises"

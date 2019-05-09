@@ -1,14 +1,22 @@
 language: objective-c
-osx_image: xcode10.1
+osx_image: xcode10.2
 
-cache: 
+addons:
+  homebrew:
+    brewfile: true
+
+branches:
+  only:
+  - master
+  - accio
+
+cache:
   directories:
-  - Carthage
   - vendor/bundle
+  - .accio
 
 before_install:
-  - brew update && brew bundle
-  - carthage bootstrap --cache-builds --platform iOS
+  - accio install
 
 script:
   - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test

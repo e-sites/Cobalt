@@ -57,8 +57,8 @@ extension Request: CustomStringConvertible {
 
 extension Request: Hashable {
 
-    public var hashValue: Int {
-        return uuid.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
     }
 
     public static func == (lhs: Request, rhs: Request) -> Bool {

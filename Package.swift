@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "Cobalt",
     products: [
-        .library(name: "Cobalt", targets: ["Cobalt"])
+        .library(name: "Cobalt", targets: ["Cobalt", "CobaltTests"])
     ],
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire", .upToNextMajor(from: "4.8.2")),
@@ -12,7 +12,7 @@ let package = Package(
         .package(url: "https://github.com/ReactiveX/RxSwift", .upToNextMajor(from: "5.0.1")),
         .package(url: "https://github.com/google/promises", .upToNextMajor(from: "1.2.8")),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess", .upToNextMajor(from: "3.2.0")),
-        .package(url: "https://github.com/Quick/Nimble", .upToNextMajor(from: "8.0.1")),
+        .package(url: "https://github.com/Quick/Nimble", .upToNextMajor(from: "8.0.1"))
     ],
     targets: [
         .target(
@@ -31,7 +31,10 @@ let package = Package(
         .testTarget(
             name: "CobaltTests",
             dependencies: [
-                "Nimble"
+                "Nimble",
+                "Alamofire",
+                "Promises",
+                "SwiftyJSON"
 
             ],
             path: "CobaltTests"

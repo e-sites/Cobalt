@@ -19,3 +19,7 @@ DerivedData
 *.xcuserstate
 lcov/
 Carthage/
+
+# Accio dependency management
+Dependencies/
+.accio/

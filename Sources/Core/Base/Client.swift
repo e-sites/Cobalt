@@ -168,52 +168,52 @@ open class Client: ReactiveCompatible {
                         request.urlString,
                         loggingParameters?.flatJSONString ?? "")
         startRequest(request)
-        let promise = Promise<JSON>.pending()
-        Alamofire.request(request.urlString,
-                          method: request.httpMethod,
-                          parameters: request.parameters,
-                          encoding: request.useEncoding,
-                          headers: request.useHeaders)
-        .validate()
-        .responseJSON { [weak self] response in
 
-            let statusCode = response.response?.statusCode ?? 500
-            self?.finishRequest(request, response: response.response)
-            let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-            self?.logger?.verbose("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
-            var json: JSON?
-            if let data = response.data {
-                json = JSON(data)
+        return Promise<JSON>(on: .main) { [weak self] fulfill, reject in
+            Alamofire.request(request.urlString,
+                              method: request.httpMethod,
+                              parameters: request.parameters,
+                              encoding: request.useEncoding,
+                              headers: request.useHeaders)
+                .validate()
+                .responseJSON { response in
 
-                var loggingOptions: [String: ParameterLoggingOption] = [:]
-                if self?.config.maskTokens == true {
-                    loggingOptions["access_token"] = .halfMasked
-                    loggingOptions["refresh_token"] = .halfMasked
-                }
+                    let statusCode = response.response?.statusCode ?? 500
+                    self?.finishRequest(request, response: response.response)
+                    let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+                    self?.logger?.verbose("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                    var json: JSON?
+                    if let data = response.data {
+                        json = JSON(data)
 
-                let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: loggingOptions)
-                self?.logger?.response("#\(requestID) " + request.httpMethod.rawValue,
-                                      request.urlString,
-                                      dictionary?.flatJSONString ?? "")
+                        var loggingOptions: [String: ParameterLoggingOption] = [:]
+                        if self?.config.maskTokens == true {
+                            loggingOptions["access_token"] = .halfMasked
+                            loggingOptions["refresh_token"] = .halfMasked
+                        }
+
+                        let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: loggingOptions)
+                        self?.logger?.response("#\(requestID) " + request.httpMethod.rawValue,
+                                               request.urlString,
+                                               dictionary?.flatJSONString ?? "")
+                    }
+
+                    if let error = response.error {
+                        self?.logger?.error("#\(requestID) Original: \(error)")
+                        let apiError = Error(from: error, json: json)
+                        self?.logger?.error("#\(requestID) Error: \(apiError)")
+                        reject(apiError)
+                        return
+                    }
+
+                    guard let responseJSON = json else {
+                        reject(Error.empty)
+                        return
+                    }
+
+                    fulfill(responseJSON)
             }
-
-            if let error = response.error {
-                self?.logger?.error("#\(requestID) Original: \(error)")
-                let apiError = Error(from: error, json: json)
-                self?.logger?.error("#\(requestID) Error: \(apiError)")
-                promise.reject(apiError)
-                return
-            }
-
-            guard let responseJSON = json else {
-                promise.reject(Error.empty)
-                return
-            }
-
-            promise.fulfill(responseJSON)
         }
-
-        return promise
     }
 
     // MARK: - Login

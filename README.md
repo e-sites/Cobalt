@@ -11,7 +11,8 @@ Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 
 [![Platform](https://img.shields.io/cocoapods/p/Cobalt.svg?style=flat)](http://cocoadocs.org/docsets/Cobalt)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svg)](http://cocoadocs.org/docsets/Palladium)
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svg)](http://cocoadocs.org/docsets/Cobalt)
+[![Accio compatible](https://img.shields.io/badge/Accio-supported-0A7CF5.svg?style=flat)](https://github.com/JamitLabs/Accio)
 [![Travis-ci](https://travis-ci.org/e-sites/Cobalt.svg?branch=master&001)](https://travis-ci.org/e-sites/Cobalt)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
@@ -46,6 +47,20 @@ And then
 
 ```
 carthage update
+```
+
+## Accio
+
+Add the following dependency to your Package.swift:
+
+```swift
+ .package(url: "https://github.com/e-sites/Cobalt", .branch("master")
+```
+
+And run:
+
+```shell
+accio install
 ```
 
 # Implementation

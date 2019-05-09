@@ -1,5 +1,9 @@
 # Changelog Cobalt
 
+## v5.8.0 (05-04-2019)
+- Swift 5.0
+- Accio compatible
+
 ## v5.7.0 (21-11-2018)
 - Use `Config.clientAuthorization` to allow `requestBody` client authentication instead of default through the `.basicHeader`.
 
