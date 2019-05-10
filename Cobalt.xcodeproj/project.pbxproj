@@ -26,7 +26,6 @@
 		C382534B2285826100B0D593 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253422285826000B0D593 /* RxRelay.framework */; };
 		C382534D2285826100B0D593 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253432285826000B0D593 /* SwiftyJSON.framework */; };
 		C382534F2285826100B0D593 /* FBLPromises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253442285826000B0D593 /* FBLPromises.framework */; };
-		C38253512285826100B0D593 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253452285826000B0D593 /* Nimble.framework */; };
 		C38253532285826100B0D593 /* Promises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253462285826100B0D593 /* Promises.framework */; };
 		C38253552285826100B0D593 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253472285826100B0D593 /* Alamofire.framework */; };
 		C38253572285826100B0D593 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253482285826100B0D593 /* KeychainAccess.framework */; };
@@ -103,7 +102,6 @@
 				C38253592285826100B0D593 /* RxCocoa.framework in Frameworks */,
 				C382534D2285826100B0D593 /* SwiftyJSON.framework in Frameworks */,
 				C382534B2285826100B0D593 /* RxRelay.framework in Frameworks */,
-				C38253512285826100B0D593 /* Nimble.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
