@@ -63,7 +63,6 @@ open class Client: ReactiveCompatible {
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///   - `handler`: The closure to call when the request is finished
-
     public func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
         self.request(request).then { json in
             handler(.success(json))
@@ -240,8 +239,6 @@ open class Client: ReactiveCompatible {
 // --------------------------------------------------------
 
 extension Client {
-
-
     func dictionaryForLogging(_ parameters: [String: Any]?,
                               options: [String: ParameterLoggingOption]?) -> [String: Any]? {
         guard let theParameters = parameters, let options = options else {
@@ -281,10 +278,13 @@ extension Client {
             let startIndex = stringValue.startIndex
             let midIndex = stringValue.index(startIndex, offsetBy: length)
             return String(describing: stringValue[startIndex..<midIndex]) + "***"
+
         case .ignore:
             return nil
+
         case .masked:
             return "***"
+
         case .shortened:
             guard let stringValue = value as? String else {
                 fallthrough
@@ -296,6 +296,7 @@ extension Client {
             } else {
                 return value
             }
+            
         default:
             return value
         }
@@ -304,6 +305,6 @@ extension Client {
 
 extension Reactive where Base: Client {
     public var authorizationGrantType: Observable<OAuthenticationGrantType?> {
-        return self.base.authorizationGrantTypeSubject.distinctUntilChanged().asObservable()
+        return base.authorizationGrantTypeSubject.distinctUntilChanged().asObservable()
     }
 }

@@ -11,13 +11,13 @@ import SwiftyJSON
 
 extension JSON {
     var flatString: String? {
-        return self.rawString(.utf8, options: JSONSerialization.WritingOptions(rawValue: 0))
+        return rawString(.utf8, options: JSONSerialization.WritingOptions(rawValue: 0))
     }
 
     public func map<T: Decodable>(to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
         let jsonDecoder = JSONDecoder()
         builder?(jsonDecoder)
-        let data = try self.rawData()
+        let data = try rawData()
         return try jsonDecoder.decode(type, from: data)
     }
 }
