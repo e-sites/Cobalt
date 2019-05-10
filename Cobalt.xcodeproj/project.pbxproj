@@ -74,17 +74,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1E763BD0FEE91D8E6B9913FE538F5E0D /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Dependencies/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
-		39310A12113C078BC6D47203937DCEFA /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Dependencies/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
-		4698CF662CCF998EF11516135C37DB02 /* FBLPromises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = FBLPromises.framework; path = Dependencies/iOS/FBLPromises.framework; sourceTree = "<group>"; };
-		4756BD385C333471D53989A2A0CA292D /* Promises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = Promises.framework; path = Dependencies/iOS/Promises.framework; sourceTree = "<group>"; };
-		552A6DE2951677738AC15BA1AB7026AB /* Nimble.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Dependencies/iOS/Nimble.framework; sourceTree = "<group>"; };
-		64D0C6C161486676FDEBD06781E77EB4 /* KeychainAccess.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Dependencies/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
-		76B258C1F39A45DDE50D47F3FC2A287D /* FBLPromises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = FBLPromises.framework; path = Dependencies/iOS/FBLPromises.framework; sourceTree = "<group>"; };
-		980399C9D1FC54B26142CFB2F21B40E7 /* RxCocoa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Dependencies/iOS/RxCocoa.framework; sourceTree = "<group>"; };
-		A3704EBEAC6044421273F9B5F8FD6F9E /* RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Dependencies/iOS/RxSwift.framework; sourceTree = "<group>"; };
-		B43D5A2F5598ED63ECEEC4C728B8CF37 /* Promises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = Promises.framework; path = Dependencies/iOS/Promises.framework; sourceTree = "<group>"; };
-		C0048040373AB8483DE3F2CA681841B0 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Dependencies/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		1E763BD0FEE91D8E6B9913FE538F5E0D /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = SwiftyJSON.framework; path = Dependencies/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
+		39310A12113C078BC6D47203937DCEFA /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = SwiftyJSON.framework; path = Dependencies/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
+		4698CF662CCF998EF11516135C37DB02 /* FBLPromises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = FBLPromises.framework; path = Dependencies/iOS/FBLPromises.framework; sourceTree = "<group>"; };
+		4756BD385C333471D53989A2A0CA292D /* Promises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Promises.framework; path = Dependencies/iOS/Promises.framework; sourceTree = "<group>"; };
+		552A6DE2951677738AC15BA1AB7026AB /* Nimble.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Nimble.framework; path = Dependencies/iOS/Nimble.framework; sourceTree = "<group>"; };
+		64D0C6C161486676FDEBD06781E77EB4 /* KeychainAccess.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = KeychainAccess.framework; path = Dependencies/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
+		76B258C1F39A45DDE50D47F3FC2A287D /* FBLPromises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = FBLPromises.framework; path = Dependencies/iOS/FBLPromises.framework; sourceTree = "<group>"; };
+		980399C9D1FC54B26142CFB2F21B40E7 /* RxCocoa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = RxCocoa.framework; path = Dependencies/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		A3704EBEAC6044421273F9B5F8FD6F9E /* RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = RxSwift.framework; path = Dependencies/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		B43D5A2F5598ED63ECEEC4C728B8CF37 /* Promises.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Promises.framework; path = Dependencies/iOS/Promises.framework; sourceTree = "<group>"; };
+		C0048040373AB8483DE3F2CA681841B0 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Alamofire.framework; path = Dependencies/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
 		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
 		C37900132181DD1F00926793 /* Promises+rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promises+rx.swift"; sourceTree = "<group>"; };
@@ -102,13 +102,13 @@
 		C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Requests.swift"; sourceTree = "<group>"; };
 		C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Authentication.swift"; sourceTree = "<group>"; };
 		C38B33BF20F6343F00232170 /* TestLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLogger.swift; sourceTree = "<group>"; };
-		D9BAE6E40D1ACB7C45712183CA6BE4F7 /* RxRelay.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = RxRelay.framework; path = Dependencies/iOS/RxRelay.framework; sourceTree = "<group>"; };
+		D9BAE6E40D1ACB7C45712183CA6BE4F7 /* RxRelay.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = RxRelay.framework; path = Dependencies/iOS/RxRelay.framework; sourceTree = "<group>"; };
 		DFDA21F41D6741AD00683D7D /* Cobalt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cobalt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobaltTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA22031D6741AE00683D7D /* CobaltTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobaltTests.swift; sourceTree = "<group>"; };
 		DFDA22051D6741AE00683D7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DFDA22131D6741C200683D7D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F8617FC0665E1FBB5189FECDD37C14B1 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Dependencies/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		F8617FC0665E1FBB5189FECDD37C14B1 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Alamofire.framework; path = Dependencies/iOS/Alamofire.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -624,11 +624,10 @@
 				DEVELOPMENT_TEAM = KH7U9B5DS2;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)/Dependencies/iOS",
 				);
 				INFOPLIST_FILE = CobaltTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks \"$(PROJECT_DIR)/Carthage/Build/iOS\"";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.cobalt.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -641,11 +640,10 @@
 				DEVELOPMENT_TEAM = KH7U9B5DS2;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)/Dependencies/iOS",
 				);
 				INFOPLIST_FILE = CobaltTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks \"$(PROJECT_DIR)/Carthage/Build/iOS\"";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.cobalt.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
