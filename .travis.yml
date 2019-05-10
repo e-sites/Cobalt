@@ -8,7 +8,6 @@ addons:
 branches:
   only:
   - master
-  - accio
 
 cache:
   directories:
@@ -16,7 +15,9 @@ cache:
   - .accio
 
 before_install:
+  - mv _.xcodeproj Cobalt.xcodeproj
   - accio install
+  - mv Cobalt.xcodeproj _.xcodeproj
 
 script:
-  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test
+  - xcodebuild -project _.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test

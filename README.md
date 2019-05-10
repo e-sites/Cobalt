@@ -247,3 +247,7 @@ public protocol Cobalt.Logger {
 ```
 
 And then use the `Cobalt.Config.logger` property to assign your logged to the `Cobalt` configuration.
+
+# Development
+
+Run `carthage bootstrap` and open `_.xcodeproj`

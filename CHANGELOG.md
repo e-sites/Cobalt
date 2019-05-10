@@ -1,6 +1,9 @@
 # Changelog Cobalt
 
-## v5.8.0 (05-04-2019)
+## v5.8.1 (10-05-2019)
+- Improved accio
+
+## v5.8.0 (05-05-2019)
 - Swift 5.0
 - Accio compatible
 
