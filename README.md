@@ -250,4 +250,4 @@ And then use the `Cobalt.Config.logger` property to assign your logged to the `C
 
 # Development
 
-Run `carthage bootstrap` and open `_.xcodeproj`
+Run `carthage bootstrap` and open `Cobalt.xcodeproj`

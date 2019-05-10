@@ -12,12 +12,10 @@ branches:
 cache:
   directories:
   - vendor/bundle
-  - .accio
+  - Carthage
 
 before_install:
-  - mv _.xcodeproj Cobalt.xcodeproj
-  - accio install
-  - mv Cobalt.xcodeproj _.xcodeproj
+  - carthage bootstrap --platform iOS --cache-builds
 
 script:
-  - xcodebuild -project _.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test
+  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test

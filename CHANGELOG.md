@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.8.2 (10-05-2019)
+- Use Carthage for build pipeline instead of accio
+
 ## v5.8.1 (10-05-2019)
 - Improved accio
 

@@ -17,21 +17,21 @@
                BlueprintIdentifier = "DFDA21F31D6741AD00683D7D"
                BuildableName = "Cobalt.framework"
                BlueprintName = "Cobalt"
-               ReferencedContainer = "container:_.xcodeproj">
+               ReferencedContainer = "container:Cobalt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "DFDA21FD1D6741AE00683D7D"
                BuildableName = "CobaltTests.xctest"
                BlueprintName = "CobaltTests"
-               ReferencedContainer = "container:_.xcodeproj">
+               ReferencedContainer = "container:Cobalt.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -49,7 +49,7 @@
                BlueprintIdentifier = "DFDA21FD1D6741AE00683D7D"
                BuildableName = "CobaltTests.xctest"
                BlueprintName = "CobaltTests"
-               ReferencedContainer = "container:_.xcodeproj">
+               ReferencedContainer = "container:Cobalt.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -59,7 +59,7 @@
             BlueprintIdentifier = "DFDA21F31D6741AD00683D7D"
             BuildableName = "Cobalt.framework"
             BlueprintName = "Cobalt"
-            ReferencedContainer = "container:_.xcodeproj">
+            ReferencedContainer = "container:Cobalt.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -81,7 +81,7 @@
             BlueprintIdentifier = "DFDA21F31D6741AD00683D7D"
             BuildableName = "Cobalt.framework"
             BlueprintName = "Cobalt"
-            ReferencedContainer = "container:_.xcodeproj">
+            ReferencedContainer = "container:Cobalt.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -99,7 +99,7 @@
             BlueprintIdentifier = "DFDA21F31D6741AD00683D7D"
             BuildableName = "Cobalt.framework"
             BlueprintName = "Cobalt"
-            ReferencedContainer = "container:_.xcodeproj">
+            ReferencedContainer = "container:Cobalt.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
