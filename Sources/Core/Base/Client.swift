@@ -150,7 +150,7 @@ open class Client: ReactiveCompatible {
         if self.requestID == 100 {
             self.requestID = 1
         }
-        var loggingOptions: [String: ParameterLoggingOption] = [:]
+        var loggingOptions: [String: KeyLoggingOption] = [:]
         if config.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
@@ -161,7 +161,7 @@ open class Client: ReactiveCompatible {
         }
 
         let loggingParameters = dictionaryForLogging(request.parameters,
-                                                     options: request.parametersLoggingOptions)
+                                                     options: request.loggingOption?.request)
 
         logger?.request("#\(requestID) " + request.httpMethod.rawValue,
                         request.urlString,
@@ -185,13 +185,7 @@ open class Client: ReactiveCompatible {
                     if let data = response.data {
                         json = JSON(data)
 
-                        var loggingOptions: [String: ParameterLoggingOption] = [:]
-                        if self?.config.maskTokens == true {
-                            loggingOptions["access_token"] = .halfMasked
-                            loggingOptions["refresh_token"] = .halfMasked
-                        }
-
-                        let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: loggingOptions)
+                        let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: request.loggingOption?.response)
                         self?.logger?.response("#\(requestID) " + request.httpMethod.rawValue,
                                                request.urlString,
                                                dictionary?.flatJSONString ?? "")
@@ -240,7 +234,7 @@ open class Client: ReactiveCompatible {
 
 extension Client {
     func dictionaryForLogging(_ parameters: [String: Any]?,
-                              options: [String: ParameterLoggingOption]?) -> [String: Any]? {
+                              options: [String: KeyLoggingOption]?) -> [String: Any]? {
         guard let theParameters = parameters, let options = options else {
             return parameters
         }
@@ -248,7 +242,7 @@ extension Client {
     }
 
     fileprivate func _mask(parameters: [String: Any],
-                           options: [String: ParameterLoggingOption],
+                           options: [String: KeyLoggingOption],
                            path: String = "") -> [String: Any] {
         var logParameters: [String: Any] = [:]
         for (key, value) in parameters {
@@ -265,7 +259,7 @@ extension Client {
         return logParameters
     }
 
-    class func mask(string value: Any?, type: ParameterLoggingOption) -> Any? {
+    class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
         guard let value = value else {
             return nil
         }
@@ -281,6 +275,9 @@ extension Client {
 
         case .ignore:
             return nil
+
+        case .replaced(let string):
+            return string
 
         case .masked:
             return "***"

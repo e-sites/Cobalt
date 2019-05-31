@@ -62,14 +62,17 @@ class AuthenticationProvider {
                 if !parameters.keys.isEmpty {
                     request.parameters = parameters
                 }
-            
-                var parametersLoggingOptions = request.parametersLoggingOptions ?? [:]
-                if parametersLoggingOptions["client_secret"] == nil {
-                    parametersLoggingOptions["client_secret"] = .halfMasked
-                }
 
-                if !parametersLoggingOptions.keys.isEmpty {
-                    request.parametersLoggingOptions = parametersLoggingOptions
+                if client.config.maskTokens {
+                    var parametersLoggingOptions: [String: KeyLoggingOption] = request.loggingOption?.request ?? [:]
+                    
+                    if parametersLoggingOptions["client_secret"] == nil {
+                        parametersLoggingOptions["client_secret"] = .halfMasked
+                    }
+                    
+                    if request.loggingOption?.request == nil {
+                        request.loggingOption = LoggingOption(request: parametersLoggingOptions, response: request.loggingOption?.response)
+                    }
                 }
             }
 
@@ -133,11 +136,15 @@ class AuthenticationProvider {
             $0.encoding = URLEncoding.default
             $0.authentication = .client
             $0.parameters = parameters
-            $0.parametersLoggingOptions = [
+            $0.loggingOption = LoggingOption(request: [
                 "password": .masked,
                 "refresh_token": .halfMasked,
                 "client_secret": .halfMasked
-            ]
+            ], response: [
+                "access_token": client.config.maskTokens ? .halfMasked : .default,
+                "refresh_token": client.config.maskTokens ? .halfMasked : .default,
+            ])
+
         }
 
         isAuthenticating = true

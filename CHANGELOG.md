@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.9.0 (31-05-2019)
+- Refactored request / response logging
+
 ## v5.8.2 (10-05-2019)
 - Use Carthage for build pipeline instead of accio
 

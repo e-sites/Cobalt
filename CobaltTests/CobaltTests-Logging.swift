@@ -31,7 +31,7 @@ class CobaltTestsLogging: CobaltTests {
         guard let logParams = client.dictionaryForLogging(dictionary, options: [
             "password": .masked,
             "some": .shortened,
-            "path.to.token": .masked,
+            "path.to.token": .replaced("Foobar"),
             "halfMasked_token": .halfMasked
             ]) else {
                 XCTAssert(false, "'logParams' should not be nil")
@@ -57,7 +57,7 @@ class CobaltTestsLogging: CobaltTests {
         }
 
         if let dic1 = logParams["path"] as? [String: Any], let dic2 = dic1["to"] as? [String: String] {
-            XCTAssertEqual(dic2["token"], "***")
+            XCTAssertEqual(dic2["token"], "Foobar")
             XCTAssertEqual(dic2["username"], "basvankuijck")
         } else {
             XCTAssert(false, "Expected 'path.to' in dictionary")
