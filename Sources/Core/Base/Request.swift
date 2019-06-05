@@ -21,10 +21,16 @@ public class Request {
     public var authentication: Authentication = .none
     public var loggingOption: LoggingOption?
 
+    @available(*, deprecated, renamed: "loggingOption")
+    public var parametersLoggingOptions: [String: Any]?
+
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = [:]
     internal(set) public var urlString: String = ""
 
+    public init() {
+
+    }
 
     public init(_ builder: ((Request) -> Void)) {
         builder(self)
