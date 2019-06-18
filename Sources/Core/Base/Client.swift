@@ -219,6 +219,24 @@ open class Client: ReactiveCompatible {
         ]
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
+    
+    /// Handle the result of a manual login call
+    ///
+    /// - Parameters:
+    ///     - grantType: `OAuthenticationGrantType`
+    ///     - accessToken: `String`
+    ///     - refreshToken: `OAuthenticationGrantType`
+    ///     - expiresIn: `Int`
+    ///     - host: `String?`
+    ///
+    /// - Returns: `Void`
+    public func loggedIn(grantType: OAuthenticationGrantType,
+                         accessToken: String,
+                         refreshToken: String,
+                         expireDate: Date,
+                         host: String? = nil) {
+        authProvider.handleManualOAuthRequest(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: host)
+    }
 
     public func clearAccessToken(forHost host: String? = nil) {
         authorizationGrantTypeSubject.onNext(nil)

@@ -174,6 +174,31 @@ class AuthenticationProvider {
             self.isAuthenticating = false
         }
     }
+    
+    ///
+    /// Handle a manual OAuth authentication call when using differently named properties
+    ///
+    /// - Parameters:
+    ///     - grantType: `OAuthenticationGrantType`
+    ///     - accessToken: `String`
+    ///     - refreshToken: `OAuthenticationGrantType`
+    ///     - expiresIn: `Int`
+    ///     - host: `String?`
+    ///
+    /// - Returns: `Void`
+    ///
+    func handleManualOAuthRequest(grantType: OAuthenticationGrantType,
+                                  accessToken: String,
+                                  refreshToken: String,
+                                  expireDate: Date,
+                                  host: String? = nil) {
+        let oauthHost = (host ?? client.config.host) ?? ""
+        let accessTokenObject = AccessToken(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: oauthHost)
+        accessTokenObject.store()
+        
+        client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
+        client.authorizationGrantTypeSubject.onNext(grantType)
+    }
 
     // MARK: - Recover
     // --------------------------------------------------------

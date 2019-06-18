@@ -73,6 +73,14 @@ public class AccessToken: Decodable, CustomStringConvertible {
         }
         return accessToken
     }
+    
+    init(grantType: OAuthenticationGrantType, accessToken: String, refreshToken: String, expireDate: Date, host: String? = nil) {
+        self.grantType = grantType
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+        self.expireDate = expireDate
+        self.host = host ?? ""
+    }
 
     init(host: String) {
         self.host = host
