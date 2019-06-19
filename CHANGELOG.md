@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.9.3 (19-06-2019)
+- Bugfix manual auth provider
+
 ## v5.9.2 (19-06-2019)
 - Bugfix manual auth provider
 

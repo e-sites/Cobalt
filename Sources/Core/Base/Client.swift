@@ -234,8 +234,8 @@ open class Client: ReactiveCompatible {
                          accessToken: String,
                          refreshToken: String,
                          expireDate: Date) {
-        guard let host = (host ?? config.host) else {
-            fatalError("No host given, nor a valid host set in the Cobalt.Config")
+        guard let host = config.host else {
+            fatalError("No valid host set in the config")
         }
         
         authProvider.handleManualOAuthRequest(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: host)
