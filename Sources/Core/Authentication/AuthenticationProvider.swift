@@ -191,9 +191,8 @@ class AuthenticationProvider {
                                   accessToken: String,
                                   refreshToken: String,
                                   expireDate: Date,
-                                  host: String? = nil) {
-        let oauthHost = (host ?? client.config.host) ?? ""
-        let accessTokenObject = AccessToken(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: oauthHost)
+                                  host: String) {
+        let accessTokenObject = AccessToken(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: host)
         accessTokenObject.store()
         
         client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")

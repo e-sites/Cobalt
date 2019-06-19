@@ -74,12 +74,14 @@ public class AccessToken: Decodable, CustomStringConvertible {
         return accessToken
     }
     
-    init(grantType: OAuthenticationGrantType, accessToken: String, refreshToken: String, expireDate: Date, host: String? = nil) {
+    init(grantType: OAuthenticationGrantType, accessToken: String, refreshToken: String, expireDate: Date, host: String) {
         self.grantType = grantType
         self.accessToken = accessToken
         self.refreshToken = refreshToken
         self.expireDate = expireDate
-        self.host = host ?? ""
+        self.host = host
+        
+        _setKeychain()
     }
 
     init(host: String) {

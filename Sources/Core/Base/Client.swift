@@ -233,8 +233,11 @@ open class Client: ReactiveCompatible {
     public func loggedIn(grantType: OAuthenticationGrantType,
                          accessToken: String,
                          refreshToken: String,
-                         expireDate: Date,
-                         host: String? = nil) {
+                         expireDate: Date) {
+        guard let host = (host ?? config.host) else {
+            fatalError("No host given, nor a valid host set in the Cobalt.Config")
+        }
+        
         authProvider.handleManualOAuthRequest(grantType: grantType, accessToken: accessToken, refreshToken: refreshToken, expireDate: expireDate, host: host)
     }
 
