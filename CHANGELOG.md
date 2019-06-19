@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.9.1 (19-06-2019)
+- Provide a way to store the login state when logging in manually
+
 ## v5.9.0 (31-05-2019)
 - Refactored request / response logging
 
