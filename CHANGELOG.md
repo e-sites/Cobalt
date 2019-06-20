@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.9.4 (20-06-2019)
+- Adding underlying error instead of unknown error 
+
 ## v5.9.3 (19-06-2019)
 - Bugfix manual auth provider
 

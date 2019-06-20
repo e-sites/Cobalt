@@ -71,7 +71,7 @@ public class Error: Swift.Error {
     init(from error: Swift.Error, json: JSON? = nil) {
         if error is Error {
             _clone(from: error as! Error)
-
+            return
         } else if let json = json, json != .null {
             switch json["error"].stringValue {
             case "invalid_grant":
@@ -85,11 +85,9 @@ public class Error: Swift.Error {
             default:
                 break
             }
-            _clone(from: Error.unknown(json))
-
-        } else {
-            _clone(from: Error.underlying(error))
         }
+        
+        _clone(from: Error.underlying(error))
     }
 
     private func _clone(from error: Error) {
