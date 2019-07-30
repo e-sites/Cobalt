@@ -53,9 +53,14 @@ public class Error: Swift.Error {
         return Error(code: 301, message: message)
     }
 
-    public static func underlying(_ error: Swift.Error) -> Error {
+    public static func underlying(_ error: Swift.Error, json: JSON? = nil) -> Error {
         let apiError = Error(code: 601)
         apiError.underlyingError = error
+        
+        if json != nil {
+            apiError.json = json
+        }
+        
         return apiError
     }
 
@@ -85,6 +90,9 @@ public class Error: Swift.Error {
             default:
                 break
             }
+            
+            _clone(from: Error.underlying(error, json: json))
+            return
         }
         
         _clone(from: Error.underlying(error))

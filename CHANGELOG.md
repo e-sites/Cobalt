@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.9.5 (30-06-2019)
+- Adding json to underlying error when present
+
 ## v5.9.4 (20-06-2019)
 - Adding underlying error instead of unknown error 
 
