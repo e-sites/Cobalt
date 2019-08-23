@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.0 (23-08-2019)
+- Make requests cacheable
+ 
 ## v5.9.5 (30-06-2019)
 - Adding json to underlying error when present
 

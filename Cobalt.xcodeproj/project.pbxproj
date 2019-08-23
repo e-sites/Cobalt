@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C316AF9A230FDF420036E295 /* Client+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE8230FD444004865D2 /* Client+Cache.swift */; };
+		C316AF9C230FE14F0036E295 /* MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AF9B230FE14F0036E295 /* MD5.swift */; };
+		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
+		C3427AE0230FCC60004865D2 /* Request+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD2230FC49F004865D2 /* Request+Cache.swift */; };
+		C3427AE1230FCC60004865D2 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD4230FC4B0004865D2 /* CachePolicy.swift */; };
+		C3427AE3230FCC60004865D2 /* ClientService+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427ADA230FC834004865D2 /* ClientService+Cache.swift */; };
+		C3427AE5230FCDFD004865D2 /* CobaltTests-Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */; };
+		C3427AED230FD5DC004865D2 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
 		C37900252181DD1F00926793 /* Promises+rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900132181DD1F00926793 /* Promises+rx.swift */; };
@@ -57,6 +65,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C316AF9B230FE14F0036E295 /* MD5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MD5.swift; sourceTree = "<group>"; };
+		C3427AD2230FC49F004865D2 /* Request+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Cache.swift"; sourceTree = "<group>"; };
+		C3427AD4230FC4B0004865D2 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
+		C3427AD8230FC74E004865D2 /* ClientService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientService.swift; sourceTree = "<group>"; };
+		C3427ADA230FC834004865D2 /* ClientService+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClientService+Cache.swift"; sourceTree = "<group>"; };
+		C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Cache.swift"; sourceTree = "<group>"; };
+		C3427AE8230FD444004865D2 /* Client+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Client+Cache.swift"; sourceTree = "<group>"; };
+		C3427AEC230FD5DB004865D2 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
 		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
 		C37900132181DD1F00926793 /* Promises+rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promises+rx.swift"; sourceTree = "<group>"; };
@@ -127,6 +143,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C3427AD1230FC47E004865D2 /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				C3427AD2230FC49F004865D2 /* Request+Cache.swift */,
+				C3427AD4230FC4B0004865D2 /* CachePolicy.swift */,
+				C3427ADA230FC834004865D2 /* ClientService+Cache.swift */,
+				C3427AE8230FD444004865D2 /* Client+Cache.swift */,
+				C3427AEC230FD5DB004865D2 /* CacheManager.swift */,
+				C316AF9B230FE14F0036E295 /* MD5.swift */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
 		C37900102181DD1F00926793 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +204,7 @@
 				C379001F2181DD1F00926793 /* RequestQueue.swift */,
 				C37900202181DD1F00926793 /* Client.swift */,
 				C37900212181DD1F00926793 /* Request.swift */,
+				C3427AD8230FC74E004865D2 /* ClientService.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -222,6 +252,7 @@
 				C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */,
 				C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */,
 				C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */,
+				C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */,
 				DFDA22051D6741AE00683D7D /* Info.plist */,
 			);
 			path = CobaltTests;
@@ -232,6 +263,7 @@
 			children = (
 				DFDA22131D6741C200683D7D /* Info.plist */,
 				C37900322181E26200926793 /* Cobalt.h */,
+				C3427AD1230FC47E004865D2 /* Cache */,
 				C37900102181DD1F00926793 /* Core */,
 			);
 			name = Cobalt;
@@ -381,16 +413,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3427AE1230FCC60004865D2 /* CachePolicy.swift in Sources */,
 				C37900302181DD1F00926793 /* Request.swift in Sources */,
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,
 				C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */,
 				C37900252181DD1F00926793 /* Promises+rx.swift in Sources */,
+				C316AF9C230FE14F0036E295 /* MD5.swift in Sources */,
+				C3427AE3230FCC60004865D2 /* ClientService+Cache.swift in Sources */,
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
+				C316AF9A230FDF420036E295 /* Client+Cache.swift in Sources */,
 				C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */,
 				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
+				C3427AED230FD5DC004865D2 /* CacheManager.swift in Sources */,
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
+				C3427AE0230FCC60004865D2 /* Request+Cache.swift in Sources */,
 				C37900292181DD1F00926793 /* AccessToken.swift in Sources */,
+				C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */,
 				C379002D2181DD1F00926793 /* Config.swift in Sources */,
 				C379002C2181DD1F00926793 /* Error.swift in Sources */,
 				C379002B2181DD1F00926793 /* Logger.swift in Sources */,
@@ -402,6 +441,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */,
+				C3427AE5230FCDFD004865D2 /* CobaltTests-Cache.swift in Sources */,
 				C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */,
 				DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */,
 				C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */,

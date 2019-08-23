@@ -47,12 +47,15 @@ open class Client: ReactiveCompatible {
         return config.logger
     }
 
+    @objc
+    let service = ClientService()
     
     // MARK: - Constructor
     // --------------------------------------------------------
 
     required public init(config: Config) {
         self.config = config
+        service.logger = logger
     }
 
     // MARK: - Request functions
@@ -112,7 +115,7 @@ open class Client: ReactiveCompatible {
 
         request.useEncoding = encoding
         request.urlString = urlString
-
+        
         // 1. We (optionally) (pre-)authorize the request
         return firstly {
             return try authProvider.authorize(request: request)
@@ -168,6 +171,14 @@ open class Client: ReactiveCompatible {
                         loggingParameters?.flatJSONString ?? "")
         startRequest(request)
 
+        service.currentRequest = request
+
+        // Check to see if the cache engine should handle it
+        if !service.shouldPerformRequestAfterCacheCheck(), let json = service.json {
+            _responseParsing(json: json, request: request, requestID: requestID)
+            return Promise(json)
+        }
+
         return Promise<JSON>(on: .main) { [weak self] fulfill, reject in
             Alamofire.request(request.urlString,
                               method: request.httpMethod,
@@ -184,11 +195,9 @@ open class Client: ReactiveCompatible {
                     var json: JSON?
                     if let data = response.data {
                         json = JSON(data)
-
-                        let dictionary = self?.dictionaryForLogging(json?.dictionaryObject ?? [:], options: request.loggingOption?.response)
-                        self?.logger?.response("#\(requestID) " + request.httpMethod.rawValue,
-                                               request.urlString,
-                                               dictionary?.flatJSONString ?? "")
+                        self?.service.json = json
+                        self?.service.optionallyWriteToCache()
+                        self?._responseParsing(json: json, request: request, requestID: requestID)
                     }
 
                     if let error = response.error {
@@ -207,6 +216,11 @@ open class Client: ReactiveCompatible {
                     fulfill(responseJSON)
             }
         }
+    }
+
+    private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
+        let dictionary = dictionaryForLogging(json?.dictionaryObject ?? [:], options: request.loggingOption?.response)
+        logger?.response("#\(requestID) " + request.httpMethod.rawValue, request.urlString, dictionary?.flatJSONString ?? "")
     }
 
     // MARK: - Login
