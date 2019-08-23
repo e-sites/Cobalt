@@ -123,8 +123,8 @@ Extend the above class with:
 import RxSwift
 
 extension Reactive where Base: Cobalt.Client {
-   func users() -> Observable<[User]> {
-      return self.users().asObservable()
+   func users() -> Single<[User]> {
+      return self.users().asSingle()
    }
 }
 ```

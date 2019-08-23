@@ -11,16 +11,17 @@ import RxSwift
 import RxCocoa
 
 extension Promise {
-    public func asObservable() -> Observable<Value> {
+    public func asSingle() -> Single<Value> {
         return Observable<Value>.create { observer in
             self.then { value in
                 observer.onNext(value)
+                observer.onCompleted()
             }.catch { error in
                 observer.onError(error)
             }
 
             return Disposables.create { }
-        }
+        }.asSingle()
     }
 }
 
