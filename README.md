@@ -115,6 +115,42 @@ class APIClient: Cobalt.Client {
 }
 ```
 
+## Caching
+
+To utilize disk caching out of the box add the following line to your Podfile:
+
+```
+pod 'Cobalt/Cache'
+```
+
+And implement it like this:
+
+```swift
+class APIClient: Cobalt.Client {
+   // ...
+   
+   func users() -> Promise<[User]> {
+      let request = Cobalt.Request {
+         $0.path = "/users"
+         $0.cachingPolicy = .expires(seconds: 60 * 60 * 24) // expires after 1 day
+      }
+		
+      return self.request(request).then { json: JSON -> Promise<[User]> in
+         let users = try json.map(to: [User].self)
+         return Promise(users)
+      }.catch { error in
+         print("Error: \(error)")
+      }
+   }
+}
+```
+
+To clear the entire cache:
+
+```swift
+APIClientInstance.cache.clearAll()
+```
+
 ### RxSwift
 
 Extend the above class with:
