@@ -20,7 +20,7 @@ extension Request {
         }
 
         set {
-            objc_setAssociatedObject(self, &requestCachePolicyKey, newValue.rawValue, .OBJC_ASSOCIATION_COPY)
+            objc_setAssociatedObject(self, &requestCachePolicyKey, newValue.rawValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
