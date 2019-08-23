@@ -20,10 +20,8 @@ class ClientService: NSObject {
 
         let selectors: [Selector] = [ "swizzleCache" ].map { Selector($0) }
         
-        for selector in selectors {
-            if responds(to: selector) {
-                perform(selector)
-            }
+        for selector in selectors where responds(to: selector) {
+            perform(selector)
         }
     }
 
