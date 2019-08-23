@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 fileprivate var requestCachePolicyKey: UInt8 = 0
 
 extension Request {
@@ -24,13 +25,13 @@ extension Request {
     }
 
     var cacheKey: String {
-        let string = [
+        return [
             host ?? "",
             path,
             httpMethod.rawValue,
             (parameters ?? [:]).map { "\($0)=\($1)" }.sorted { $0 < $1 }.joined(separator: "")
-        ].joined(separator: "~")
-
-        return string.utf8.md5.rawValue.lowercased()
+        ]
+        .joined(separator: "~")
+        .md5
     }
 }

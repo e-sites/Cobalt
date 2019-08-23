@@ -13,7 +13,7 @@
 		C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427ADA230FC834004865D2 /* ClientService+Cache.swift */; };
 		C316AFA1230FF03C0036E295 /* Client+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE8230FD444004865D2 /* Client+Cache.swift */; };
 		C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
-		C316AFA3230FF03C0036E295 /* MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AF9B230FE14F0036E295 /* MD5.swift */; };
+		C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AFA4230FF5250036E295 /* String+Extension.swift */; };
 		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
@@ -65,7 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C316AF9B230FE14F0036E295 /* MD5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MD5.swift; sourceTree = "<group>"; };
+		C316AFA4230FF5250036E295 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		C3427AD2230FC49F004865D2 /* Request+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Cache.swift"; sourceTree = "<group>"; };
 		C3427AD4230FC4B0004865D2 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
 		C3427AD8230FC74E004865D2 /* ClientService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientService.swift; sourceTree = "<group>"; };
@@ -151,7 +151,6 @@
 				C3427ADA230FC834004865D2 /* ClientService+Cache.swift */,
 				C3427AE8230FD444004865D2 /* Client+Cache.swift */,
 				C3427AEC230FD5DB004865D2 /* CacheManager.swift */,
-				C316AF9B230FE14F0036E295 /* MD5.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
@@ -173,6 +172,7 @@
 				C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */,
 				C37900132181DD1F00926793 /* Promises+rx.swift */,
 				C37900142181DD1F00926793 /* Optional.swift */,
+				C316AFA4230FF5250036E295 /* String+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -419,9 +419,9 @@
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,
 				C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */,
 				C37900252181DD1F00926793 /* Promises+rx.swift in Sources */,
-				C316AFA3230FF03C0036E295 /* MD5.swift in Sources */,
 				C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */,
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
+				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
 				C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */,
 				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
