@@ -7,10 +7,6 @@
 //
 
 import Foundation
-import var CommonCrypto.CC_MD5_DIGEST_LENGTH
-import func CommonCrypto.CC_MD5
-import typealias CommonCrypto.CC_LONG
-
 fileprivate var requestCachePolicyKey: UInt8 = 0
 
 extension Request {
