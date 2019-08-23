@@ -16,17 +16,21 @@ import Foundation
 @testable import Cobalt
 
 class CobaltTestsCache: CobaltTests {
-    func testCache() {
-        client.cache.clear()
 
+    override func setUp() {
+        super.setUp()
+        client.cache.clearAll()
+    }
+
+    func testCache() {
         waitUntil { done in
             let request = Request {
-                $0.cachePolicy = .expires(seconds: 10)
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
                     "per_page": 10
                 ]
+                $0.cachePolicy = .expires(seconds: 10)
             }
 
             self.client.request(request)
@@ -37,12 +41,12 @@ class CobaltTestsCache: CobaltTests {
                 }.always {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                         let request = Request {
-                            $0.cachePolicy = .expires(seconds: 10)
                             $0.authentication = .client
                             $0.path = "/api/users"
                             $0.parameters = [
                                 "per_page": 10
                             ]
+                            $0.cachePolicy = .expires(seconds: 10)
                         }
 
                         self.client.request(request)
@@ -59,16 +63,14 @@ class CobaltTestsCache: CobaltTests {
     }
 
     func testNoCache() {
-        client.cache.clear()
-
         waitUntil { done in
             let request = Request {
-                $0.cachePolicy = .expires(seconds: 10)
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
                     "per_page": 10
                 ]
+                $0.cachePolicy = .expires(seconds: 10)
             }
 
             self.client.request(request)
@@ -78,12 +80,12 @@ class CobaltTestsCache: CobaltTests {
                     XCTAssert(false, "\(error)")
                 }.always {
                     let request = Request {
-                        $0.cachePolicy = .expires(seconds: 10)
                         $0.authentication = .client
                         $0.path = "/api/users"
                         $0.parameters = [
                             "per_page": 5
                         ]
+                        $0.cachePolicy = .expires(seconds: 10)
                     }
 
                     self.client.request(request)
