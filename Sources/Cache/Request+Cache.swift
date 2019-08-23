@@ -14,7 +14,7 @@ extension Request {
     public var cachePolicy: CachePolicy {
         get {
             guard let policyRawValue = objc_getAssociatedObject(self, &requestCachePolicyKey) as? String else {
-                return .none
+                return .never
             }
             return CachePolicy(rawValue: policyRawValue)
         }

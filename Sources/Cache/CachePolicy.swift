@@ -12,7 +12,7 @@ import Foundation
 public enum CachePolicy {
 
     /// Do not cache the response
-    case none
+    case never
 
     /// Cache the response for a 'x' seconds
     case expires(seconds: TimeInterval)
@@ -30,13 +30,13 @@ public enum CachePolicy {
                 break
             }
         }
-        self = .none
+        self = .never
     }
 
     var rawValue: String {
         switch self {
-        case .none:
-            return "none"
+        case .never:
+            return "never"
 
         case .expires(let time):
             return "expires:\(time)"

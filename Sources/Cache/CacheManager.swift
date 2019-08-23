@@ -25,7 +25,7 @@ public class CacheManager {
 
     func getCachedJSON(for request: Request) -> JSON? {
         switch request.cachePolicy {
-        case .none:
+        case .never:
             return nil
 
         case .expires(let interval):
@@ -58,7 +58,7 @@ public class CacheManager {
 
     func write(request: Request, response: JSON) {
         switch request.cachePolicy {
-        case .none:
+        case .never:
             return
 
         default:
