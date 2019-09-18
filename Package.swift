@@ -3,6 +3,9 @@ import PackageDescription
 
 let package = Package(
     name: "Cobalt",
+    platforms: [
+        .iOS(.v9),
+    ],
     products: [
         .library(name: "Cobalt", targets: ["Cobalt", "CobaltTests"])
     ],
@@ -24,7 +27,6 @@ let package = Package(
                 "RxCocoa",
                 "Promises",
                 "KeychainAccess"
-
             ],
             path: "Sources"
         ),
@@ -35,7 +37,6 @@ let package = Package(
                 "Alamofire",
                 "Promises",
                 "SwiftyJSON"
-
             ],
             path: "CobaltTests"
         )

@@ -19,6 +19,8 @@ DerivedData
 *.xcuserstate
 lcov/
 Carthage/
+.build
+.swiftpm
 
 # Accio dependency management
 Dependencies/
