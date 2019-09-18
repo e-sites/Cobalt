@@ -7,7 +7,7 @@ let package = Package(
         .iOS(.v9),
     ],
     products: [
-        .library(name: "Cobalt", targets: ["Cobalt", "CobaltTests"])
+        .library(name: "Cobalt", targets: ["Cobalt"])
     ],
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire", .upToNextMajor(from: "4.0.0")),
@@ -29,16 +29,6 @@ let package = Package(
                 "KeychainAccess"
             ],
             path: "Sources"
-        ),
-        .testTarget(
-            name: "CobaltTests",
-            dependencies: [
-                "Nimble",
-                "Alamofire",
-                "Promises",
-                "SwiftyJSON"
-            ],
-            path: "CobaltTests"
         )
     ]
 )
