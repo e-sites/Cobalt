@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.1 (02-10-2019)
+- Split up caching and core for SwiftPM
+
 ## v5.10.0 (23-08-2019)
 - Make requests cacheable
  

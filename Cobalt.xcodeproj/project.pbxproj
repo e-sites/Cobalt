@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,9 +15,15 @@
 		C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
 		C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AFA4230FF5250036E295 /* String+Extension.swift */; };
 		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
+		C3439A652344A84100817084 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A642344A84100817084 /* Alamofire */; };
+		C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A672344A84D00817084 /* SwiftyJSON */; };
+		C3439A6B2344A86100817084 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A6A2344A86100817084 /* RxSwift */; };
+		C3439A6E2344A87500817084 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A6D2344A87500817084 /* Promises */; };
+		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
+		C3439A742344A8DF00817084 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A732344A8DF00817084 /* Nimble */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
-		C37900252181DD1F00926793 /* Promises+rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900132181DD1F00926793 /* Promises+rx.swift */; };
+		C37900252181DD1F00926793 /* Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900132181DD1F00926793 /* Promises.swift */; };
 		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
 		C37900292181DD1F00926793 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900182181DD1F00926793 /* AccessToken.swift */; };
@@ -31,23 +37,6 @@
 		C37900332181E26200926793 /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = C37900322181E26200926793 /* Cobalt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
 		C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
-		C382534B2285826100B0D593 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253422285826000B0D593 /* RxRelay.framework */; };
-		C382534D2285826100B0D593 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253432285826000B0D593 /* SwiftyJSON.framework */; };
-		C382534F2285826100B0D593 /* FBLPromises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253442285826000B0D593 /* FBLPromises.framework */; };
-		C38253532285826100B0D593 /* Promises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253462285826100B0D593 /* Promises.framework */; };
-		C38253552285826100B0D593 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253472285826100B0D593 /* Alamofire.framework */; };
-		C38253572285826100B0D593 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253482285826100B0D593 /* KeychainAccess.framework */; };
-		C38253592285826100B0D593 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253492285826100B0D593 /* RxCocoa.framework */; };
-		C382535B2285826100B0D593 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C382534A2285826100B0D593 /* RxSwift.framework */; };
-		C38253622285912500B0D593 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253472285826100B0D593 /* Alamofire.framework */; };
-		C38253632285912500B0D593 /* FBLPromises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253442285826000B0D593 /* FBLPromises.framework */; };
-		C38253642285912500B0D593 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253482285826100B0D593 /* KeychainAccess.framework */; };
-		C38253652285912500B0D593 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253452285826000B0D593 /* Nimble.framework */; };
-		C38253662285912500B0D593 /* Promises.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253462285826100B0D593 /* Promises.framework */; };
-		C38253672285912500B0D593 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253492285826100B0D593 /* RxCocoa.framework */; };
-		C38253682285912500B0D593 /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253422285826000B0D593 /* RxRelay.framework */; };
-		C38253692285912500B0D593 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C382534A2285826100B0D593 /* RxSwift.framework */; };
-		C382536A2285912500B0D593 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C38253432285826000B0D593 /* SwiftyJSON.framework */; };
 		C38B33C020F6343F00232170 /* TestLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38B33BF20F6343F00232170 /* TestLogger.swift */; };
 		C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B5C5D022A16796004331A9 /* LoggingOption.swift */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
@@ -75,7 +64,7 @@
 		C3427AEC230FD5DB004865D2 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
 		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
-		C37900132181DD1F00926793 /* Promises+rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promises+rx.swift"; sourceTree = "<group>"; };
+		C37900132181DD1F00926793 /* Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promises.swift; sourceTree = "<group>"; };
 		C37900142181DD1F00926793 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
 		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		C37900182181DD1F00926793 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
@@ -89,15 +78,6 @@
 		C37900322181E26200926793 /* Cobalt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cobalt.h; sourceTree = "<group>"; };
 		C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Requests.swift"; sourceTree = "<group>"; };
 		C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Authentication.swift"; sourceTree = "<group>"; };
-		C38253422285826000B0D593 /* RxRelay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxRelay.framework; path = Carthage/Build/iOS/RxRelay.framework; sourceTree = "<group>"; };
-		C38253432285826000B0D593 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
-		C38253442285826000B0D593 /* FBLPromises.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBLPromises.framework; path = Carthage/Build/iOS/FBLPromises.framework; sourceTree = "<group>"; };
-		C38253452285826000B0D593 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
-		C38253462285826100B0D593 /* Promises.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Promises.framework; path = Carthage/Build/iOS/Promises.framework; sourceTree = "<group>"; };
-		C38253472285826100B0D593 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		C38253482285826100B0D593 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
-		C38253492285826100B0D593 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
-		C382534A2285826100B0D593 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		C38B33BF20F6343F00232170 /* TestLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLogger.swift; sourceTree = "<group>"; };
 		C3B5C5D022A16796004331A9 /* LoggingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingOption.swift; sourceTree = "<group>"; };
 		DFDA21F41D6741AD00683D7D /* Cobalt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cobalt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,14 +92,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C38253532285826100B0D593 /* Promises.framework in Frameworks */,
-				C38253552285826100B0D593 /* Alamofire.framework in Frameworks */,
-				C382535B2285826100B0D593 /* RxSwift.framework in Frameworks */,
-				C382534F2285826100B0D593 /* FBLPromises.framework in Frameworks */,
-				C38253572285826100B0D593 /* KeychainAccess.framework in Frameworks */,
-				C38253592285826100B0D593 /* RxCocoa.framework in Frameworks */,
-				C382534D2285826100B0D593 /* SwiftyJSON.framework in Frameworks */,
-				C382534B2285826100B0D593 /* RxRelay.framework in Frameworks */,
+				C3439A6B2344A86100817084 /* RxSwift in Frameworks */,
+				C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */,
+				C3439A6E2344A87500817084 /* Promises in Frameworks */,
+				C3439A652344A84100817084 /* Alamofire in Frameworks */,
+				C3439A712344A88A00817084 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,16 +104,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C38253662285912500B0D593 /* Promises.framework in Frameworks */,
-				C38253652285912500B0D593 /* Nimble.framework in Frameworks */,
-				C38253692285912500B0D593 /* RxSwift.framework in Frameworks */,
-				C38253672285912500B0D593 /* RxCocoa.framework in Frameworks */,
-				C382536A2285912500B0D593 /* SwiftyJSON.framework in Frameworks */,
-				C38253632285912500B0D593 /* FBLPromises.framework in Frameworks */,
-				C38253682285912500B0D593 /* RxRelay.framework in Frameworks */,
 				DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */,
-				C38253642285912500B0D593 /* KeychainAccess.framework in Frameworks */,
-				C38253622285912500B0D593 /* Alamofire.framework in Frameworks */,
+				C3439A742344A8DF00817084 /* Nimble in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,7 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */,
-				C37900132181DD1F00926793 /* Promises+rx.swift */,
+				C37900132181DD1F00926793 /* Promises.swift */,
 				C37900142181DD1F00926793 /* Optional.swift */,
 				C316AFA4230FF5250036E295 /* String+Extension.swift */,
 			);
@@ -209,26 +178,9 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
-		C382532922857D7E00B0D593 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				C38253472285826100B0D593 /* Alamofire.framework */,
-				C38253442285826000B0D593 /* FBLPromises.framework */,
-				C38253482285826100B0D593 /* KeychainAccess.framework */,
-				C38253452285826000B0D593 /* Nimble.framework */,
-				C38253462285826100B0D593 /* Promises.framework */,
-				C38253492285826100B0D593 /* RxCocoa.framework */,
-				C38253422285826000B0D593 /* RxRelay.framework */,
-				C382534A2285826100B0D593 /* RxSwift.framework */,
-				C38253432285826000B0D593 /* SwiftyJSON.framework */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		DFDA21EA1D6741AD00683D7D = {
 			isa = PBXGroup;
 			children = (
-				C382532922857D7E00B0D593 /* Dependencies */,
 				DFDA220E1D6741C200683D7D /* Cobalt */,
 				DFDA22021D6741AE00683D7D /* CobaltTests */,
 				DFDA21F51D6741AD00683D7D /* Products */,
@@ -298,6 +250,13 @@
 			dependencies = (
 			);
 			name = Cobalt;
+			packageProductDependencies = (
+				C3439A642344A84100817084 /* Alamofire */,
+				C3439A672344A84D00817084 /* SwiftyJSON */,
+				C3439A6A2344A86100817084 /* RxSwift */,
+				C3439A6D2344A87500817084 /* Promises */,
+				C3439A702344A88A00817084 /* KeychainAccess */,
+			);
 			productName = APIBaseClient;
 			productReference = DFDA21F41D6741AD00683D7D /* Cobalt.framework */;
 			productType = "com.apple.product-type.framework";
@@ -309,7 +268,6 @@
 				DFDA21FA1D6741AE00683D7D /* Sources */,
 				DFDA21FB1D6741AE00683D7D /* Frameworks */,
 				DFDA21FC1D6741AE00683D7D /* Resources */,
-				C382535D228582BA00B0D593 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -317,6 +275,9 @@
 				DFDA22011D6741AE00683D7D /* PBXTargetDependency */,
 			);
 			name = CobaltTests;
+			packageProductDependencies = (
+				C3439A732344A8DF00817084 /* Nimble */,
+			);
 			productName = APIBaseClientTests;
 			productReference = DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -351,6 +312,14 @@
 				en,
 			);
 			mainGroup = DFDA21EA1D6741AD00683D7D;
+			packageReferences = (
+				C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */,
+				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */,
+			);
 			productRefGroup = DFDA21F51D6741AD00683D7D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -378,36 +347,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		C382535D228582BA00B0D593 /* Carthage */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Nimble.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Promises.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FBLPromises.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/KeychainAccess.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxRelay.framework",
-			);
-			name = Carthage;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		DFDA21EF1D6741AD00683D7D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -418,7 +357,7 @@
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,
 				C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */,
-				C37900252181DD1F00926793 /* Promises+rx.swift in Sources */,
+				C37900252181DD1F00926793 /* Promises.swift in Sources */,
 				C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */,
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
 				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
@@ -563,7 +502,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -581,14 +521,13 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Dependencies/iOS",
-				);
 				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.library.cobalt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -605,14 +544,13 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-					"$(PROJECT_DIR)/Dependencies/iOS",
-				);
 				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.library.cobalt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -624,13 +562,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = KH7U9B5DS2;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = CobaltTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.cobalt.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -641,13 +578,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = KH7U9B5DS2;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies/iOS",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
 				INFOPLIST_FILE = CobaltTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.cobalt.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -684,6 +620,90 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+		C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/promises.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.8;
+			};
+		};
+		C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.2.0;
+			};
+		};
+		C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Quick/Nimble.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C3439A642344A84100817084 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		C3439A672344A84D00817084 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
+		C3439A6A2344A86100817084 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		C3439A6D2344A87500817084 /* Promises */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */;
+			productName = Promises;
+		};
+		C3439A702344A88A00817084 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		C3439A732344A8DF00817084 /* Nimble */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */;
+			productName = Nimble;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DFDA21EB1D6741AD00683D7D /* Project object */;
 }

@@ -8,7 +8,6 @@
 import Foundation
 import Promises
 import RxSwift
-import RxCocoa
 
 extension Promise {
     public func asSingle() -> Single<Value> {

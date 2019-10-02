@@ -1,21 +1,9 @@
 language: objective-c
-osx_image: xcode10.2
-
-addons:
-  homebrew:
-    brewfile: true
+osx_image: xcode11
 
 branches:
   only:
   - master
 
-cache:
-  directories:
-  - vendor/bundle
-  - Carthage
-
-before_install:
-  - carthage bootstrap --platform iOS --cache-builds
-
 script:
-  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' clean build test
+  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' clean build test

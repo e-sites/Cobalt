@@ -1,6 +1,0 @@
-github "Alamofire/Alamofire" "4.8.2"
-github "Quick/Nimble" "v8.0.1"
-github "ReactiveX/RxSwift" "5.0.1"
-github "SwiftyJSON/SwiftyJSON" "5.0.0"
-github "google/promises" "1.2.8"
-github "kishikawakatsumi/KeychainAccess" "v3.2.0"
