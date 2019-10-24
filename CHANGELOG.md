@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.2 (24-10-2019)
+- iso8601 default mapping date
+
 ## v5.10.1 (02-10-2019)
 - Split up caching and core for SwiftPM
 

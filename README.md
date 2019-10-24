@@ -49,12 +49,20 @@ And then
 carthage update
 ```
 
+## SwiftPM
+
+Add the following dependency to your Package.swift:
+
+```swift
+ .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
+```
+
 ## Accio
 
 Add the following dependency to your Package.swift:
 
 ```swift
- .package(url: "https://github.com/e-sites/Cobalt", .branch("master")
+ .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
 ```
 
 And run:
@@ -286,4 +294,4 @@ And then use the `Cobalt.Config.logger` property to assign your logged to the `C
 
 # Development
 
-Run `carthage bootstrap` and open `Cobalt.xcodeproj`
+Just open `Cobalt.xcodeproj`
