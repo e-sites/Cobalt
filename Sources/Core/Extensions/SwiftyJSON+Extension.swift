@@ -16,7 +16,9 @@ extension JSON {
 
     public func map<T: Decodable>(to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
         let jsonDecoder = JSONDecoder()
-        jsonDecoder.dateDecodingStrategy = .iso8601
+        if #available(iOS 10, *) {
+            jsonDecoder.dateDecodingStrategy = .iso8601
+        }
         builder?(jsonDecoder)
         let data = try rawData()
         return try jsonDecoder.decode(type, from: data)
