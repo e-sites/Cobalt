@@ -65,7 +65,7 @@ open class Client: ReactiveCompatible {
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///   - `handler`: The closure to call when the request is finished
-    public func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
+    open func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
         self.request(request).then { json in
             handler(.success(json))
         }.catch { error in
@@ -79,7 +79,7 @@ open class Client: ReactiveCompatible {
     ///   - `request`: The `Request` object
     ///
     /// - Returns: `Promise<JSON>`
-    public func request(_ request: Request) -> Promise<JSON> {
+    open func request(_ request: Request) -> Promise<JSON> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
             return Promise(Error.invalidRequest("Missing 'host'"))

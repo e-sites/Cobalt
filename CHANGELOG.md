@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.3 (15-11-2019)
+- Make `request` open
+
 ## v5.10.2 (24-10-2019)
 - iso8601 default mapping date
 
