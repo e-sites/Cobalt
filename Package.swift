@@ -11,11 +11,11 @@ let package = Package(
         .library(name: "CobaltCache", targets: ["CobaltCache"])
     ],
     dependencies: [
-        .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "4.9.1")),
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", .upToNextMajor(from: "5.0.0")),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "5.0.0")),
-        .package(url: "https://github.com/google/promises.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "3.0.0"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "5.0.1")),
+        .package(url: "https://github.com/google/promises.git", .upToNextMajor(from: "1.2.8")),
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "4.1.0"))
     ],
     targets: [
         .target(

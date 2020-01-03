@@ -627,7 +627,7 @@
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
+				minimumVersion = 4.9.1;
 			};
 		};
 		C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
@@ -643,7 +643,7 @@
 			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
+				minimumVersion = 5.0.1;
 			};
 		};
 		C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */ = {
@@ -659,7 +659,7 @@
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.2.0;
+				minimumVersion = 4.1.0;
 			};
 		};
 		C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */ = {
