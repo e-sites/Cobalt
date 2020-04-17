@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.5 (17-04-2020)
+- Fixed bug in logging request options for dictionaries
+
 ## v5.10.3 (15-11-2019)
 - Make `request` open
 

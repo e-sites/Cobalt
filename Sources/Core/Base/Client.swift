@@ -281,7 +281,7 @@ extension Client {
         var logParameters: [String: Any] = [:]
         for (key, value) in parameters {
             let type = options["\(path)\(key)"] ?? .default
-            if let dictionary = value as? [String: Any] {
+            if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
                 continue
             }
