@@ -27,7 +27,7 @@ class AuthenticationProvider {
     /// - Returns: `Promise<Request>`
     func authorize(request: Request) throws -> Promise<Request> {
         // Define headers
-        var headers = request.headers ?? [:]
+        request.useHeaders = request.headers ?? [:]
 
         // Regular client_id / client_secret
         guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
@@ -44,7 +44,7 @@ class AuthenticationProvider {
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
                     throw Error.missingClientAuthentication
                 }
-                headers["Authorization"] = "Basic \(base64)"
+                request.useHeaders["Authorization"] = "Basic \(base64)"
 
             case .requestBody:
                 // Alternatively, the authorization server MAY support including the
@@ -85,7 +85,6 @@ class AuthenticationProvider {
             break
         }
 
-        request.useHeaders = headers
         return Promise<Request>(request)
     }
 

@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.6 (11-05-2020)
+- Fixed a bug with custom headers
+
 ## v5.10.5 (17-04-2020)
 - Fixed bug in logging request options for dictionaries
 
