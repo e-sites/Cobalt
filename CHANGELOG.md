@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v5.10.7 (13-05-2020)
+- `open` login
+
 ## v5.10.6 (11-05-2020)
 - Fixed a bug with custom headers
 

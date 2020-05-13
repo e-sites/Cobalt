@@ -225,7 +225,7 @@ open class Client: ReactiveCompatible {
     // MARK: - Login
     // --------------------------------------------------------
 
-    public func login(username: String, password: String) -> Promise<Void> {
+    open func login(username: String, password: String) -> Promise<Void> {
         let parameters = [
             "username": username,
             "password": password
