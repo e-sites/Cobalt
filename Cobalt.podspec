@@ -15,8 +15,8 @@ Pod::Spec.new do |s|
     ss.source_files = "Sources/Core/**/*.{h,swift}"
   	ss.dependency 'Alamofire'
   	ss.dependency 'SwiftyJSON'
-  	ss.dependency 'RxSwift'
-  	ss.dependency 'PromisesSwift'
+    ss.dependency 'RxSwift'
+    ss.dependency 'RxCocoa'
     ss.dependency 'KeychainAccess'
   end
 
