@@ -14,16 +14,15 @@
 		C316AFA1230FF03C0036E295 /* Client+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE8230FD444004865D2 /* Client+Cache.swift */; };
 		C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
 		C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AFA4230FF5250036E295 /* String+Extension.swift */; };
+		C321494524A08BDC000816AC /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C321494424A08BDC000816AC /* RxSwift */; };
+		C321494724A08BDC000816AC /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = C321494624A08BDC000816AC /* RxCocoa */; };
 		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
 		C3439A652344A84100817084 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A642344A84100817084 /* Alamofire */; };
 		C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A672344A84D00817084 /* SwiftyJSON */; };
-		C3439A6B2344A86100817084 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A6A2344A86100817084 /* RxSwift */; };
-		C3439A6E2344A87500817084 /* Promises in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A6D2344A87500817084 /* Promises */; };
 		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
 		C3439A742344A8DF00817084 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A732344A8DF00817084 /* Nimble */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
-		C37900252181DD1F00926793 /* Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900132181DD1F00926793 /* Promises.swift */; };
 		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
 		C37900292181DD1F00926793 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900182181DD1F00926793 /* AccessToken.swift */; };
@@ -64,7 +63,6 @@
 		C3427AEC230FD5DB004865D2 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
 		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
-		C37900132181DD1F00926793 /* Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promises.swift; sourceTree = "<group>"; };
 		C37900142181DD1F00926793 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
 		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		C37900182181DD1F00926793 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
@@ -92,10 +90,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3439A6B2344A86100817084 /* RxSwift in Frameworks */,
 				C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */,
-				C3439A6E2344A87500817084 /* Promises in Frameworks */,
 				C3439A652344A84100817084 /* Alamofire in Frameworks */,
+				C321494724A08BDC000816AC /* RxCocoa in Frameworks */,
+				C321494524A08BDC000816AC /* RxSwift in Frameworks */,
 				C3439A712344A88A00817084 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -112,6 +110,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C321494824A090D7000816AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C3427AD1230FC47E004865D2 /* Cache */ = {
 			isa = PBXGroup;
 			children = (
@@ -139,7 +144,6 @@
 			isa = PBXGroup;
 			children = (
 				C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */,
-				C37900132181DD1F00926793 /* Promises.swift */,
 				C37900142181DD1F00926793 /* Optional.swift */,
 				C316AFA4230FF5250036E295 /* String+Extension.swift */,
 			);
@@ -184,6 +188,7 @@
 				DFDA220E1D6741C200683D7D /* Cobalt */,
 				DFDA22021D6741AE00683D7D /* CobaltTests */,
 				DFDA21F51D6741AD00683D7D /* Products */,
+				C321494824A090D7000816AC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -253,9 +258,9 @@
 			packageProductDependencies = (
 				C3439A642344A84100817084 /* Alamofire */,
 				C3439A672344A84D00817084 /* SwiftyJSON */,
-				C3439A6A2344A86100817084 /* RxSwift */,
-				C3439A6D2344A87500817084 /* Promises */,
 				C3439A702344A88A00817084 /* KeychainAccess */,
+				C321494424A08BDC000816AC /* RxSwift */,
+				C321494624A08BDC000816AC /* RxCocoa */,
 			);
 			productName = APIBaseClient;
 			productReference = DFDA21F41D6741AD00683D7D /* Cobalt.framework */;
@@ -315,10 +320,9 @@
 			packageReferences = (
 				C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
-				C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */,
-				C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */,
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */,
+				C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = DFDA21F51D6741AD00683D7D /* Products */;
 			projectDirPath = "";
@@ -357,7 +361,6 @@
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,
 				C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */,
-				C37900252181DD1F00926793 /* Promises.swift in Sources */,
 				C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */,
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
 				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
@@ -622,6 +625,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
 		C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -636,22 +647,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.0;
-			};
-		};
-		C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.1;
-			};
-		};
-		C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/promises.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.8;
 			};
 		};
 		C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
@@ -673,6 +668,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C321494424A08BDC000816AC /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		C321494624A08BDC000816AC /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
 		C3439A642344A84100817084 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -682,16 +687,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
-		};
-		C3439A6A2344A86100817084 /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A692344A86100817084 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
-		C3439A6D2344A87500817084 /* Promises */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A6C2344A87500817084 /* XCRemoteSwiftPackageReference "promises" */;
-			productName = Promises;
 		};
 		C3439A702344A88A00817084 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;

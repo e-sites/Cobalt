@@ -9,7 +9,6 @@
 
 import XCTest
 import Nimble
-import Promises
 import Alamofire
 import Foundation
 @testable import Cobalt
@@ -47,7 +46,7 @@ class CobaltTestsAuthentication: CobaltTests {
 
         expect(accessToken1.accessToken) == getAccessToken1.accessToken
         expect(getAccessToken1.refreshToken).to(beNil())
-            expect(accessToken1.refreshToken).to(beNil())
+        expect(accessToken1.refreshToken).to(beNil())
         expect(accessToken1.grantType) == getAccessToken1.grantType
         expect(accessToken1.expireDate?.timeIntervalSince1970) == getAccessToken1.expireDate?.timeIntervalSince1970
 

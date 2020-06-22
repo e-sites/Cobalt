@@ -8,7 +8,8 @@
 
 import Foundation
 import Alamofire
-import Promises
+import RxCocoa
+import RxSwift
 import SwiftyJSON
 
 class AuthenticationProvider {
@@ -25,7 +26,7 @@ class AuthenticationProvider {
     ///   - request: `Request`
     ///
     /// - Returns: `Promise<Request>`
-    func authorize(request: Request) throws -> Promise<Request> {
+    func authorize(request: Request) throws -> Single<Request> {
         // Define headers
         request.useHeaders = request.headers ?? [:]
 
@@ -85,7 +86,7 @@ class AuthenticationProvider {
             break
         }
 
-        return Promise<Request>(request)
+        return Single<Request>.just(request)
     }
 
     /// Here we're going to do either of the following:
@@ -94,7 +95,7 @@ class AuthenticationProvider {
     /// 2. If the user has an expired `password` access-token, refresh it
     /// 3. If you need a `client_credentials` grantType and the access-token is expired. Create a new one
     private func _authorizeOAuth(request: Request,
-                                 grantType: OAuthenticationGrantType) throws -> Promise<Request> {
+                                 grantType: OAuthenticationGrantType) throws -> Single<Request> {
         var parameters: Parameters = [:]
         var grantType = grantType
 
@@ -106,7 +107,7 @@ class AuthenticationProvider {
                 let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
                 client.logger?.verbose("[?] Access token expires in: \(expiresIn)s")
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
-                return Promise<Request>(request)
+                return Single<Request>.just(request)
             }
 
             client.logger?.warning("Access-token expired, refreshing ...")
@@ -120,12 +121,16 @@ class AuthenticationProvider {
             throw Error.missingClientAuthentication
         }
 
-        return sendOAuthRequest(grantType: grantType, parameters: parameters).then { _ in
-            return try self._authorizeOAuth(request: request, grantType: grantType)
-        }
+        return sendOAuthRequest(grantType: grantType, parameters: parameters)
+            .flatMap { [weak self] _ -> Single<Request> in
+                guard let self = self else {
+                    return Single<Request>.never()
+                }
+                return try self._authorizeOAuth(request: request, grantType: grantType)
+            }
     }
 
-    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> Promise<Void> {
+    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> Single<Void> {
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
@@ -148,17 +153,20 @@ class AuthenticationProvider {
 
         isAuthenticating = true
 
-        return client.request(request).then { json in
+        return client.request(request).flatMap { [weak self, client] json in
             let accessToken = try json.map(to: AccessToken.self)
-            accessToken.host = (request.host ?? self.client.config.host) ?? ""
+            accessToken.host = (request.host ?? client?.config.host) ?? ""
             accessToken.grantType = grantType
             accessToken.store()
-            self.client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
-            self.client.authorizationGrantTypeSubject.onNext(accessToken.grantType)
-            return Promise<Void>(())
+            client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
+            client?.authorizationGrantTypeSubject.onNext(accessToken.grantType)
+            self?.isAuthenticating = false
+            return Single<Void>.just(())
 
-        }.recover { error -> Promise<Void> in
-
+        }.catchError { [weak self, client] error -> Single<Void> in
+            defer {
+                self?.isAuthenticating = false
+            }
             guard error == Error.invalidGrant, grantType == .refreshToken else {
                 throw error
             }
@@ -166,11 +174,9 @@ class AuthenticationProvider {
             // If the server responds with 'invalid_grant' for a refresh_token granType
             // then the refresh-token is invalid and therefor the access-token is too.
             // So we can completely remove the access-token, since it is in no way able to revalidate.
-            self.client.logger?.warning("Clearing access-token; invalid refresh-token")
-            self.client.clearAccessToken()
+            client?.logger?.warning("Clearing access-token; invalid refresh-token")
+            client?.clearAccessToken()
             throw Error.refreshTokenInvalidated
-        }.always {
-            self.isAuthenticating = false
         }
     }
     
@@ -201,7 +207,7 @@ class AuthenticationProvider {
     // MARK: - Recover
     // --------------------------------------------------------
 
-    func recover(from error: Swift.Error, request: Request) throws -> Promise<JSON> {
+    func recover(from error: Swift.Error, request: Request) throws -> Single<JSON> {
         // If we receive an 'invalid_grant' error and we tried to do a refresh_token authentication
         // The access-token and underlying refresh-token is invalid
         // So we can revoke the access-token
@@ -209,10 +215,10 @@ class AuthenticationProvider {
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
-            let accessToken = AccessToken(host: (request.host ?? self.client.config.host) ?? "")
-            self.client.logger?.warning("Access-token expired; invalidating access-token")
+            let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
+            client.logger?.warning("Access-token expired; invalidating access-token")
             accessToken.invalidate()
-            return self.client.request(request)
+            return client.request(request)
         }
         throw error
     }

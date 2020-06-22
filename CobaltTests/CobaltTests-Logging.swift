@@ -9,7 +9,6 @@
 import Foundation
 import XCTest
 import Nimble
-import Promises
 import Alamofire
 import Foundation
 @testable import Cobalt

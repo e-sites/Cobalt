@@ -7,14 +7,25 @@
 //
 
 import Foundation
-import Promises
+import RxSwift
+import RxCocoa
 import Alamofire
 import SwiftyJSON
+
+private class SingleMap {
+    var single: Single<JSON>!
+    var observer: ((SingleEvent<JSON>) -> Void)!
+
+    func destroy() {
+        single = nil
+        observer = nil
+    }
+}
 
 class RequestQueue {
     private weak var apiClient: Client!
     private(set) var requests: [Request] = []
-    private var _promiseMap: [Request: Promise<JSON>] = [:]
+    private var _singleMap: [Request: SingleMap] = [:]
 
     var count: Int {
         return requests.count
@@ -28,7 +39,16 @@ class RequestQueue {
         if requests.contains(request) {
             return
         }
-        _promiseMap[request] = Promise<JSON>.pending()
+
+        let map = SingleMap()
+        map.single = Single<JSON>.create { [weak self, map] observer in
+            map.observer = observer
+            return Disposables.create {
+                map.destroy()
+                self?._singleMap.removeValue(forKey: request)
+            }
+        }
+        _singleMap[request] = map
         requests.append(request)
         apiClient.logger?.verbose("Added to queue [\(count)]: \(request)")
     }
@@ -38,7 +58,7 @@ class RequestQueue {
             return
         }
         let request = requests.removeFirst()
-        _promiseMap.removeValue(forKey: request)
+        _singleMap.removeValue(forKey: request)
     }
 
     func next() {
@@ -48,27 +68,27 @@ class RequestQueue {
     }
 
     func clear() {
-        _promiseMap.removeAll()
+        _singleMap.removeAll()
         requests.removeAll()
     }
 
-    func promise(of request: Request) -> Promise<JSON>? {
-        return _promiseMap[request]
+    func single(of request: Request) -> Single<JSON>? {
+        return _singleMap[request]?.single
     }
 
     func handle(request: Request) {
-        let promise = self.promise(of: request)
+        let map = _singleMap[request]
         removeFirst()
-        if promise == nil {
+        if map == nil {
             return
         }
         
         apiClient.request(request) { result in
             switch result {
             case .success(let json):
-                promise?.fulfill(json)
+                map?.observer(.success(json))
             case .failure(let error):
-                promise?.reject(error)
+                map?.observer(.error(error))
             }
         }
     }

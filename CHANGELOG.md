@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v6.0.0 (22-06-2020)
+- Replaced Promises with RxSwift
+
 ## v5.10.7 (13-05-2020)
 - `open` login
 

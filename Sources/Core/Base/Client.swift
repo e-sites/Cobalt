@@ -8,7 +8,7 @@
 
 import Foundation
 import RxSwift
-import Promises
+import RxCocoa
 import SwiftyJSON
 import Alamofire
 
@@ -26,6 +26,8 @@ open class Client: ReactiveCompatible {
     fileprivate lazy var queue = RequestQueue(client: self)
 
     var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
+
+    private let disposeBag = DisposeBag()
 
     var authorizationGrantType: OAuthenticationGrantType? {
         do {
@@ -66,11 +68,11 @@ open class Client: ReactiveCompatible {
     ///   - `request`: The `Request` object
     ///   - `handler`: The closure to call when the request is finished
     open func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
-        self.request(request).then { json in
+        self.request(request).subscribe(onSuccess: { json in
             handler(.success(json))
-        }.catch { error in
+        }, onError: { error in
             handler(.failure(error))
-        }
+        }).disposed(by: disposeBag)
     }
 
     /// Make a promise requst
@@ -79,10 +81,10 @@ open class Client: ReactiveCompatible {
     ///   - `request`: The `Request` object
     ///
     /// - Returns: `Promise<JSON>`
-    open func request(_ request: Request) -> Promise<JSON> {
+    open func request(_ request: Request) -> Single<JSON> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
-            return Promise(Error.invalidRequest("Missing 'host'"))
+            return Single<JSON>.error(Error.invalidRequest("Missing 'host'"))
         }
 
         // If the client is authenticating with OAuth.
@@ -90,7 +92,7 @@ open class Client: ReactiveCompatible {
         // So we add it to the `RequestQueue`
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
-            return queue.promise(of: request) ?? Promise(Error.unknown())
+            return queue.single(of: request) ?? Single<JSON>.error(Error.unknown())
         }
         
         if host.hasSuffix("/") {
@@ -116,26 +118,34 @@ open class Client: ReactiveCompatible {
         request.urlString = urlString
         
         // 1. We (optionally) (pre-)authorize the request
-        return firstly {
+        let single = Single<Void>.just(())
+        .flatMap { [authProvider] in 
             return try authProvider.authorize(request: request)
 
         // 2. We actually send the request with Alamofire
-        }.then { newRequest in
+        }.flatMap { [weak self] newRequest in
+            guard let self = self else {
+                return Single<JSON>.never()
+            }
             return self._request(newRequest)
 
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.recover { error -> Promise<JSON> in
-            self.queue.removeFirst()
-            return try self.authProvider.recover(from: error, request: request)
+        }.catchError { [weak self, authProvider] error -> Single<JSON> in
+            self?.queue.removeFirst()
+            return try authProvider.recover(from: error, request: request)
 
         // 4. If any other requests are queued, fire up the next one
-        }.always {
+        }
+
+        single.subscribe { [queue] _ in
             // When a request is finished, no matter if its succesful or not
             // We try to clear th queue
             if request.requiresOAuthentication {
-                self.queue.next()
+                queue.next()
             }
-        }
+        }.disposed(by: disposeBag)
+
+        return single
     }
 
     open func startRequest(_ request: Request) {
@@ -146,7 +156,7 @@ open class Client: ReactiveCompatible {
 
     }
 
-    private func _request(_ request: Request) -> Promise<JSON> {
+    private func _request(_ request: Request) -> Single<JSON> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
@@ -175,10 +185,10 @@ open class Client: ReactiveCompatible {
         // Check to see if the cache engine should handle it
         if !service.shouldPerformRequestAfterCacheCheck(), let json = service.json {
             _responseParsing(json: json, request: request, requestID: requestID)
-            return Promise(json)
+            return Single<JSON>.just(json)
         }
 
-        return Promise<JSON>(on: .main) { [weak self] fulfill, reject in
+        return Single<JSON>.create { [weak self] observer in
             Alamofire.request(request.urlString,
                               method: request.httpMethod,
                               parameters: request.parameters,
@@ -186,7 +196,6 @@ open class Client: ReactiveCompatible {
                               headers: request.useHeaders)
                 .validate()
                 .responseJSON { response in
-
                     let statusCode = response.response?.statusCode ?? 500
                     self?.finishRequest(request, response: response.response)
                     let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
@@ -203,17 +212,17 @@ open class Client: ReactiveCompatible {
                         self?.logger?.error("#\(requestID) Original: \(error)")
                         let apiError = Error(from: error, json: json)
                         self?.logger?.error("#\(requestID) Error: \(apiError)")
-                        reject(apiError)
+                        observer(.error(apiError))
                         return
                     }
 
                     guard let responseJSON = json else {
-                        reject(Error.empty)
+                        observer(.error(Error.empty))
                         return
                     }
-
-                    fulfill(responseJSON)
+                    observer(.success(responseJSON))
             }
+            return Disposables.create()
         }
     }
 
@@ -225,7 +234,7 @@ open class Client: ReactiveCompatible {
     // MARK: - Login
     // --------------------------------------------------------
 
-    open func login(username: String, password: String) -> Promise<Void> {
+    open func login(username: String, password: String) -> Single<Void> {
         let parameters = [
             "username": username,
             "password": password

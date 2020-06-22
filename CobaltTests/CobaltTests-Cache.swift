@@ -10,7 +10,8 @@
 import Foundation
 import XCTest
 import Nimble
-import Promises
+import RxSwift
+import RxCocoa
 import Alamofire
 import Foundation
 @testable import Cobalt
@@ -33,12 +34,11 @@ class CobaltTestsCache: CobaltTests {
                 $0.cachePolicy = .expires(seconds: 10)
             }
 
-            self.client.request(request)
-                .then { json in
+            self.client.request(request).subscribe { event in
+                switch event {
+                case .success(let json):
                     expect(json["data"].arrayValue.count) == 10
-                }.catch { error in
-                    XCTAssert(false, "\(error)")
-                }.always {
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                         let request = Request {
                             $0.authentication = .client
@@ -49,16 +49,21 @@ class CobaltTestsCache: CobaltTests {
                             $0.cachePolicy = .expires(seconds: 10)
                         }
 
-                        self.client.request(request)
-                        .then { json in
-                            expect(json["data"].arrayValue.count) == 10
-                        }.catch { error in
-                            XCTAssert(false, "\(error)")
-                        }.always {
+                        self.client.request(request).subscribe { event in
+                            switch event {
+                            case .success(let json):
+                                expect(json["data"].arrayValue.count) == 10
+                            case .error(let error):
+                                XCTAssert(false, "\(error)")
+                            }
                             done()
-                        }
+                        }.disposed(by: self.disposeBag)
+                    }
+
+                case .error(let error):
+                    XCTAssert(false, "\(error)")
                 }
-            }
+            }.disposed(by: self.disposeBag)
         }
     }
 
@@ -73,12 +78,12 @@ class CobaltTestsCache: CobaltTests {
                 $0.cachePolicy = .expires(seconds: 10)
             }
 
-            self.client.request(request)
-                .then { json in
+            self.client.request(request).subscribe { event in
+                switch event {
+                case .success(let json):
                     expect(json["data"].arrayValue.count) == 10
-                }.catch { error in
-                    XCTAssert(false, "\(error)")
-                }.always {
+
+
                     let request = Request {
                         $0.authentication = .client
                         $0.path = "/api/users"
@@ -88,15 +93,20 @@ class CobaltTestsCache: CobaltTests {
                         $0.cachePolicy = .expires(seconds: 10)
                     }
 
-                    self.client.request(request)
-                    .then { json in
-                        expect(json["data"].arrayValue.count) == 5
-                    }.catch { error in
-                        XCTAssert(false, "\(error)")
-                    }.always {
+                    self.client.request(request).subscribe { event in
+                        switch event {
+                        case .success(let json):
+                            expect(json["data"].arrayValue.count) == 5
+                        case .error(let error):
+                            XCTAssert(false, "\(error)")
+                        }
                         done()
-                    }
-            }
+                    }.disposed(by: self.disposeBag)
+                    
+                case .error(let error):
+                    XCTAssert(false, "\(error)")
+                }
+            }.disposed(by: self.disposeBag)
         }
     }
 }

@@ -8,12 +8,14 @@
 
 import XCTest
 import Nimble
-import Promises
 import Alamofire
+import RxSwift
+import RxCocoa
 @testable import Cobalt
 
 
 class CobaltTests: XCTestCase {
+    lazy var disposeBag = DisposeBag()
     lazy var config = Config {
         $0.clientID = "id"
         $0.clientSecret = "secret"
