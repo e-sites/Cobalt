@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v6.0.1 (22-06-2020)
+- Fixed a bug where request would be send twice
+
 ## v6.0.0 (22-06-2020)
 - Replaced Promises with RxSwift
 

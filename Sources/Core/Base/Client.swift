@@ -118,8 +118,7 @@ open class Client: ReactiveCompatible {
         request.urlString = urlString
         
         // 1. We (optionally) (pre-)authorize the request
-        let single = Single<Void>.just(())
-        .flatMap { [authProvider] in 
+        return Single<Void>.just(()).flatMap { [authProvider] in 
             return try authProvider.authorize(request: request)
 
         // 2. We actually send the request with Alamofire
@@ -135,17 +134,14 @@ open class Client: ReactiveCompatible {
             return try authProvider.recover(from: error, request: request)
 
         // 4. If any other requests are queued, fire up the next one
-        }
-
-        single.subscribe { [queue] _ in
+        }.flatMap { [queue] json -> Single<JSON> in
             // When a request is finished, no matter if its succesful or not
             // We try to clear th queue
             if request.requiresOAuthentication {
                 queue.next()
             }
-        }.disposed(by: disposeBag)
-
-        return single
+            return Single.just(json)
+        }
     }
 
     open func startRequest(_ request: Request) {

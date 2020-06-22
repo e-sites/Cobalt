@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Cobalt"
-  s.version      = "6.0.0"
+  s.version      = "6.0.1"
   s.author       = { "Bas van Kuijck" => "bas@e-sites.nl" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.homepage     = "http://www.e-sites.nl"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.source_files = "Sources/*.h"
   s.platform     = :ios, '9.0'
   s.requires_arc  = true
-  s.swift_versions = [ '5.0', '5.1' ]
+  s.swift_versions = [ '5.0', '5.1', '5.2' ]
 
   s.subspec 'Core' do |ss|
     ss.source_files = "Sources/Core/**/*.{h,swift}"
