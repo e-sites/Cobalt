@@ -12,20 +12,10 @@ import RxCocoa
 import Alamofire
 import SwiftyJSON
 
-private class SingleMap {
-    var single: Single<JSON>!
-    var observer: ((SingleEvent<JSON>) -> Void)!
-
-    func destroy() {
-        single = nil
-        observer = nil
-    }
-}
-
 class RequestQueue {
     private weak var apiClient: Client!
     private(set) var requests: [Request] = []
-    private var _singleMap: [Request: SingleMap] = [:]
+    private var _map: [Request: PublishRelay<Swift.Result<JSON, Swift.Error>>] = [:]
 
     var count: Int {
         return requests.count
@@ -39,16 +29,7 @@ class RequestQueue {
         if requests.contains(request) {
             return
         }
-
-        let map = SingleMap()
-        map.single = Single<JSON>.create { [weak self, map] observer in
-            map.observer = observer
-            return Disposables.create {
-                map.destroy()
-                self?._singleMap.removeValue(forKey: request)
-            }
-        }
-        _singleMap[request] = map
+        _map[request] = PublishRelay<Swift.Result<JSON, Swift.Error>>()
         requests.append(request)
         apiClient.logger?.verbose("Added to queue [\(count)]: \(request)")
     }
@@ -58,7 +39,7 @@ class RequestQueue {
             return
         }
         let request = requests.removeFirst()
-        _singleMap.removeValue(forKey: request)
+        _map.removeValue(forKey: request)
     }
 
     func next() {
@@ -68,27 +49,34 @@ class RequestQueue {
     }
 
     func clear() {
-        _singleMap.removeAll()
+        _map.removeAll()
         requests.removeAll()
     }
 
     func single(of request: Request) -> Single<JSON>? {
-        return _singleMap[request]?.single
+        return _map[request]?.map { result throws -> JSON in
+            switch result {
+            case .success(let json):
+                return json
+            case .failure(let error):
+                throw error
+            }
+        }.take(1).asSingle()
     }
 
     func handle(request: Request) {
-        let map = _singleMap[request]
+        let relay = _map[request]
         removeFirst()
-        if map == nil {
+        if relay == nil {
             return
         }
         
         apiClient.request(request) { result in
             switch result {
             case .success(let json):
-                map?.observer(.success(json))
+                relay?.accept(.success(json))
             case .failure(let error):
-                map?.observer(.error(error))
+                relay?.accept(.failure(error))
             }
         }
     }
