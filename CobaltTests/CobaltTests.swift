@@ -13,7 +13,6 @@ import RxSwift
 import RxCocoa
 @testable import Cobalt
 
-
 class CobaltTests: XCTestCase {
     lazy var disposeBag = DisposeBag()
     lazy var config = Config {
@@ -21,7 +20,6 @@ class CobaltTests: XCTestCase {
         $0.clientSecret = "secret"
         $0.clientAuthorization = .requestBody
         $0.host = "https://reqres.in"
-        $0.logger = TestLogger()
     }
     lazy var client = Cobalt.Client(config: self.config)
 

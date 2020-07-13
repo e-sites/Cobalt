@@ -27,7 +27,6 @@
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
 		C37900292181DD1F00926793 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900182181DD1F00926793 /* AccessToken.swift */; };
 		C379002A2181DD1F00926793 /* AuthenticationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900192181DD1F00926793 /* AuthenticationProvider.swift */; };
-		C379002B2181DD1F00926793 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001B2181DD1F00926793 /* Logger.swift */; };
 		C379002C2181DD1F00926793 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001D2181DD1F00926793 /* Error.swift */; };
 		C379002D2181DD1F00926793 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001E2181DD1F00926793 /* Config.swift */; };
 		C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379001F2181DD1F00926793 /* RequestQueue.swift */; };
@@ -36,7 +35,7 @@
 		C37900332181E26200926793 /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = C37900322181E26200926793 /* Cobalt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
 		C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
-		C38B33C020F6343F00232170 /* TestLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38B33BF20F6343F00232170 /* TestLogger.swift */; };
+		C37F875824BC7EF8003EFD5B /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = C37F875724BC7EF8003EFD5B /* Logging */; };
 		C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B5C5D022A16796004331A9 /* LoggingOption.swift */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
@@ -76,7 +75,6 @@
 		C37900322181E26200926793 /* Cobalt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cobalt.h; sourceTree = "<group>"; };
 		C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Requests.swift"; sourceTree = "<group>"; };
 		C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Authentication.swift"; sourceTree = "<group>"; };
-		C38B33BF20F6343F00232170 /* TestLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLogger.swift; sourceTree = "<group>"; };
 		C3B5C5D022A16796004331A9 /* LoggingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingOption.swift; sourceTree = "<group>"; };
 		DFDA21F41D6741AD00683D7D /* Cobalt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cobalt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobaltTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37F875824BC7EF8003EFD5B /* Logging in Frameworks */,
 				C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */,
 				C3439A652344A84100817084 /* Alamofire in Frameworks */,
 				C321494724A08BDC000816AC /* RxCocoa in Frameworks */,
@@ -204,7 +203,6 @@
 		DFDA22021D6741AE00683D7D /* CobaltTests */ = {
 			isa = PBXGroup;
 			children = (
-				C38B33BF20F6343F00232170 /* TestLogger.swift */,
 				DFDA22031D6741AE00683D7D /* CobaltTests.swift */,
 				C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */,
 				C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */,
@@ -261,6 +259,7 @@
 				C3439A702344A88A00817084 /* KeychainAccess */,
 				C321494424A08BDC000816AC /* RxSwift */,
 				C321494624A08BDC000816AC /* RxCocoa */,
+				C37F875724BC7EF8003EFD5B /* Logging */,
 			);
 			productName = APIBaseClient;
 			productReference = DFDA21F41D6741AD00683D7D /* Cobalt.framework */;
@@ -323,6 +322,7 @@
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */,
 				C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */,
+				C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */,
 			);
 			productRefGroup = DFDA21F51D6741AD00683D7D /* Products */;
 			projectDirPath = "";
@@ -374,7 +374,6 @@
 				C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */,
 				C379002D2181DD1F00926793 /* Config.swift in Sources */,
 				C379002C2181DD1F00926793 /* Error.swift in Sources */,
-				C379002B2181DD1F00926793 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,7 +386,6 @@
 				C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */,
 				DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */,
 				C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */,
-				C38B33C020F6343F00232170 /* TestLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,6 +663,14 @@
 				kind = branch;
 			};
 		};
+		C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -697,6 +703,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */;
 			productName = Nimble;
+		};
+		C37F875724BC7EF8003EFD5B /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

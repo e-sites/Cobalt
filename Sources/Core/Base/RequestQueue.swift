@@ -31,7 +31,7 @@ class RequestQueue {
         }
         _map[request] = PublishRelay<Swift.Result<JSON, Swift.Error>>()
         requests.append(request)
-        apiClient.logger?.verbose("Added to queue [\(count)]: \(request)")
+        apiClient.logger?.notice("Added to queue [\(count)]: \(request)")
     }
 
     func removeFirst() {

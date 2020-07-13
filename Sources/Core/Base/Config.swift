@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Logging
 
 public class Config {
     public enum ClientAuthorization: String {
@@ -16,7 +17,7 @@ public class Config {
 
     public var clientID: String?
     public var clientSecret: String?
-    public var logger: Logger?
+    public var logger: Logging.Logger?
     public var host: String?
     public var maskTokens = false
     public var oauthEndpointPath = "/oauth/v2/token"

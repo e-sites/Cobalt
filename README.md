@@ -10,65 +10,23 @@ Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite
 
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 
-[![Platform](https://img.shields.io/cocoapods/p/Cobalt.svg?style=flat)](http://cocoadocs.org/docsets/Cobalt)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svg)](http://cocoadocs.org/docsets/Cobalt)
-[![Accio compatible](https://img.shields.io/badge/Accio-supported-0A7CF5.svg?style=flat)](https://github.com/JamitLabs/Accio)
 [![Travis-ci](https://travis-ci.org/e-sites/Cobalt.svg?branch=master&001)](https://travis-ci.org/e-sites/Cobalt)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-
 
 
 # Installation
 
-## CocoaPods
+##Swift PM
 
-Podfile:
-
-```ruby
-pod 'Cobalt'
-```
-
-And then
-
-```
-pod install
-```
-
-
-## Carthage
-
-Cartfile:
-
-```ruby
-github "e-sites/Cobalt"
-```
-
-And then
-
-```
-carthage update
-```
-
-## SwiftPM
-
-Add the following dependency to your Package.swift:
+**package.swift** dependency:
 
 ```swift
- .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
+.package(url: "https://github.com/e-sites/cobalt.git", from: "7.0.0"),
 ```
 
-## Accio
-
-Add the following dependency to your Package.swift:
+and to your application/library target, add `"Cobalt"` to your `dependencies`, e.g. like this:
 
 ```swift
- .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
-```
-
-And run:
-
-```shell
-accio install
+.target(name: "BestExampleApp", dependencies: ["Cobalt"]),
 ```
 
 # Implementation
@@ -272,25 +230,6 @@ To remove the access_token from its memory and keychain, use:
 ```swift
 func clearAccessToken()
 ```
-
-# Logging
-If you want to use (debug) logging, create a custom logger class which implements `Cobalt.Logger`:
-
-```swift
-public protocol Cobalt.Logger {
-    func verbose(_ items: Any...)
-    func warning(_ items: Any...)
-    func debug(_ items: Any...)
-    func success(_ items: Any...)
-    func error(_ items: Any...)
-    func request(_ items: Any...)
-    func response(_ items: Any...)
-    func info(_ items: Any...)
-    func log(_ items: Any...)
-}
-```
-
-And then use the `Cobalt.Config.logger` property to assign your logged to the `Cobalt` configuration.
 
 # Development
 

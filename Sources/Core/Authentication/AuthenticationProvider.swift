@@ -105,7 +105,7 @@ class AuthenticationProvider {
 
             if !accessTokenObj.isExpired {
                 let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
-                client.logger?.verbose("[?] Access token expires in: \(expiresIn)s")
+                client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
                 return Single<Request>.just(request)
             }

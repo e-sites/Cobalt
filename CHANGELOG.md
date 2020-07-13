@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.0 (13-07-2020)
+- Use swift-log as logging framework
+
 ## v6.0.1 (22-06-2020)
 - Fixed a bug where request would be send twice
 

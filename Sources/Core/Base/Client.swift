@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import SwiftyJSON
 import Alamofire
+import Logging
 
 open class Client: ReactiveCompatible {
 
@@ -165,15 +166,13 @@ open class Client: ReactiveCompatible {
 
         if !request.useHeaders.keys.isEmpty {
             let headersDictionary = dictionaryForLogging(request.useHeaders, options: loggingOptions)
-            logger?.verbose("#\(requestID) Headers: \(headersDictionary ?? [:])")
+            logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
 
         let loggingParameters = dictionaryForLogging(request.parameters,
                                                      options: request.loggingOption?.request)
 
-        logger?.request("#\(requestID) " + request.httpMethod.rawValue,
-                        request.urlString,
-                        loggingParameters?.flatJSONString ?? "")
+        logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
         startRequest(request)
 
         service.currentRequest = request
@@ -195,7 +194,7 @@ open class Client: ReactiveCompatible {
                     let statusCode = response.response?.statusCode ?? 500
                     self?.finishRequest(request, response: response.response)
                     let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                    self?.logger?.verbose("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                    self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                     var json: JSON?
                     if let data = response.data {
                         json = JSON(data)
@@ -224,7 +223,7 @@ open class Client: ReactiveCompatible {
 
     private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
         let dictionary = dictionaryForLogging(json?.dictionaryObject ?? [:], options: request.loggingOption?.response)
-        logger?.response("#\(requestID) " + request.httpMethod.rawValue, request.urlString, dictionary?.flatJSONString ?? "")
+        logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue)  \(request.urlString) \(dictionary?.flatJSONString ?? "")", metadata: [ "tag": "api"])
     }
 
     // MARK: - Login
