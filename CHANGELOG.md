@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.1 (16-07-2020)
+- CocoaPods
+
 ## v7.0.0 (13-07-2020)
 - Use swift-log as logging framework
 
