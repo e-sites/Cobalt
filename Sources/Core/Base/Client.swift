@@ -68,7 +68,7 @@ open class Client: ReactiveCompatible {
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///   - `handler`: The closure to call when the request is finished
-    open func request(_ request: Request, handler: @escaping ((Alamofire.Result<JSON>) -> Void)) {
+    open func request(_ request: Request, handler: @escaping ((Result<JSON, Swift.Error>) -> Void)) {
         self.request(request).subscribe(onSuccess: { json in
             handler(.success(json))
         }, onError: { error in
@@ -164,8 +164,8 @@ open class Client: ReactiveCompatible {
             loggingOptions["Authorization"] = .halfMasked
         }
 
-        if !request.useHeaders.keys.isEmpty {
-            let headersDictionary = dictionaryForLogging(request.useHeaders, options: loggingOptions)
+        if !request.useHeaders.isEmpty {
+            let headersDictionary = dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
 
@@ -184,7 +184,7 @@ open class Client: ReactiveCompatible {
         }
 
         return Single<JSON>.create { [weak self] observer in
-            Alamofire.request(request.urlString,
+            AF.request(request.urlString,
                               method: request.httpMethod,
                               parameters: request.parameters,
                               encoding: request.useEncoding,

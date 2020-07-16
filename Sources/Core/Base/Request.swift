@@ -25,7 +25,7 @@ public class Request {
     public var parametersLoggingOptions: [String: Any]?
 
     var useEncoding: ParameterEncoding = URLEncoding.default
-    var useHeaders: HTTPHeaders = [:]
+    var useHeaders: HTTPHeaders = HTTPHeaders()
     internal(set) public var urlString: String = ""
 
     public init() {

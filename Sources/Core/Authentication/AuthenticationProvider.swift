@@ -28,7 +28,9 @@ class AuthenticationProvider {
     /// - Returns: `Promise<Request>`
     func authorize(request: Request) throws -> Single<Request> {
         // Define headers
-        request.useHeaders = request.headers ?? [:]
+        if let headers = request.headers {
+            request.useHeaders = headers
+        }
 
         // Regular client_id / client_secret
         guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {

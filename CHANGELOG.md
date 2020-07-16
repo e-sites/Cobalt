@@ -2,6 +2,7 @@
 
 ## v7.0.2 (16-07-2020)
 - Minimum requirement: 10.0
+- Updated Alamofire to v5
 
 ## v7.0.1 (16-07-2020)
 - CocoaPods
