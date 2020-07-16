@@ -1,13 +1,13 @@
 Pod::Spec.new do |s|
   s.name         = "Cobalt"
-  s.version      = "7.0.1"
+  s.version      = "7.0.2"
   s.author       = { "Bas van Kuijck" => "bas@e-sites.nl" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.homepage     = "http://www.e-sites.nl"
   s.summary      = "_THE_ E-sites Swift iOS API Client used for standard restful API's with default support for OAuth2."
   s.source       = { :git => "https://github.com/e-sites/Cobalt.git", :tag => "v#{s.version}" }
   s.source_files = "Sources/*.h"
-  s.platform     = :ios, '9.0'
+  s.platform     = :ios, '10.0'
   s.requires_arc  = true
   s.swift_versions = [ '5.0', '5.1', '5.2' ]
 

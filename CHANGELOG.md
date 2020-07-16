@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.2 (16-07-2020)
+- Minimum requirement: 10.0
+
 ## v7.0.1 (16-07-2020)
 - CocoaPods
 
