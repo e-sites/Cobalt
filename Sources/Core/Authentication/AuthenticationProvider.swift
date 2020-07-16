@@ -106,13 +106,19 @@ class AuthenticationProvider {
             let accessToken = accessTokenObj.accessToken {
 
             if !accessTokenObj.isExpired {
-                let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
-                client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
+                if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+                } else {
+                    let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
+                    client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
+                }
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
                 return Single<Request>.just(request)
             }
 
-            client.logger?.warning("Access-token expired, refreshing ...")
+            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+            } else {
+                client.logger?.warning("Access-token expired, refreshing ...")
+            }
             if grantType == .password, let refreshToken = accessTokenObj.refreshToken {
                 grantType = .refreshToken
                 parameters["refresh_token"] = refreshToken
@@ -218,7 +224,11 @@ class AuthenticationProvider {
             grantType != .refreshToken {
 
             let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
-            client.logger?.warning("Access-token expired; invalidating access-token")
+            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+            } else {
+                client.logger?.warning("Access-token expired; invalidating access-token")
+            }
+
             accessToken.invalidate()
             return client.request(request)
         }

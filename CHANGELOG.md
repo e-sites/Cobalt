@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.4 (16-07-2020)
+- LoggingOption "*" ignore available
+
 ## v7.0.2 (16-07-2020)
 - Minimum requirement: 10.0
 - Updated Alamofire to v5

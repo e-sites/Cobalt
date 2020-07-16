@@ -164,22 +164,40 @@ open class Client: ReactiveCompatible {
             loggingOptions["Authorization"] = .halfMasked
         }
 
-        if !request.useHeaders.isEmpty {
+        let ignoreLoggingRequest: Bool
+        if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+            ignoreLoggingRequest = true
+        } else {
+            ignoreLoggingRequest = false
+        }
+
+        let ignoreLoggingResponse: Bool
+        if let logRes = request.loggingOption?.response?["*"], case KeyLoggingOption.ignore = logRes {
+            ignoreLoggingResponse = true
+        } else {
+            ignoreLoggingResponse = false
+        }
+
+        if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
             let headersDictionary = dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
 
-        let loggingParameters = dictionaryForLogging(request.parameters,
-                                                     options: request.loggingOption?.request)
+        if !ignoreLoggingRequest {
+            let loggingParameters = dictionaryForLogging(request.parameters,
+                                                         options: request.loggingOption?.request)
 
-        logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+        }
         startRequest(request)
 
         service.currentRequest = request
 
         // Check to see if the cache engine should handle it
         if !service.shouldPerformRequestAfterCacheCheck(), let json = service.json {
-            _responseParsing(json: json, request: request, requestID: requestID)
+            if !ignoreLoggingResponse {
+                _responseParsing(json: json, request: request, requestID: requestID)
+            }
             return Single<JSON>.just(json)
         }
 
@@ -194,19 +212,26 @@ open class Client: ReactiveCompatible {
                     let statusCode = response.response?.statusCode ?? 500
                     self?.finishRequest(request, response: response.response)
                     let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                    self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                    if !ignoreLoggingResponse {
+                        self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                    }
+
                     var json: JSON?
                     if let data = response.data {
                         json = JSON(data)
                         self?.service.json = json
                         self?.service.optionallyWriteToCache()
-                        self?._responseParsing(json: json, request: request, requestID: requestID)
+                        if !ignoreLoggingResponse {
+                            self?._responseParsing(json: json, request: request, requestID: requestID)
+                        }
                     }
 
                     if let error = response.error {
-                        self?.logger?.error("#\(requestID) Original: \(error)")
                         let apiError = Error(from: error, json: json)
-                        self?.logger?.error("#\(requestID) Error: \(apiError)")
+                        if !ignoreLoggingResponse {
+                            self?.logger?.error("#\(requestID) Original: \(error)")
+                            self?.logger?.error("#\(requestID) Error: \(apiError)")
+                        }
                         observer(.error(apiError))
                         return
                     }

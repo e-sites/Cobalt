@@ -8,6 +8,7 @@
 
 import XCTest
 import Nimble
+import Logging
 import Alamofire
 import RxSwift
 import RxCocoa
@@ -18,6 +19,8 @@ class CobaltTests: XCTestCase {
     lazy var config = Config {
         $0.clientID = "id"
         $0.clientSecret = "secret"
+        $0.logger = Logger(label: "com.esites.cobalt-test")
+        $0.logger?.logLevel = .trace
         $0.clientAuthorization = .requestBody
         $0.host = "https://reqres.in"
     }
