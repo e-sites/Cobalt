@@ -8,10 +8,9 @@
 
 import XCTest
 import Nimble
-import RxSwift
-import RxCocoa
 import Alamofire
 import Foundation
+import Combine
 @testable import Cobalt
 
 class CobaltTestsRequests: CobaltTests {
@@ -25,16 +24,17 @@ class CobaltTestsRequests: CobaltTests {
                 ]
             }
 
-            self.client.request(request).subscribe { event in
+            self.client.request(request).sink(receiveCompletion: { event in
                 switch event {
-                case .success(let json):
-                    expect(json["data"].arrayValue.count) == 10
-
-                case .error(let error):
+                case .finished:
+                    break
+                case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
                 done()
-            }.disposed(by: self.disposeBag)
+            }, receiveValue: { json in
+                expect(json["data"].arrayValue.count) == 10
+            }).store(in: &self.cancellables)
         }
     }
 
@@ -44,29 +44,26 @@ class CobaltTestsRequests: CobaltTests {
                 $0.path = "/some_strange_request"
             }
 
-            self.client.request(request).subscribe { event in
+            self.client.request(request).sink(receiveCompletion: { event in
                 switch event {
-                case .success:
+                case .finished:
                     XCTAssert(false, "Should not get here")
 
-                case .error(let error):
-                    if !(error is Cobalt.Error) {
-                        XCTAssert(false, "Expect to be a Error, got: \(error)")
-                        return
-                    }
-                    let apiError = error as! Cobalt.Error
-                    if let underlyingError = apiError.underlyingError {
+                case .failure(let error):
+                    if let underlyingError = error.underlyingError {
                         if !(underlyingError is AFError) {
                             XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
                             return
                         }
                         expect((underlyingError as! AFError).responseCode) == 404
                     } else {
-                        XCTAssert(false, "Expect to have error 404, got \(apiError)")
+                        XCTAssert(false, "Expect to have error 404, got \(error)")
                     }
                 }
                 done()
-            }.disposed(by: self.disposeBag)
+            }, receiveValue: { _ in
+                XCTAssert(false, "Should not get here")
+            }).store(in: &self.cancellables)
         }
     }
 }

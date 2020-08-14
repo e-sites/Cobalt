@@ -7,15 +7,13 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
-import Alamofire
+import Combine
 import SwiftyJSON
 
 class RequestQueue {
     private weak var apiClient: Client!
     private(set) var requests: [Request] = []
-    private var _map: [Request: PublishRelay<Swift.Result<JSON, Swift.Error>>] = [:]
+    private var _map: [Request: PassthroughSubject<JSON, Error>] = [:]
 
     var count: Int {
         return requests.count
@@ -29,7 +27,7 @@ class RequestQueue {
         if requests.contains(request) {
             return
         }
-        _map[request] = PublishRelay<Swift.Result<JSON, Swift.Error>>()
+        _map[request] = PassthroughSubject<JSON, Error>()
         requests.append(request)
         apiClient.logger?.notice("Added to queue [\(count)]: \(request)")
     }
@@ -53,31 +51,27 @@ class RequestQueue {
         requests.removeAll()
     }
 
-    func single(of request: Request) -> Single<JSON>? {
-        return _map[request]?.map { result throws -> JSON in
-            switch result {
-            case .success(let json):
-                return json
-            case .failure(let error):
-                throw error
-            }
-        }.take(1).asSingle()
+    func publisher(of request: Request) -> AnyPublisher<JSON, Error>? {
+        return _map[request]?.eraseToAnyPublisher()
     }
 
     func handle(request: Request) {
-        let relay = _map[request]
+        let subject = _map[request]
         removeFirst()
-        if relay == nil {
+        if subject == nil {
             return
         }
         
-        apiClient.request(request) { result in
-            switch result {
-            case .success(let json):
-                relay?.accept(.success(json))
+        apiClient.request(request).sink(receiveCompletion: { event in
+            switch event {
+            case .finished:
+                subject?.send(completion: .finished)
+                
             case .failure(let error):
-                relay?.accept(.failure(error))
+                subject?.send(completion: .failure(error))
             }
-        }
+        }, receiveValue: { json in
+            subject?.send(json)
+        }).store(in: &apiClient.cancellables)
     }
 }

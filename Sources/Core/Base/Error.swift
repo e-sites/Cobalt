@@ -7,9 +7,8 @@
 //
 
 import Foundation
-import Alamofire
 import SwiftyJSON
-
+import Combine
 
 public class Error: Swift.Error {
 
@@ -74,8 +73,8 @@ public class Error: Swift.Error {
     }
 
     init(from error: Swift.Error, json: JSON? = nil) {
-        if error is Error {
-            _clone(from: error as! Error)
+        if let cobaltError = error as? Error {
+            _clone(from: cobaltError)
             return
         } else if let json = json, json != .null {
             switch json["error"].stringValue {
@@ -132,5 +131,11 @@ extension Error: Equatable {
 
     public static func == (lhs: Swift.Error, rhs: Error) -> Bool {
         return rhs == lhs
+    }
+}
+
+extension Error {
+    func asPublisher<T>(outputType: T.Type) -> AnyPublisher<T, Error> {
+        return Fail<T, Error>(error: self).eraseToAnyPublisher()
     }
 }

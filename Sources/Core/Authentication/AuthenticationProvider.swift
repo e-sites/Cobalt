@@ -8,9 +8,8 @@
 
 import Foundation
 import Alamofire
-import RxCocoa
-import RxSwift
 import SwiftyJSON
+import Combine
 
 class AuthenticationProvider {
     private weak var client: Client!
@@ -26,7 +25,7 @@ class AuthenticationProvider {
     ///   - request: `Request`
     ///
     /// - Returns: `Promise<Request>`
-    func authorize(request: Request) throws -> Single<Request> {
+    func authorize(request: Request) -> AnyPublisher<Request, Error> {
         // Define headers
         if let headers = request.headers {
             request.useHeaders = headers
@@ -34,9 +33,8 @@ class AuthenticationProvider {
 
         // Regular client_id / client_secret
         guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
-            throw Error.missingClientAuthentication
+            return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
         }
-
 
         // How should the request be authorized?
         switch request.authentication {
@@ -45,7 +43,7 @@ class AuthenticationProvider {
             case .basicHeader:
                 // Just add an `Authorization` header
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
-                    throw Error.missingClientAuthentication
+                    return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
                 }
                 request.useHeaders["Authorization"] = "Basic \(base64)"
 
@@ -82,13 +80,13 @@ class AuthenticationProvider {
         // If the client requires an OAuth2 authorization;
         // continue to `_authorizeOAuth(request:, grantType:)`
         case .oauth2(let grantType):
-            return try _authorizeOAuth(request: request, grantType: grantType)
+            return _authorizeOAuth(request: request, grantType: grantType)
 
         default:
             break
         }
 
-        return Single<Request>.just(request)
+        return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 
     /// Here we're going to do either of the following:
@@ -97,7 +95,7 @@ class AuthenticationProvider {
     /// 2. If the user has an expired `password` access-token, refresh it
     /// 3. If you need a `client_credentials` grantType and the access-token is expired. Create a new one
     private func _authorizeOAuth(request: Request,
-                                 grantType: OAuthenticationGrantType) throws -> Single<Request> {
+                                 grantType: OAuthenticationGrantType) -> AnyPublisher<Request, Error> {
         var parameters: Parameters = [:]
         var grantType = grantType
 
@@ -112,7 +110,7 @@ class AuthenticationProvider {
                     client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 }
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
-                return Single<Request>.just(request)
+                return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
 
             if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
@@ -126,19 +124,19 @@ class AuthenticationProvider {
         }
 
         if grantType == .password {
-            throw Error.missingClientAuthentication
+            return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
         }
 
         return sendOAuthRequest(grantType: grantType, parameters: parameters)
-            .flatMap { [weak self] _ -> Single<Request> in
+            .flatMap { [weak self] _ -> AnyPublisher<Request, Error> in
                 guard let self = self else {
-                    return Single<Request>.never()
+                    return Empty(completeImmediately: false, outputType: Request.self, failureType: Error.self).eraseToAnyPublisher()
                 }
-                return try self._authorizeOAuth(request: request, grantType: grantType)
-            }
+                return self._authorizeOAuth(request: request, grantType: grantType)
+            }.eraseToAnyPublisher()
     }
 
-    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> Single<Void> {
+    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, Error> {
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
@@ -161,31 +159,32 @@ class AuthenticationProvider {
 
         isAuthenticating = true
 
-        return client.request(request).flatMap { [weak self, client] json in
+        return client.request(request).tryMap { [weak self, client] json -> Void in
             let accessToken = try json.map(to: AccessToken.self)
             accessToken.host = (request.host ?? client?.config.host) ?? ""
             accessToken.grantType = grantType
             accessToken.store()
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
-            client?.authorizationGrantTypeSubject.onNext(accessToken.grantType)
+            client?.authorizationGrantTypeSubject.send(accessToken.grantType)
             self?.isAuthenticating = false
-            return Single<Void>.just(())
-
-        }.catchError { [weak self, client] error -> Single<Void> in
+            return ()
+        }.tryCatch { [weak self, client] error -> AnyPublisher<Void, Error> in
             defer {
                 self?.isAuthenticating = false
             }
             guard error == Error.invalidGrant, grantType == .refreshToken else {
                 throw error
             }
-
+            
             // If the server responds with 'invalid_grant' for a refresh_token granType
             // then the refresh-token is invalid and therefor the access-token is too.
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
             client?.clearAccessToken()
             throw Error.refreshTokenInvalidated
-        }
+        }.mapError { error in
+            return Error(from: error)
+        }.eraseToAnyPublisher()
     }
     
     ///
@@ -209,13 +208,13 @@ class AuthenticationProvider {
         accessTokenObject.store()
         
         client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
-        client.authorizationGrantTypeSubject.onNext(grantType)
+        client.authorizationGrantTypeSubject.send(grantType)
     }
 
     // MARK: - Recover
     // --------------------------------------------------------
 
-    func recover(from error: Swift.Error, request: Request) throws -> Single<JSON> {
+    func recover(from error: Swift.Error, request: Request) -> AnyPublisher<JSON, Error> {
         // If we receive an 'invalid_grant' error and we tried to do a refresh_token authentication
         // The access-token and underlying refresh-token is invalid
         // So we can revoke the access-token
@@ -232,6 +231,6 @@ class AuthenticationProvider {
             accessToken.invalidate()
             return client.request(request)
         }
-        throw error
+        return Fail(error: Error(from: error)).eraseToAnyPublisher()
     }
 }

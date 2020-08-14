@@ -7,21 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C316AF9D230FF0390036E295 /* CobaltTests-Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */; };
 		C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD2230FC49F004865D2 /* Request+Cache.swift */; };
 		C316AF9F230FF03C0036E295 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD4230FC4B0004865D2 /* CachePolicy.swift */; };
 		C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427ADA230FC834004865D2 /* ClientService+Cache.swift */; };
 		C316AFA1230FF03C0036E295 /* Client+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE8230FD444004865D2 /* Client+Cache.swift */; };
 		C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
 		C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AFA4230FF5250036E295 /* String+Extension.swift */; };
-		C321494524A08BDC000816AC /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C321494424A08BDC000816AC /* RxSwift */; };
-		C321494724A08BDC000816AC /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = C321494624A08BDC000816AC /* RxCocoa */; };
 		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
-		C3439A652344A84100817084 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A642344A84100817084 /* Alamofire */; };
 		C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A672344A84D00817084 /* SwiftyJSON */; };
 		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
-		C3439A742344A8DF00817084 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A732344A8DF00817084 /* Nimble */; };
-		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
 		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
@@ -33,9 +27,13 @@
 		C379002F2181DD1F00926793 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900202181DD1F00926793 /* Client.swift */; };
 		C37900302181DD1F00926793 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900212181DD1F00926793 /* Request.swift */; };
 		C37900332181E26200926793 /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = C37900322181E26200926793 /* Cobalt.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
-		C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
 		C37F875824BC7EF8003EFD5B /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = C37F875724BC7EF8003EFD5B /* Logging */; };
+		C387776E24E68BDF00FAD2D8 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C387776D24E68BDF00FAD2D8 /* Nimble */; };
+		C387776F24E68BEF00FAD2D8 /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
+		C387777024E68D9800FAD2D8 /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
+		C387777124E68DB000FAD2D8 /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
+		C387777224E6905B00FAD2D8 /* CobaltTests-Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */; };
+		C387777524E6971100FAD2D8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C387777424E6971100FAD2D8 /* Alamofire */; };
 		C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B5C5D022A16796004331A9 /* LoggingOption.swift */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
@@ -66,7 +64,6 @@
 		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		C37900182181DD1F00926793 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
 		C37900192181DD1F00926793 /* AuthenticationProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationProvider.swift; sourceTree = "<group>"; };
-		C379001B2181DD1F00926793 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		C379001D2181DD1F00926793 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		C379001E2181DD1F00926793 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		C379001F2181DD1F00926793 /* RequestQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestQueue.swift; sourceTree = "<group>"; };
@@ -89,10 +86,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C37F875824BC7EF8003EFD5B /* Logging in Frameworks */,
+				C387777524E6971100FAD2D8 /* Alamofire in Frameworks */,
 				C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */,
-				C3439A652344A84100817084 /* Alamofire in Frameworks */,
-				C321494724A08BDC000816AC /* RxCocoa in Frameworks */,
-				C321494524A08BDC000816AC /* RxSwift in Frameworks */,
 				C3439A712344A88A00817084 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -102,7 +97,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */,
-				C3439A742344A8DF00817084 /* Nimble in Frameworks */,
+				C387776E24E68BDF00FAD2D8 /* Nimble in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,7 +157,6 @@
 		C379001A2181DD1F00926793 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
-				C379001B2181DD1F00926793 /* Logger.swift */,
 				C3B5C5D022A16796004331A9 /* LoggingOption.swift */,
 			);
 			path = Logging;
@@ -254,12 +248,10 @@
 			);
 			name = Cobalt;
 			packageProductDependencies = (
-				C3439A642344A84100817084 /* Alamofire */,
 				C3439A672344A84D00817084 /* SwiftyJSON */,
 				C3439A702344A88A00817084 /* KeychainAccess */,
-				C321494424A08BDC000816AC /* RxSwift */,
-				C321494624A08BDC000816AC /* RxCocoa */,
 				C37F875724BC7EF8003EFD5B /* Logging */,
+				C387777424E6971100FAD2D8 /* Alamofire */,
 			);
 			productName = APIBaseClient;
 			productReference = DFDA21F41D6741AD00683D7D /* Cobalt.framework */;
@@ -280,7 +272,7 @@
 			);
 			name = CobaltTests;
 			packageProductDependencies = (
-				C3439A732344A8DF00817084 /* Nimble */,
+				C387776D24E68BDF00FAD2D8 /* Nimble */,
 			);
 			productName = APIBaseClientTests;
 			productReference = DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */;
@@ -317,12 +309,11 @@
 			);
 			mainGroup = DFDA21EA1D6741AD00683D7D;
 			packageReferences = (
-				C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */,
-				C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */,
 				C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */,
+				C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */,
+				C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = DFDA21F51D6741AD00683D7D /* Products */;
 			projectDirPath = "";
@@ -381,11 +372,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C37A6B8A20F75BA400A4034E /* CobaltTests-Authentication.swift in Sources */,
-				C316AF9D230FF0390036E295 /* CobaltTests-Cache.swift in Sources */,
-				C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */,
+				C387777124E68DB000FAD2D8 /* CobaltTests-Logging.swift in Sources */,
+				C387777024E68D9800FAD2D8 /* CobaltTests-Authentication.swift in Sources */,
+				C387776F24E68BEF00FAD2D8 /* CobaltTests-Requests.swift in Sources */,
+				C387777224E6905B00FAD2D8 /* CobaltTests-Cache.swift in Sources */,
 				DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */,
-				C37A6B8820F75B7700A4034E /* CobaltTests-Requests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,7 +438,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -500,7 +491,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -623,22 +614,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
-		C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.1;
-			};
-		};
 		C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
@@ -655,14 +630,6 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Quick/Nimble.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log.git";
@@ -671,24 +638,25 @@
 				minimumVersion = 1.3.0;
 			};
 		};
+		C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mRs-/Nimble.git";
+			requirement = {
+				branch = Swift5.3;
+				kind = branch;
+			};
+		};
+		C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C321494424A08BDC000816AC /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
-		};
-		C321494624A08BDC000816AC /* RxCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		C3439A642344A84100817084 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
 		C3439A672344A84D00817084 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
@@ -699,15 +667,20 @@
 			package = C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
 		};
-		C3439A732344A8DF00817084 /* Nimble */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */;
-			productName = Nimble;
-		};
 		C37F875724BC7EF8003EFD5B /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		C387776D24E68BDF00FAD2D8 /* Nimble */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */;
+			productName = Nimble;
+		};
+		C387777424E6971100FAD2D8 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

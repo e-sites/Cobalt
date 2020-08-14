@@ -7,13 +7,12 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
 import SwiftyJSON
 import Alamofire
 import Logging
+import Combine
 
-open class Client: ReactiveCompatible {
+open class Client {
 
     // MARK: - Variables
     // --------------------------------------------------------
@@ -26,17 +25,9 @@ open class Client: ReactiveCompatible {
 
     fileprivate lazy var queue = RequestQueue(client: self)
 
-    var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
+    public var authorizationGrantTypeSubject = CurrentValueSubject<OAuthenticationGrantType?, Never>(nil)
 
-    private let disposeBag = DisposeBag()
-
-    var authorizationGrantType: OAuthenticationGrantType? {
-        do {
-            return try authorizationGrantTypeSubject.value()
-        } catch {
-            return nil
-        }
-    }
+    var cancellables = Set<AnyCancellable>()
 
     public var accessToken: AccessToken? {
         guard let host = config.host else {
@@ -62,30 +53,17 @@ open class Client: ReactiveCompatible {
 
     // MARK: - Request functions
     // --------------------------------------------------------
-
-    /// Make a request using a 'simple' `Result` handler closure
-    ///
-    /// - Parameters:
-    ///   - `request`: The `Request` object
-    ///   - `handler`: The closure to call when the request is finished
-    open func request(_ request: Request, handler: @escaping ((Result<JSON, Swift.Error>) -> Void)) {
-        self.request(request).subscribe(onSuccess: { json in
-            handler(.success(json))
-        }, onError: { error in
-            handler(.failure(error))
-        }).disposed(by: disposeBag)
-    }
-
-    /// Make a promise requst
+    
+    /// Make a combine request
     ///
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///
     /// - Returns: `Promise<JSON>`
-    open func request(_ request: Request) -> Single<JSON> {
+    open func request(_ request: Request) -> AnyPublisher<JSON, Error> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
-            return Single<JSON>.error(Error.invalidRequest("Missing 'host'"))
+            return Error.invalidRequest("Missing 'host'").asPublisher(outputType: JSON.self)
         }
 
         // If the client is authenticating with OAuth.
@@ -93,7 +71,11 @@ open class Client: ReactiveCompatible {
         // So we add it to the `RequestQueue`
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
-            return queue.single(of: request) ?? Single<JSON>.error(Error.unknown())
+            guard let publisher = queue.publisher(of: request) else {
+                return Error.unknown().asPublisher(outputType: JSON.self)
+            }
+            
+            return publisher
         }
         
         if host.hasSuffix("/") {
@@ -119,30 +101,29 @@ open class Client: ReactiveCompatible {
         request.urlString = urlString
         
         // 1. We (optionally) (pre-)authorize the request
-        return Single<Void>.just(()).flatMap { [authProvider] in 
-            return try authProvider.authorize(request: request)
-
+        return authProvider.authorize(request: request)
+            
         // 2. We actually send the request with Alamofire
-        }.flatMap { [weak self] newRequest in
+        .flatMap { [weak self] newRequest -> AnyPublisher<JSON, Error> in
             guard let self = self else {
-                return Single<JSON>.never()
+                return Empty(completeImmediately: false, outputType: JSON.self, failureType: Error.self).eraseToAnyPublisher()
             }
             return self._request(newRequest)
-
+            
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catchError { [weak self, authProvider] error -> Single<JSON> in
+        }.catch { [weak self, authProvider] error -> AnyPublisher<JSON, Error> in
             self?.queue.removeFirst()
-            return try authProvider.recover(from: error, request: request)
-
+            return authProvider.recover(from: error, request: request)
+        
         // 4. If any other requests are queued, fire up the next one
-        }.flatMap { [queue] json -> Single<JSON> in
+        }.flatMap { [queue] json -> AnyPublisher<JSON, Error> in
             // When a request is finished, no matter if its succesful or not
             // We try to clear th queue
             if request.requiresOAuthentication {
                 queue.next()
             }
-            return Single.just(json)
-        }
+            return Just(json).setFailureType(to: Error.self).eraseToAnyPublisher()
+        }.eraseToAnyPublisher()
     }
 
     open func startRequest(_ request: Request) {
@@ -153,7 +134,7 @@ open class Client: ReactiveCompatible {
 
     }
 
-    private func _request(_ request: Request) -> Single<JSON> {
+    private func _request(_ request: Request) -> AnyPublisher<JSON, Error> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
@@ -198,52 +179,53 @@ open class Client: ReactiveCompatible {
             if !ignoreLoggingResponse {
                 _responseParsing(json: json, request: request, requestID: requestID)
             }
-            return Single<JSON>.just(json)
+            return Just(json).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
 
-        return Single<JSON>.create { [weak self] observer in
-            AF.request(request.urlString,
-                              method: request.httpMethod,
-                              parameters: request.parameters,
-                              encoding: request.useEncoding,
-                              headers: request.useHeaders)
-                .validate()
-                .responseJSON { response in
-                    let statusCode = response.response?.statusCode ?? 500
-                    self?.finishRequest(request, response: response.response)
-                    let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                    if !ignoreLoggingResponse {
-                        self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
-                    }
-
-                    var json: JSON?
-                    if let data = response.data {
-                        json = JSON(data)
-                        self?.service.json = json
-                        self?.service.optionallyWriteToCache()
+        return Deferred { [weak self] in
+            Future { promise in
+                AF.request(request.urlString,
+                                  method: request.httpMethod,
+                                  parameters: request.parameters,
+                                  encoding: request.useEncoding,
+                                  headers: request.useHeaders)
+                    .validate()
+                    .responseJSON { response in
+                        let statusCode = response.response?.statusCode ?? 500
+                        self?.finishRequest(request, response: response.response)
+                        let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                         if !ignoreLoggingResponse {
-                            self?._responseParsing(json: json, request: request, requestID: requestID)
+                            self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                         }
-                    }
 
-                    if let error = response.error {
-                        let apiError = Error(from: error, json: json)
-                        if !ignoreLoggingResponse {
-                            self?.logger?.error("#\(requestID) Original: \(error)")
-                            self?.logger?.error("#\(requestID) Error: \(apiError)")
+                        var json: JSON?
+                        if let data = response.data {
+                            json = JSON(data)
+                            self?.service.json = json
+                            self?.service.optionallyWriteToCache()
+                            if !ignoreLoggingResponse {
+                                self?._responseParsing(json: json, request: request, requestID: requestID)
+                            }
                         }
-                        observer(.error(apiError))
-                        return
-                    }
 
-                    guard let responseJSON = json else {
-                        observer(.error(Error.empty))
-                        return
-                    }
-                    observer(.success(responseJSON))
+                        if let error = response.error {
+                            let apiError = Error(from: error, json: json)
+                            if !ignoreLoggingResponse {
+                                self?.logger?.error("#\(requestID) Original: \(error)")
+                                self?.logger?.error("#\(requestID) Error: \(apiError)")
+                            }
+                            promise(.failure(apiError))
+                            return
+                        }
+
+                        guard let responseJSON = json else {
+                            promise(.failure(Error.empty))
+                            return
+                        }
+                        promise(.success(responseJSON))
+                }
             }
-            return Disposables.create()
-        }
+        }.eraseToAnyPublisher()
     }
 
     private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
@@ -254,7 +236,7 @@ open class Client: ReactiveCompatible {
     // MARK: - Login
     // --------------------------------------------------------
 
-    open func login(username: String, password: String) -> Single<Void> {
+    open func login(username: String, password: String) -> AnyPublisher<Void, Error> {
         let parameters = [
             "username": username,
             "password": password
@@ -284,7 +266,7 @@ open class Client: ReactiveCompatible {
     }
 
     public func clearAccessToken(forHost host: String? = nil) {
-        authorizationGrantTypeSubject.onNext(nil)
+        authorizationGrantTypeSubject.send(nil)
         guard let host = (host ?? config.host) else {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
@@ -360,11 +342,5 @@ extension Client {
         default:
             return value
         }
-    }
-}
-
-extension Reactive where Base: Client {
-    public var authorizationGrantType: Observable<OAuthenticationGrantType?> {
-        return base.authorizationGrantTypeSubject.distinctUntilChanged().asObservable()
     }
 }

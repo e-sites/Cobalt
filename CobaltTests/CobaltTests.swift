@@ -10,12 +10,11 @@ import XCTest
 import Nimble
 import Logging
 import Alamofire
-import RxSwift
-import RxCocoa
+import Combine
 @testable import Cobalt
 
 class CobaltTests: XCTestCase {
-    lazy var disposeBag = DisposeBag()
+    var cancellables = Set<AnyCancellable>()
     lazy var config = Config {
         $0.clientID = "id"
         $0.clientSecret = "secret"
