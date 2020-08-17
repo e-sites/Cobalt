@@ -32,16 +32,17 @@ class AuthenticationProvider {
             request.useHeaders = headers
         }
 
-        // Regular client_id / client_secret
-        guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
-            throw Error.missingClientAuthentication
-        }
-
-
         // How should the request be authorized?
         switch request.authentication {
         case .client:
+            // Regular client_id / client_secret
+            guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
+                throw Error.missingClientAuthentication
+            }
+
             switch client.config.clientAuthorization {
+            case .none:
+                break
             case .basicHeader:
                 // Just add an `Authorization` header
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
