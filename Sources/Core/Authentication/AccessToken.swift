@@ -116,7 +116,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         guard let expireDate = self.expireDate else {
             return true
         }
-        return expireDate < Date()
+        return expireDate <= Date()
     }
 
     public required init(from decoder: Decoder) throws {

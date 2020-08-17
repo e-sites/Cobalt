@@ -14,6 +14,7 @@ import Combine
 @testable import Cobalt
 
 class CobaltTestsRequests: CobaltTests {
+    
     func testRequestGET() {
         waitUntil { done in
             let request = Request {

@@ -30,16 +30,18 @@ class AuthenticationProvider {
         if let headers = request.headers {
             request.useHeaders = headers
         }
-
-        // Regular client_id / client_secret
-        guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
-            return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
-        }
-
+        
         // How should the request be authorized?
         switch request.authentication {
         case .client:
+            // Regular client_id / client_secret
+            guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
+                return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
+            }
+
             switch client.config.clientAuthorization {
+            case .none:
+                break
             case .basicHeader:
                 // Just add an `Authorization` header
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
@@ -82,7 +84,7 @@ class AuthenticationProvider {
         case .oauth2(let grantType):
             return _authorizeOAuth(request: request, grantType: grantType)
 
-        default:
+        case .none:
             break
         }
 
@@ -104,8 +106,7 @@ class AuthenticationProvider {
             let accessToken = accessTokenObj.accessToken {
 
             if !accessTokenObj.isExpired {
-                if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
-                } else {
+                if request.loggingOption?.request?.isIgnoreAll != true {
                     let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
                     client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 }
@@ -113,8 +114,7 @@ class AuthenticationProvider {
                 return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
 
-            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
-            } else {
+            if request.loggingOption?.request?.isIgnoreAll != true {
                 client.logger?.warning("Access-token expired, refreshing ...")
             }
             if grantType == .password, let refreshToken = accessTokenObj.refreshToken {
@@ -154,7 +154,6 @@ class AuthenticationProvider {
                 "access_token": client.config.maskTokens ? .halfMasked : .default,
                 "refresh_token": client.config.maskTokens ? .halfMasked : .default,
             ])
-
         }
 
         isAuthenticating = true
@@ -165,7 +164,7 @@ class AuthenticationProvider {
             accessToken.grantType = grantType
             accessToken.store()
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
-            client?.authorizationGrantTypeSubject.send(accessToken.grantType)
+            client?.authorizationGrantType = accessToken.grantType
             self?.isAuthenticating = false
             return ()
         }.tryCatch { [weak self, client] error -> AnyPublisher<Void, Error> in
@@ -176,7 +175,7 @@ class AuthenticationProvider {
                 throw error
             }
             
-            // If the server responds with 'invalid_grant' for a refresh_token granType
+            // If the server responds with 'invalid_grant' for a refresh_token grantType
             // then the refresh-token is invalid and therefor the access-token is too.
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
@@ -208,7 +207,7 @@ class AuthenticationProvider {
         accessTokenObject.store()
         
         client.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
-        client.authorizationGrantTypeSubject.send(grantType)
+        client.authorizationGrantType = grantType
     }
 
     // MARK: - Recover
@@ -223,8 +222,7 @@ class AuthenticationProvider {
             grantType != .refreshToken {
 
             let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
-            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
-            } else {
+            if request.loggingOption?.request?.isIgnoreAll != true {
                 client.logger?.warning("Access-token expired; invalidating access-token")
             }
 

@@ -25,7 +25,7 @@ open class Client {
 
     fileprivate lazy var queue = RequestQueue(client: self)
 
-    public var authorizationGrantTypeSubject = CurrentValueSubject<OAuthenticationGrantType?, Never>(nil)
+    @Published public var authorizationGrantType: OAuthenticationGrantType?
 
     var cancellables = Set<AnyCancellable>()
 
@@ -111,8 +111,8 @@ open class Client {
             return self._request(newRequest)
             
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [weak self, authProvider] error -> AnyPublisher<JSON, Error> in
-            self?.queue.removeFirst()
+        }.catch { [queue, authProvider] error -> AnyPublisher<JSON, Error> in
+            queue.removeFirst()
             return authProvider.recover(from: error, request: request)
         
         // 4. If any other requests are queued, fire up the next one
@@ -145,19 +145,8 @@ open class Client {
             loggingOptions["Authorization"] = .halfMasked
         }
 
-        let ignoreLoggingRequest: Bool
-        if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
-            ignoreLoggingRequest = true
-        } else {
-            ignoreLoggingRequest = false
-        }
-
-        let ignoreLoggingResponse: Bool
-        if let logRes = request.loggingOption?.response?["*"], case KeyLoggingOption.ignore = logRes {
-            ignoreLoggingResponse = true
-        } else {
-            ignoreLoggingResponse = false
-        }
+        let ignoreLoggingRequest = request.loggingOption?.request?.isIgnoreAll == true
+        let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
 
         if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
             let headersDictionary = dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
@@ -266,7 +255,7 @@ open class Client {
     }
 
     public func clearAccessToken(forHost host: String? = nil) {
-        authorizationGrantTypeSubject.send(nil)
+        authorizationGrantType = nil
         guard let host = (host ?? config.host) else {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }

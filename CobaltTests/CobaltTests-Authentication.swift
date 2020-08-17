@@ -10,6 +10,7 @@
 import XCTest
 import Nimble
 import Alamofire
+import Combine
 import Foundation
 @testable import Cobalt
 

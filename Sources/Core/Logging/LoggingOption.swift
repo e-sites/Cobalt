@@ -26,3 +26,12 @@ public struct LoggingOption {
         self.response = response
     }
 }
+
+extension Dictionary where Key == String, Value == KeyLoggingOption {
+    var isIgnoreAll: Bool {
+        if let logReq = self["*"], case KeyLoggingOption.ignore = logReq {
+            return false
+        }
+        return true
+    }
+}
