@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.6 (18-08-2020)
+- Fixed logging for non dictionary json responses
+
 ## v7.0.5 (17-08-2020)
 - Fixed a bug where an error was thrown when no authentication is required
 
