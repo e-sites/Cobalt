@@ -21,7 +21,7 @@ public class Config {
     public var host: String?
     public var maskTokens = false
     public var oauthEndpointPath = "/oauth/v2/token"
-    public var clientAuthorization: Config.ClientAuthorization?
+    public var clientAuthorization: Config.ClientAuthorization? = .basicHeader
 
     public init(_ builder: ((Config) -> Void)) {
         builder(self)

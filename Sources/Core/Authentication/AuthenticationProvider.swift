@@ -30,7 +30,7 @@ class AuthenticationProvider {
         if let headers = request.headers {
             request.useHeaders = headers
         }
-        
+
         // How should the request be authorized?
         switch request.authentication {
         case .client:

@@ -218,8 +218,16 @@ open class Client {
     }
 
     private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
-        let dictionary = dictionaryForLogging(json?.dictionaryObject ?? [:], options: request.loggingOption?.response)
-        logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue)  \(request.urlString) \(dictionary?.flatJSONString ?? "")", metadata: [ "tag": "api"])
+        var responseString: String?
+        if let dictionaryObject = json?.dictionaryObject {
+            let dictionary = dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
+            responseString = dictionary?.flatJSONString
+            
+        } else {
+            responseString = json?.flatString
+        }
+        
+        logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue)  \(request.urlString) \(responseString ?? "")", metadata: [ "tag": "api"])
     }
 
     // MARK: - Login
