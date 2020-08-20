@@ -156,7 +156,7 @@ open class Client {
             let loggingParameters = dictionaryForLogging(request.parameters,
                                                          options: request.loggingOption?.request)
 
-//            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
         }
         startRequest(request)
 
@@ -169,7 +169,7 @@ open class Client {
             }
             return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
-
+        
         return Deferred { [weak self] in
             Future { promise in
                 AF.request(request.urlString,
