@@ -8,12 +8,11 @@
 
 import Foundation
 import Combine
-import SwiftyJSON
 
 class RequestQueue {
     private weak var apiClient: Client!
     private(set) var requests: [Request] = []
-    private var _map: [Request: PassthroughSubject<JSON, Error>] = [:]
+    private var _map: [Request: PassthroughSubject<CobaltResponse, Error>] = [:]
 
     var count: Int {
         return requests.count
@@ -27,7 +26,7 @@ class RequestQueue {
         if requests.contains(request) {
             return
         }
-        _map[request] = PassthroughSubject<JSON, Error>()
+        _map[request] = PassthroughSubject<CobaltResponse, Error>()
         requests.append(request)
         apiClient.logger?.notice("Added to queue [\(count)]: \(request)")
     }
@@ -51,7 +50,7 @@ class RequestQueue {
         requests.removeAll()
     }
 
-    func publisher(of request: Request) -> AnyPublisher<JSON, Error>? {
+    func publisher(of request: Request) -> AnyPublisher<CobaltResponse, Error>? {
         return _map[request]?.eraseToAnyPublisher()
     }
 
@@ -70,8 +69,8 @@ class RequestQueue {
             case .failure(let error):
                 subject?.send(completion: .failure(error))
             }
-        }, receiveValue: { json in
-            subject?.send(json)
+        }, receiveValue: { response in
+            subject?.send(response)
         }).store(in: &apiClient.cancellables)
     }
 }

@@ -8,7 +8,6 @@
 
 import Foundation
 import Alamofire
-import SwiftyJSON
 import Combine
 
 class AuthenticationProvider {
@@ -130,7 +129,7 @@ class AuthenticationProvider {
         return sendOAuthRequest(grantType: grantType, parameters: parameters)
             .flatMap { [weak self] _ -> AnyPublisher<Request, Error> in
                 guard let self = self else {
-                    return Empty(completeImmediately: false, outputType: Request.self, failureType: Error.self).eraseToAnyPublisher()
+                    return AnyPublisher<Request, Error>.never()
                 }
                 return self._authorizeOAuth(request: request, grantType: grantType)
             }.eraseToAnyPublisher()
@@ -158,8 +157,8 @@ class AuthenticationProvider {
 
         isAuthenticating = true
 
-        return client.request(request).tryMap { [weak self, client] json -> Void in
-            let accessToken = try json.map(to: AccessToken.self)
+        return client.request(request).tryMap { [weak self, client] response -> Void in
+            let accessToken = try response.map(to: AccessToken.self)
             accessToken.host = (request.host ?? client?.config.host) ?? ""
             accessToken.grantType = grantType
             accessToken.store()
@@ -213,7 +212,7 @@ class AuthenticationProvider {
     // MARK: - Recover
     // --------------------------------------------------------
 
-    func recover(from error: Swift.Error, request: Request) -> AnyPublisher<JSON, Error> {
+    func recover(from error: Swift.Error, request: Request) -> AnyPublisher<CobaltResponse, Error> {
         // If we receive an 'invalid_grant' error and we tried to do a refresh_token authentication
         // The access-token and underlying refresh-token is invalid
         // So we can revoke the access-token
@@ -230,5 +229,11 @@ class AuthenticationProvider {
             return client.request(request)
         }
         return Fail(error: Error(from: error)).eraseToAnyPublisher()
+    }
+}
+
+extension AnyPublisher {
+    static func never() -> AnyPublisher<Output, Failure> {
+        return Empty(completeImmediately: false, outputType: Output.self, failureType: Failure.self).eraseToAnyPublisher()
     }
 }

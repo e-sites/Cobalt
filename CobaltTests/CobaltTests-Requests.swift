@@ -33,8 +33,12 @@ class CobaltTestsRequests: CobaltTests {
                     XCTAssert(false, "\(error)")
                 }
                 done()
-            }, receiveValue: { json in
-                expect(json["data"].arrayValue.count) == 10
+            }, receiveValue: { response in
+                if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
+                    expect(data.count) == 10
+                } else {
+                    XCTAssert(false, "Response \(response) is not a dictionary")
+                }
             }).store(in: &self.cancellables)
         }
     }

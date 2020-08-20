@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 import Alamofire
 import Logging
 import Combine
@@ -59,11 +58,11 @@ open class Client {
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///
-    /// - Returns: `Promise<JSON>`
-    open func request(_ request: Request) -> AnyPublisher<JSON, Error> {
+    /// - Returns: `AnyPublisher<CobaltResponse, Error>`
+    open func request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
-            return Error.invalidRequest("Missing 'host'").asPublisher(outputType: JSON.self)
+            return Error.invalidRequest("Missing 'host'").asPublisher(outputType: CobaltResponse.self)
         }
 
         // If the client is authenticating with OAuth.
@@ -72,7 +71,7 @@ open class Client {
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
             guard let publisher = queue.publisher(of: request) else {
-                return Error.unknown().asPublisher(outputType: JSON.self)
+                return Error.unknown().asPublisher(outputType: CobaltResponse.self)
             }
             
             return publisher
@@ -104,25 +103,25 @@ open class Client {
         return authProvider.authorize(request: request)
             
         // 2. We actually send the request with Alamofire
-        .flatMap { [weak self] newRequest -> AnyPublisher<JSON, Error> in
+        .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
             guard let self = self else {
-                return Empty(completeImmediately: false, outputType: JSON.self, failureType: Error.self).eraseToAnyPublisher()
+                return AnyPublisher<CobaltResponse, Error>.never()
             }
             return self._request(newRequest)
             
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [queue, authProvider] error -> AnyPublisher<JSON, Error> in
+        }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Error> in
             queue.removeFirst()
             return authProvider.recover(from: error, request: request)
         
         // 4. If any other requests are queued, fire up the next one
-        }.flatMap { [queue] json -> AnyPublisher<JSON, Error> in
+        }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in
             // When a request is finished, no matter if its succesful or not
             // We try to clear th queue
             if request.requiresOAuthentication {
                 queue.next()
             }
-            return Just(json).setFailureType(to: Error.self).eraseToAnyPublisher()
+            return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }.eraseToAnyPublisher()
     }
 
@@ -134,7 +133,7 @@ open class Client {
 
     }
 
-    private func _request(_ request: Request) -> AnyPublisher<JSON, Error> {
+    private func _request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
@@ -157,18 +156,18 @@ open class Client {
             let loggingParameters = dictionaryForLogging(request.parameters,
                                                          options: request.loggingOption?.request)
 
-            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+//            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
         }
         startRequest(request)
 
         service.currentRequest = request
 
         // Check to see if the cache engine should handle it
-        if !service.shouldPerformRequestAfterCacheCheck(), let json = service.json {
+        if !service.shouldPerformRequestAfterCacheCheck(), let response = service.response {
             if !ignoreLoggingResponse {
-                _responseParsing(json: json, request: request, requestID: requestID)
+                _responseParsing(response: response, request: request, requestID: requestID)
             }
-            return Just(json).setFailureType(to: Error.self).eraseToAnyPublisher()
+            return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
 
         return Deferred { [weak self] in
@@ -179,26 +178,26 @@ open class Client {
                                   encoding: request.useEncoding,
                                   headers: request.useHeaders)
                     .validate()
-                    .responseJSON { response in
-                        let statusCode = response.response?.statusCode ?? 500
-                        self?.finishRequest(request, response: response.response)
+                    .responseJSON { jsonResponse in
+                        let statusCode = jsonResponse.response?.statusCode ?? 500
+                        self?.finishRequest(request, response: jsonResponse.response)
                         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                         if !ignoreLoggingResponse {
                             self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                         }
 
-                        var json: JSON?
-                        if let data = response.data {
-                            json = JSON(data)
-                            self?.service.json = json
+                        var response: CobaltResponse?
+                        if let data = jsonResponse.data {
+                            response = data.asCobaltResponse()
+                            self?.service.response = response
                             self?.service.optionallyWriteToCache()
                             if !ignoreLoggingResponse {
-                                self?._responseParsing(json: json, request: request, requestID: requestID)
+                                self?._responseParsing(response: response, request: request, requestID: requestID)
                             }
                         }
 
-                        if let error = response.error {
-                            let apiError = Error(from: error, json: json)
+                        if let error = jsonResponse.error {
+                            let apiError = Error(from: error, response: response)
                             if !ignoreLoggingResponse {
                                 self?.logger?.error("#\(requestID) Original: \(error)")
                                 self?.logger?.error("#\(requestID) Error: \(apiError)")
@@ -207,24 +206,24 @@ open class Client {
                             return
                         }
 
-                        guard let responseJSON = json else {
+                        guard let cobaltResponse = response else {
                             promise(.failure(Error.empty))
                             return
                         }
-                        promise(.success(responseJSON))
+                        promise(.success(cobaltResponse))
                 }
             }
         }.eraseToAnyPublisher()
     }
 
-    private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
+    private func _responseParsing(response: CobaltResponse?, request: Request, requestID: Int) {
         var responseString: String?
-        if let dictionaryObject = json?.dictionaryObject {
+        if let dictionaryObject = response as? [String: Any] {
             let dictionary = dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
             responseString = dictionary?.flatJSONString
             
         } else {
-            responseString = json?.flatString
+            responseString = response?.flatJSONString
         }
         
         logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue)  \(request.urlString) \(responseString ?? "")", metadata: [ "tag": "api"])

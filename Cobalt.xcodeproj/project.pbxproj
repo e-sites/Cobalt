@@ -14,9 +14,8 @@
 		C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AEC230FD5DB004865D2 /* CacheManager.swift */; };
 		C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C316AFA4230FF5250036E295 /* String+Extension.swift */; };
 		C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD8230FC74E004865D2 /* ClientService.swift */; };
-		C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A672344A84D00817084 /* SwiftyJSON */; };
 		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
-		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
+		C37900242181DD1F00926793 /* CobaltResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* CobaltResponse.swift */; };
 		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
 		C37900292181DD1F00926793 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900182181DD1F00926793 /* AccessToken.swift */; };
@@ -59,7 +58,7 @@
 		C3427AE8230FD444004865D2 /* Client+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Client+Cache.swift"; sourceTree = "<group>"; };
 		C3427AEC230FD5DB004865D2 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
-		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
+		C37900122181DD1F00926793 /* CobaltResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CobaltResponse.swift; sourceTree = "<group>"; };
 		C37900142181DD1F00926793 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
 		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		C37900182181DD1F00926793 /* AccessToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessToken.swift; sourceTree = "<group>"; };
@@ -87,7 +86,6 @@
 			files = (
 				C37F875824BC7EF8003EFD5B /* Logging in Frameworks */,
 				C387777524E6971100FAD2D8 /* Alamofire in Frameworks */,
-				C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */,
 				C3439A712344A88A00817084 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +135,6 @@
 		C37900112181DD1F00926793 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */,
 				C37900142181DD1F00926793 /* Optional.swift */,
 				C316AFA4230FF5250036E295 /* String+Extension.swift */,
 			);
@@ -165,6 +162,7 @@
 		C379001C2181DD1F00926793 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				C37900122181DD1F00926793 /* CobaltResponse.swift */,
 				C379001D2181DD1F00926793 /* Error.swift */,
 				C379001E2181DD1F00926793 /* Config.swift */,
 				C379001F2181DD1F00926793 /* RequestQueue.swift */,
@@ -248,7 +246,6 @@
 			);
 			name = Cobalt;
 			packageProductDependencies = (
-				C3439A672344A84D00817084 /* SwiftyJSON */,
 				C3439A702344A88A00817084 /* KeychainAccess */,
 				C37F875724BC7EF8003EFD5B /* Logging */,
 				C387777424E6971100FAD2D8 /* Alamofire */,
@@ -309,7 +306,6 @@
 			);
 			mainGroup = DFDA21EA1D6741AD00683D7D;
 			packageReferences = (
-				C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */,
 				C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */,
@@ -355,7 +351,7 @@
 				C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */,
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
 				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
-				C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */,
+				C37900242181DD1F00926793 /* CobaltResponse.swift in Sources */,
 				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
 				C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */,
@@ -614,14 +610,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
 		C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
@@ -657,11 +645,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C3439A672344A84D00817084 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
-		};
 		C3439A702344A88A00817084 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */;

@@ -41,8 +41,12 @@ class CobaltTestsCache: CobaltTests {
                     XCTAssert(false, "\(error)")
                     done()
                 }
-            }, receiveValue: { json in
-                expect(json["data"].arrayValue.count) == 10
+            }, receiveValue: { response in
+                if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
+                    expect(data.count) == 10
+                } else {
+                    XCTAssert(false, "Response \(response) is not a dictionary")
+                }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                     let request = Request {
@@ -62,8 +66,12 @@ class CobaltTestsCache: CobaltTests {
                             XCTAssert(false, "\(error)")
                         }
                         done()
-                    }, receiveValue: { json in
-                        expect(json["data"].arrayValue.count) == 10
+                    }, receiveValue: { response in
+                        if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
+                            expect(data.count) == 10
+                        } else {
+                            XCTAssert(false, "Response \(response) is not a dictionary")
+                        }
                     }).store(in: &self.cancellables)
                 }
             }).store(in: &self.cancellables)
@@ -89,10 +97,14 @@ class CobaltTestsCache: CobaltTests {
                     XCTAssert(false, "\(error)")
                     done()
                 }
-            }, receiveValue: { json in
-                expect(json["data"].arrayValue.count) == 10
+            }, receiveValue: { response in
+                if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
+                    expect(data.count) == 10
+                } else {
+                    XCTAssert(false, "Response \(response) is not a dictionary")
+                }
                 
-                let request = Request {
+                let newRequest = Request {
                     $0.authentication = .client
                     $0.path = "/api/users"
                     $0.parameters = [
@@ -100,8 +112,8 @@ class CobaltTestsCache: CobaltTests {
                     ]
                     $0.cachePolicy = .expires(seconds: 10)
                 }
-                
-                self.client.request(request).sink(receiveCompletion: { event in
+                expect(newRequest.cacheKey) != request.cacheKey
+                self.client.request(newRequest).sink(receiveCompletion: { event in
                     switch event {
                     case .finished:
                         break
@@ -109,8 +121,12 @@ class CobaltTestsCache: CobaltTests {
                         XCTAssert(false, "\(error)")
                     }
                     done()
-                }, receiveValue: { json in
-                    expect(json["data"].arrayValue.count) == 5
+                }, receiveValue: { resonse2 in
+                    if let dictionary = resonse2 as? [String: Any], let data = dictionary["data"] as? [Any] {
+                        expect(data.count) == 5
+                    } else {
+                        XCTAssert(false, "Response \(resonse2) is not a dictionary")
+                    }
                 }).store(in: &self.cancellables)
                 
             }).store(in: &self.cancellables)

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Cobalt"
-  s.version      = "7.0.6"
+  s.version      = "8.0.0"
   s.author       = { "Bas van Kuijck" => "bas@e-sites.nl" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.homepage     = "http://www.e-sites.nl"
@@ -14,10 +14,7 @@ Pod::Spec.new do |s|
   s.subspec 'Core' do |ss|
     ss.source_files = "Sources/Core/**/*.{h,swift}"
   	ss.dependency 'Alamofire', '> 5.0'
-  	ss.dependency 'SwiftyJSON'
-    ss.dependency 'RxSwift'
-    ss.dependency 'RxCocoa'
-    ss.dependency 'KeychainAccess'
+  	ss.dependency 'KeychainAccess'
     ss.dependency 'Logging'
   end
 

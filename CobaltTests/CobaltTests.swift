@@ -27,8 +27,8 @@ class CobaltTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        Nimble.AsyncDefaults.timeout = .seconds(15)
-        Nimble.AsyncDefaults.pollInterval = .milliseconds(100)
+        Nimble.AsyncDefaults.Timeout = 15
+        Nimble.AsyncDefaults.PollInterval = 0.1
     }
     
     override func tearDown() {

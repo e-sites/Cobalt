@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 fileprivate var _swizzled = false
 fileprivate var cacheManagerKey: UInt8 = 0
@@ -47,12 +46,12 @@ extension ClientService {
         _ = swizzledShouldPerformRequestAfterCacheCheck()
 
         guard let request = currentRequest,
-            let cachedJSON = cacheManager.getCachedJSON(for: request) else {
+            let cachedResponse = cacheManager.getCachedResponse(for: request) else {
             return true
         }
 
         logger?.debug("Retrieving from cache...")
-        self.json = cachedJSON
+        self.response = cachedResponse
         return false
     }
 
@@ -61,9 +60,9 @@ extension ClientService {
         defer {
             swizzledOptionallyWriteToCache()
         }
-        guard let json = self.json, let request = currentRequest else {
+        guard let response = self.response, let request = currentRequest else {
             return
         }
-        cacheManager.write(request: request, response: json)
+        cacheManager.write(request: request, response: response)
     }
 }
