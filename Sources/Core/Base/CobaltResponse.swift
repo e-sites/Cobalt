@@ -44,9 +44,7 @@ public extension CobaltResponse {
     
     func map<T: Decodable>(to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
         let jsonDecoder = JSONDecoder()
-        if #available(iOS 10, *) {
-            jsonDecoder.dateDecodingStrategy = .iso8601
-        }
+        jsonDecoder.dateDecodingStrategy = .iso8601
         builder?(jsonDecoder)
         let data = try JSONSerialization.data(withJSONObject: self, options: .fragmentsAllowed)
         return try jsonDecoder.decode(type, from: data)

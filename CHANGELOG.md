@@ -1,5 +1,9 @@
 # Changelog Cobalt
 
+## v8.0.0 (20-08-2020)
+- Replaced RxSwift with Combine
+- Removed SwiftyJSON dependency
+
 ## v7.0.6 (18-08-2020)
 - Fixed logging for non dictionary json responses
 

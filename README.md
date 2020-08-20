@@ -55,15 +55,15 @@ class APIClient: Cobalt.Client {
 
 ## Making requests
 
-APIClient uses [Promises by google](https://github.com/google/promises) internally for handling the responses for a request
+APIClient uses Swift's Combine framework internally for handling the responses for a request.
 
-### Promises
+### Combine
 
 ```swift
 class APIClient: Cobalt.Client {
    // ...
    
-   func users() -> Promise<[User]> {
+   func users() -> AnyPublisher<[User], Cobalt.Error> {
       let request = Cobalt.Request {
          $0.path = "/users"
          $0.parameters = [
@@ -71,12 +71,9 @@ class APIClient: Cobalt.Client {
          ]
       }
 		
-      return self.request(request).then { json: JSON -> Promise<[User]> in
-         let users = try json.map(to: [User].self)
-         return Promise(users)
-      }.catch { error in
-         print("Error: \(error)")
-      }
+      return self.request(request).tryMap { response in
+         return try response.map(to: [User].self)
+      }.eraseToAnyPublisher()
    }
 }
 ```
@@ -95,18 +92,18 @@ And implement it like this:
 class APIClient: Cobalt.Client {
    // ...
    
-   func users() -> Promise<[User]> {
+   func users() -> AnyPublisher<[User], Cobalt.Error> {
       let request = Cobalt.Request {
          $0.path = "/users"
+         $0.parameters = [
+            "per_page": 10
+         ]
          $0.cachingPolicy = .expires(seconds: 60 * 60 * 24) // expires after 1 day
       }
 		
-      return self.request(request).then { json: JSON -> Promise<[User]> in
-         let users = try json.map(to: [User].self)
-         return Promise(users)
-      }.catch { error in
-         print("Error: \(error)")
-      }
+      return self.request(request).tryMap { response in
+         return try response.map(to: [User].self)
+      }.eraseToAnyPublisher()
    }
 }
 ```
@@ -117,56 +114,13 @@ To clear the entire cache:
 APIClientInstance.cache.clearAll()
 ```
 
-### RxSwift
-
-Extend the above class with:
-
-```swift
-import RxSwift
-
-extension Reactive where Base: Cobalt.Client {
-   func users() -> Single<[User]> {
-      return self.users().asSingle()
-   }
-}
-```
-And use it like so:
-
-```swift
-APIClient.default.rx.users() // ... rxswift etc.
-```
-
-### Regular closures
-
-Not in the need for Promises or RxSwift, you can also use regular closures:
-
-```swift
-extension Promise {
-    func closure(_ handler: @escaping ((Value?, Error?) -> Void)) {
-        self.then { value in
-            handler(value, nil)
-        }.catch { error in
-            handler(nil, error)
-        }
-    }
-}
-```
-
-And then use it like this:
-
-```swift
-APIClient.default.users().closure { users, error 
-    // ... Handle it
-}
-```
-
 ## OAuth2
 
 If you want to login a user using the OAuth2 protocol, use the `login()` function from the `Cobalt` class.
 Internally it will handle the retrieval and refreshing of the provided `access_token`:
 
 ```swift
-func login(email: String, password: String) -> Promise<Void>
+func login(email: String, password: String) -> AnyPublisher<Void, Cobalt.Error>
 ```
 
 You can also use other options of authentication
@@ -180,16 +134,17 @@ If the access_token is expired, Cobalt will automatically refresh it, using the 
 class APIClient: Cobalt.Client {
    // ...
    
-   func profile() -> Promise<User> {
-        let request = Cobalt.Request({
+   func profile() -> AnyPublisher<User, Cobalt.Error> {
+        let request = Cobalt.Request {
             $0.authentication = .oauth2(.password)
             $0.path = "/user/profile"
-        })
-
-        return request(request).then { json -> Promise<User> in
-            let user = try json["data"].map(to: User.self)
-            return Promise(user)
         }
+
+        return request(request).tryCompactMap { response in
+            if let dictionary = response as? [String: Any], let data = dictionary["data"] as? CobaltResponse {
+                return try data.map(to: User.self)
+            }
+        }.eraseToAnyPublisher()
     }
 }
 
@@ -202,8 +157,8 @@ You have to provide the `.oauth2(.clientCredentials)` authentication for the `Co
 class APIClient: Cobalt.Client {
    // ...
    
-   func register(email: String, password: String) -> Promise<Void> {
-      let request = Cobalt.Request({
+   func register(email: String, password: String) -> AnyPublisher<Void, Cobalt.Error> {
+      let request = Cobalt.Request {
             $0.httpMethod = .post
             $0.path = "/register"
             $0.authentication = .oauth2(.clientCredentials)
@@ -211,11 +166,10 @@ class APIClient: Cobalt.Client {
                 "email": email,
                 "password": password
             ]
-        })
-
-        return request(request).then { json -> Promise<Void> in
-            return Promise(())
         }
+
+        return request(request).map { _ in }
+            .eraseToAnyPublisher()
     }
 ```
 
