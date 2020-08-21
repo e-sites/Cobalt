@@ -8,7 +8,6 @@
 
 import XCTest
 import Nimble
-import Alamofire
 import Foundation
 import Combine
 @testable import Cobalt
@@ -55,15 +54,7 @@ class CobaltTestsRequests: CobaltTests {
                     XCTAssert(false, "Should not get here")
 
                 case .failure(let error):
-                    if let underlyingError = error.underlyingError {
-                        if !(underlyingError is AFError) {
-                            XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
-                            return
-                        }
-                        expect((underlyingError as! AFError).responseCode) == 404
-                    } else {
-                        XCTAssert(false, "Expect to have error 404, got \(error)")
-                    }
+                    expect(error.code) == 404
                 }
                 done()
             }, receiveValue: { _ in

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 import Combine
 
 class AuthenticationProvider {
@@ -25,11 +24,6 @@ class AuthenticationProvider {
     ///
     /// - Returns: `Promise<Request>`
     func authorize(request: Request) -> AnyPublisher<Request, Error> {
-        // Define headers
-        if let headers = request.headers {
-            request.useHeaders = headers
-        }
-
         // How should the request be authorized?
         switch request.authentication {
         case .client:
@@ -46,7 +40,7 @@ class AuthenticationProvider {
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
                     return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
                 }
-                request.useHeaders["Authorization"] = "Basic \(base64)"
+                request.addHeader("Authorization", value: "Basic \(base64)")
 
             case .requestBody:
                 // Alternatively, the authorization server MAY support including the
@@ -97,7 +91,7 @@ class AuthenticationProvider {
     /// 3. If you need a `client_credentials` grantType and the access-token is expired. Create a new one
     private func _authorizeOAuth(request: Request,
                                  grantType: OAuthenticationGrantType) -> AnyPublisher<Request, Error> {
-        var parameters: Parameters = [:]
+        var parameters: [String: Any] = [:]
         var grantType = grantType
 
         let host = (request.host ?? self.client.config.host) ?? ""
@@ -109,7 +103,7 @@ class AuthenticationProvider {
                     let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
                     client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 }
-                request.useHeaders["Authorization"] = "Bearer " + accessToken
+                request.addHeader("Authorization", value: "Bearer " + accessToken)
                 return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
 
@@ -135,14 +129,14 @@ class AuthenticationProvider {
             }.eraseToAnyPublisher()
     }
 
-    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, Error> {
+    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: [String: Any]? = nil) -> AnyPublisher<Void, Error> {
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
         let request = Request {
             $0.path = client.config.oauthEndpointPath
             $0.httpMethod = .post
-            $0.encoding = URLEncoding.default
+            $0.encoding = .url
             $0.authentication = .client
             $0.parameters = parameters
             $0.loggingOption = LoggingOption(request: [

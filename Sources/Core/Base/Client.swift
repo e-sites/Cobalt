@@ -86,17 +86,6 @@ open class Client {
         }
         let urlString = host + "/" + path
 
-        // Define encoding
-        let encoding: ParameterEncoding
-        if let requestEncoding = request.encoding {
-            encoding = requestEncoding
-        } else if request.httpMethod == .get {
-            encoding = URLEncoding.default
-        } else {
-            encoding = JSONEncoding.default
-        }
-
-        request.useEncoding = encoding
         request.urlString = urlString
         
         // 1. We (optionally) (pre-)authorize the request
@@ -147,8 +136,8 @@ open class Client {
         let ignoreLoggingRequest = request.loggingOption?.request?.isIgnoreAll == true
         let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
 
-        if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
-            let headersDictionary = dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
+        if request.headers?.isEmpty == false, !ignoreLoggingRequest {
+            let headersDictionary = dictionaryForLogging(request.headers, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
 
@@ -170,49 +159,43 @@ open class Client {
             return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
         
-        return Deferred { [weak self] in
-            Future { promise in
-                AF.request(request.urlString,
-                                  method: request.httpMethod,
-                                  parameters: request.parameters,
-                                  encoding: request.useEncoding,
-                                  headers: request.useHeaders)
-                    .validate()
-                    .responseJSON { jsonResponse in
-                        let statusCode = jsonResponse.response?.statusCode ?? 500
-                        self?.finishRequest(request, response: jsonResponse.response)
-                        let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                        if !ignoreLoggingResponse {
-                            self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
-                        }
-
-                        var response: CobaltResponse?
-                        if let data = jsonResponse.data {
-                            response = data.asCobaltResponse()
-                            self?.service.response = response
-                            self?.service.optionallyWriteToCache()
-                            if !ignoreLoggingResponse {
-                                self?._responseParsing(response: response, request: request, requestID: requestID)
-                            }
-                        }
-
-                        if let error = jsonResponse.error {
-                            let apiError = Error(from: error, response: response)
-                            if !ignoreLoggingResponse {
-                                self?.logger?.error("#\(requestID) Original: \(error)")
-                                self?.logger?.error("#\(requestID) Error: \(apiError)")
-                            }
-                            promise(.failure(apiError))
-                            return
-                        }
-
-                        guard let cobaltResponse = response else {
-                            promise(.failure(Error.empty))
-                            return
-                        }
-                        promise(.success(cobaltResponse))
-                }
+        guard let urlRequest = request.urlRequest() else {
+            return Error.unknown().asPublisher(outputType: CobaltResponse.self)
+        }
+        
+        return URLSession.shared.dataTaskPublisher(for: urlRequest).tryMap { [weak self] data, urlResponse -> CobaltResponse in
+            let httpResponse = urlResponse as? HTTPURLResponse
+            let statusCode = httpResponse?.statusCode ?? 200
+            self?.finishRequest(request, response: httpResponse)
+            
+            let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+            if !ignoreLoggingResponse {
+                self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
             }
+            
+            let response = data.asCobaltResponse()
+            if statusCode < 200 || statusCode >= 300 {
+                throw Error(code: statusCode, response: response, message: statusString)
+            }
+            
+            if response == nil {
+                throw Error.empty
+            }
+            
+            self?.service.response = response
+            self?.service.optionallyWriteToCache()
+            if !ignoreLoggingResponse {
+                self?._responseParsing(response: response, request: request, requestID: requestID)
+            }
+            
+            return response!
+        }.mapError { [weak self] error in
+            let apiError = Error(from: error)
+            if !ignoreLoggingResponse {
+                self?.logger?.error("#\(requestID) Original: \(error)")
+                self?.logger?.error("#\(requestID) Error: \(apiError)")
+            }
+            return apiError
         }.eraseToAnyPublisher()
     }
 
@@ -274,15 +257,15 @@ open class Client {
 // --------------------------------------------------------
 
 extension Client {
-    func dictionaryForLogging(_ parameters: [String: Any]?,
-                              options: [String: KeyLoggingOption]?) -> [String: Any]? {
+    func dictionaryForLogging(_ parameters: [String: Any?]?,
+                              options: [String: KeyLoggingOption]?) -> [String: Any?]? {
         guard let theParameters = parameters, let options = options else {
             return parameters
         }
         return _mask(parameters: theParameters, options: options)
     }
 
-    fileprivate func _mask(parameters: [String: Any],
+    fileprivate func _mask(parameters: [String: Any?],
                            options: [String: KeyLoggingOption],
                            path: String = "") -> [String: Any] {
         var logParameters: [String: Any] = [:]

@@ -24,35 +24,35 @@ public class Error: Swift.Error {
     // --------------------------------------------------------
 
     public static var empty: Error {
-        return Error(code: 101)
+        return Error(code: 1001)
     }
 
     public static var invalidGrant: Error {
-        return Error(code: 201, message: "invalid_grant")
+        return Error(code: 2001, message: "invalid_grant")
     }
 
     public static var invalidClient: Error {
-        return Error(code: 202, message: "invalid_client")
+        return Error(code: 2002, message: "invalid_client")
     }
 
     public static var refreshTokenInvalidated: Error {
-        return Error(code: 203, message: "Refresh token is invalidated")
+        return Error(code: 2003, message: "Refresh token is invalidated")
     }
 
     public static var missingClientAuthentication: Error {
-        return Error(code: 204, message: "Missing client authentication")
+        return Error(code: 2004, message: "Missing client authentication")
     }
 
     public static func unknown(_ response: CobaltResponse? = nil) -> Error {
-        return Error(code: 100, response: response)
+        return Error(code: 1000, response: response)
     }
 
     public static func invalidRequest(_ message: String) -> Error {
-        return Error(code: 301, message: message)
+        return Error(code: 3001, message: message)
     }
 
     public static func underlying(_ error: Swift.Error, response: CobaltResponse? = nil) -> Error {
-        let apiError = Error(code: 601)
+        let apiError = Error(code: 6001)
         apiError.underlyingError = error
         
         if response != nil {
