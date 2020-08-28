@@ -9,7 +9,6 @@
 import XCTest
 import Nimble
 import Logging
-import Alamofire
 import Combine
 @testable import Cobalt
 

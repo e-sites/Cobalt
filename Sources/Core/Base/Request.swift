@@ -33,7 +33,7 @@ public class Request {
     public var host: String?
     public var httpMethod: HTTPMethod = .get
     public var parameters: [String: Any]?
-    public var headers: [String: String?]?
+    public var headers: [String: String]?
     public var encoding: ParameterEncoding = ParameterEncoding.methodDependent
     public var authentication: Authentication = .none
     public var loggingOption: LoggingOption?

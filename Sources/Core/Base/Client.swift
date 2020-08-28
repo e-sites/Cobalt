@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 import Logging
 import Combine
 
@@ -91,7 +90,7 @@ open class Client {
         // 1. We (optionally) (pre-)authorize the request
         return authProvider.authorize(request: request)
             
-        // 2. We actually send the request with Alamofire
+        // 2. We actually send the request with URLSession
         .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
             guard let self = self else {
                 return AnyPublisher<CobaltResponse, Error>.never()
@@ -257,15 +256,15 @@ open class Client {
 // --------------------------------------------------------
 
 extension Client {
-    func dictionaryForLogging(_ parameters: [String: Any?]?,
-                              options: [String: KeyLoggingOption]?) -> [String: Any?]? {
+    func dictionaryForLogging(_ parameters: [String: Any]?,
+                              options: [String: KeyLoggingOption]?) -> [String: Any]? {
         guard let theParameters = parameters, let options = options else {
             return parameters
         }
         return _mask(parameters: theParameters, options: options)
     }
 
-    fileprivate func _mask(parameters: [String: Any?],
+    fileprivate func _mask(parameters: [String: Any],
                            options: [String: KeyLoggingOption],
                            path: String = "") -> [String: Any] {
         var logParameters: [String: Any] = [:]
@@ -275,7 +274,7 @@ extension Client {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
                 continue
             }
-            guard let string = Client.mask(string: value, type: type) else {
+            guard let string = Client.mask(value: value, type: type) else {
                 continue
             }
             logParameters[key] = string
@@ -283,14 +282,11 @@ extension Client {
         return logParameters
     }
 
-    class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
-        guard let value = value else {
-            return nil
-        }
+    class func mask(value: Any, type: KeyLoggingOption) -> String? {
         switch type {
         case .halfMasked:
             guard let stringValue = value as? String, !stringValue.isEmpty else {
-                return value
+                return String(describing: value)
             }
             let length = Int(floor(Double(stringValue.count) / 2.0))
             let startIndex = stringValue.startIndex
@@ -315,11 +311,11 @@ extension Client {
                 let endIndex = stringValue.index(startIndex, offsetBy: 128)
                 return String(describing: stringValue[startIndex..<endIndex]) + "..."
             } else {
-                return value
+                return String(describing: value)
             }
             
         default:
-            return value
+            return String(describing: value)
         }
     }
 }
