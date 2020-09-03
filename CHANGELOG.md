@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.7 (03-09-2020)
+- Added request to the Error (for logging purposes)
+
 ## v7.0.6 (18-08-2020)
 - Fixed logging for non dictionary json responses
 

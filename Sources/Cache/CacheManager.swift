@@ -66,7 +66,7 @@ public class CacheManager {
         do {
             switch request.cachePolicy {
             case .never:
-                throw SwiftyJSONError.unsupportedType
+                throw Error(from: SwiftyJSONError.unsupportedType).set(request: request)
 
             case .expires:
                 if !FileManager.default.fileExists(atPath: url.path) {
@@ -75,13 +75,13 @@ public class CacheManager {
 
                 // Check if the cache expired
                 if let date = _cachedMapping[url.absoluteString], date < Date() {
-                    throw SwiftyJSONError.notExist
+                    throw Error(from: SwiftyJSONError.notExist).set(request: request)
                 }
 
                 let jsonString = try String(contentsOfFile: url.path)
                 let json = JSON(parseJSON: jsonString)
                 if json == .null {
-                    throw SwiftyJSONError.notExist
+                    throw Error(from: SwiftyJSONError.notExist).set(request: request)
                 }
                 return json
             }

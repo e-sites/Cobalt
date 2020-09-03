@@ -37,7 +37,7 @@ class AuthenticationProvider {
         case .client:
             // Regular client_id / client_secret
             guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
-                throw Error.missingClientAuthentication
+                throw Error.missingClientAuthentication.set(request: request)
             }
 
             switch client.config.clientAuthorization {
@@ -46,7 +46,7 @@ class AuthenticationProvider {
             case .basicHeader:
                 // Just add an `Authorization` header
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
-                    throw Error.missingClientAuthentication
+                    throw Error.missingClientAuthentication.set(request: request)
                 }
                 request.useHeaders["Authorization"] = "Basic \(base64)"
 
@@ -127,7 +127,7 @@ class AuthenticationProvider {
         }
 
         if grantType == .password {
-            throw Error.missingClientAuthentication
+            throw Error.missingClientAuthentication.set(request: request)
         }
 
         return sendOAuthRequest(grantType: grantType, parameters: parameters)

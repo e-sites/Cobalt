@@ -10,10 +10,37 @@
 import XCTest
 import Nimble
 import Alamofire
+import RxSwift
+import RxCocoa
 import Foundation
 @testable import Cobalt
 
 class CobaltTestsAuthentication: CobaltTests {
+    override func setUp() {
+        super.setUp()
+        config.clientAuthorization = .basicHeader
+        config.host = "https://apps.e-sites.nl"
+        config.oauthEndpointPath = "/prototypes/cobalt/access_token.json"
+    }
+    
+    func testsAuthenticate() {
+        waitUntil { done in
+            let request = Request {
+                $0.authentication = .oauth2(.clientCredentials)
+                $0.path = "/prototypes/cobalt/users.php"
+            }
+
+            self.client.request(request).subscribe { event in
+                switch event {
+                case .success(let json):
+                    expect(json["users"].arrayValue.count) == 2
+                case .error(let error):
+                    XCTAssert(false, "\(error)")
+                }
+                done()
+            }.disposed(by: self.disposeBag)
+        }
+    }
 
     func testDoubleAccessTokens() {
         let host1 = "https://www.e-sites.nl"

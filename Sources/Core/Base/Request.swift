@@ -46,9 +46,9 @@ public class Request {
 
 extension Request: CustomStringConvertible {
     public var description: String {
-        return "<Request> [ uuid: \(uuid), " +
-            "path: \(path), " +
-            "httpMethod: \(httpMethod), " +
+        return "<Request> [ path: \(path), " +
+            "httpMethod: \(httpMethod.rawValue), " +
+            "parameters: \(optionalDescription(parameters)), " +
         "authentication: \(authentication) ]"
     }
 }

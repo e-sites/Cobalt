@@ -85,7 +85,7 @@ open class Client: ReactiveCompatible {
     open func request(_ request: Request) -> Single<JSON> {
         // Strip slashes to form a valid urlString
         guard var host = (request.host ?? config.host) else {
-            return Single<JSON>.error(Error.invalidRequest("Missing 'host'"))
+            return Single<JSON>.error(Error.invalidRequest("Missing 'host'").set(request: request))
         }
 
         // If the client is authenticating with OAuth.
@@ -93,7 +93,7 @@ open class Client: ReactiveCompatible {
         // So we add it to the `RequestQueue`
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
-            return queue.single(of: request) ?? Single<JSON>.error(Error.unknown())
+            return queue.single(of: request) ?? Single<JSON>.error(Error.unknown().set(request: request))
         }
         
         if host.hasSuffix("/") {
@@ -227,7 +227,7 @@ open class Client: ReactiveCompatible {
                     }
 
                     if let error = response.error {
-                        let apiError = Error(from: error, json: json)
+                        let apiError = Error(from: error, json: json).set(request: request)
                         if !ignoreLoggingResponse {
                             self?.logger?.error("#\(requestID) Original: \(error)")
                             self?.logger?.error("#\(requestID) Error: \(apiError)")
@@ -237,7 +237,7 @@ open class Client: ReactiveCompatible {
                     }
 
                     guard let responseJSON = json else {
-                        observer(.error(Error.empty))
+                        observer(.error(Error.empty.set(request: request)))
                         return
                     }
                     observer(.success(responseJSON))

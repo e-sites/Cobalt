@@ -17,6 +17,8 @@ public class Error: Swift.Error {
     private(set) public var json: JSON?
     private(set) public var message: String?
     private(set) public var underlyingError: Swift.Error?
+    
+    internal(set) public var request: Request?
 
     public var domain: String {
         return "com.esites.Cobalt"
@@ -63,6 +65,11 @@ public class Error: Swift.Error {
         
         return apiError
     }
+    
+    func set(request: Request) -> Error {
+        self.request = request
+        return self
+    }
 
     // MARK: - Constructor
     // --------------------------------------------------------
@@ -103,20 +110,24 @@ public class Error: Swift.Error {
         self.message = error.message
         self.underlyingError = error.underlyingError
         self.json = error.json
+        self.request = error.request
     }
 }
 
 extension Error: CustomStringConvertible {
     public var description: String {
-        var jsonString = "nil"
+        var jsonString = "(nil)"
+        
         if let json = self.json {
-            jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "nil"
+            jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "(nil)"
         }
+        
         return "<Error> [ code: \(code), " +
+            "request: \(optionalDescription(request)), " +
             "json: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
             "underlying: \(optionalDescription(underlyingError)) " +
-        "]"
+         "]"
     }
 }
 
