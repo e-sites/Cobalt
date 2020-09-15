@@ -26,7 +26,15 @@ open class Client: ReactiveCompatible {
 
     fileprivate lazy var queue = RequestQueue(client: self)
 
-    var authorizationGrantTypeSubject = BehaviorSubject<OAuthenticationGrantType?>(value: nil)
+    lazy var authorizationGrantTypeSubject: BehaviorSubject<OAuthenticationGrantType?> = {
+        var value: OAuthenticationGrantType?
+        if let grantTypeRawValue = UserDefaults.standard.string(forKey: "OAuthenticationGrantType"),
+            let grantType = OAuthenticationGrantType(rawValue: grantTypeRawValue) {
+            value = grantType
+        }
+        
+        return BehaviorSubject<OAuthenticationGrantType?>(value: value)
+    }()
 
     private let disposeBag = DisposeBag()
 
@@ -58,6 +66,11 @@ open class Client: ReactiveCompatible {
     required public init(config: Config) {
         self.config = config
         service.logger = logger
+        
+        authorizationGrantTypeSubject.subscribe(onNext: { grantType in
+            UserDefaults.standard.set(grantType?.rawValue, forKey: "OAuthenticationGrantType")
+            _ = UserDefaults.standard.synchronize()
+        }).disposed(by: disposeBag)
     }
 
     // MARK: - Request functions

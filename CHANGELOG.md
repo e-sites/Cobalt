@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.8 (03-09-2020)
+- Store `OAuthenticationGrantType`
+
 ## v7.0.7 (03-09-2020)
 - Added request to the Error (for logging purposes)
 
