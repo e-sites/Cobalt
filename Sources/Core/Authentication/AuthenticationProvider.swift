@@ -72,10 +72,11 @@ class AuthenticationProvider {
                     
                     if parametersLoggingOptions["client_secret"] == nil {
                         parametersLoggingOptions["client_secret"] = .halfMasked
-                    }
-                    
-                    if request.loggingOption?.request == nil {
-                        request.loggingOption = LoggingOption(request: parametersLoggingOptions, response: request.loggingOption?.response)
+                        
+                        if request.loggingOption == nil {
+                            request.loggingOption = LoggingOption()
+                        }
+                        request.loggingOption?.request = parametersLoggingOptions
                     }
                 }
             }
