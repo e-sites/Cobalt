@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import Nimble
 import Logging
 import Alamofire
 import RxSwift
@@ -25,14 +24,14 @@ class CobaltTests: XCTestCase {
         $0.host = "https://reqres.in"
     }
     lazy var client = Cobalt.Client(config: self.config)
-
-    override func setUp() {
-        super.setUp()
-        Nimble.AsyncDefaults.timeout = .seconds(15)
-        Nimble.AsyncDefaults.pollInterval = .milliseconds(100)
-    }
     
     override func tearDown() {
         super.tearDown()
+    }
+    
+    func waitUntil(_ handler: @escaping (((() -> Void)?) -> Void)) {
+        let expectation = self.expectation(description: "test")
+        handler({ expectation.fulfill() })
+        waitForExpectations(timeout: 15, handler: nil)
     }
 }

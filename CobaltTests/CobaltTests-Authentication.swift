@@ -8,7 +8,6 @@
 
 
 import XCTest
-import Nimble
 import Alamofire
 import RxSwift
 import RxCocoa
@@ -33,11 +32,11 @@ class CobaltTestsAuthentication: CobaltTests {
             self.client.request(request).subscribe { event in
                 switch event {
                 case .success(let json):
-                    expect(json["users"].arrayValue.count) == 2
+                    XCTAssert(json["users"].arrayValue.count == 2)
                 case .error(let error):
                     XCTAssert(false, "\(error)")
                 }
-                done()
+                done?()
             }.disposed(by: self.disposeBag)
         }
     }
@@ -58,8 +57,7 @@ class CobaltTestsAuthentication: CobaltTests {
         accessToken2.expireDate = Date(timeIntervalSinceNow: 20)
         accessToken2.grantType = .password
         accessToken2.store()
-
-        expect(AccessToken.get(host: host1, grantType: .password)).to(beNil())
+        XCTAssert(AccessToken.get(host: host1, grantType: .password) == nil)
 
         guard let getAccessToken1 = AccessToken.get(host: host1, grantType: .clientCredentials) else {
             XCTAssert(false, "Should have gotten accessToken1")
@@ -71,21 +69,21 @@ class CobaltTestsAuthentication: CobaltTests {
             return
         }
 
-        expect(accessToken1.accessToken) == getAccessToken1.accessToken
-        expect(getAccessToken1.refreshToken).to(beNil())
-        expect(accessToken1.refreshToken).to(beNil())
-        expect(accessToken1.grantType) == getAccessToken1.grantType
-        expect(accessToken1.expireDate?.timeIntervalSince1970) == getAccessToken1.expireDate?.timeIntervalSince1970
+        XCTAssert(accessToken1.accessToken == getAccessToken1.accessToken)
+        XCTAssert(getAccessToken1.refreshToken == nil)
+        XCTAssert(accessToken1.refreshToken == nil)
+        XCTAssert(accessToken1.grantType == getAccessToken1.grantType)
+        XCTAssert(accessToken1.expireDate?.timeIntervalSince1970 == getAccessToken1.expireDate?.timeIntervalSince1970)
 
-        expect(accessToken2.accessToken) == getAccessToken2.accessToken
-        expect(accessToken2.refreshToken) == getAccessToken2.refreshToken
-        expect(accessToken2.grantType) == getAccessToken2.grantType
-        expect(accessToken2.expireDate?.timeIntervalSince1970) == getAccessToken2.expireDate?.timeIntervalSince1970
+        XCTAssert(accessToken2.accessToken == getAccessToken2.accessToken)
+        XCTAssert(accessToken2.refreshToken == getAccessToken2.refreshToken)
+        XCTAssert(accessToken2.grantType == getAccessToken2.grantType)
+        XCTAssert(accessToken2.expireDate?.timeIntervalSince1970 == getAccessToken2.expireDate?.timeIntervalSince1970)
 
         accessToken1.clear()
-        expect(AccessToken.get(host: host1, grantType: .clientCredentials)).to(beNil())
+        XCTAssert(AccessToken.get(host: host1, grantType: .clientCredentials) == nil)
 
         accessToken2.clear()
-        expect(AccessToken.get(host: host2, grantType: .password)).to(beNil())
+        XCTAssert(AccessToken.get(host: host2, grantType: .password) == nil)
     }
 }

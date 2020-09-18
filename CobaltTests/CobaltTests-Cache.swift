@@ -9,7 +9,6 @@
 
 import Foundation
 import XCTest
-import Nimble
 import RxSwift
 import RxCocoa
 import Alamofire
@@ -37,7 +36,7 @@ class CobaltTestsCache: CobaltTests {
             self.client.request(request).subscribe { event in
                 switch event {
                 case .success(let json):
-                    expect(json["data"].arrayValue.count) == 10
+                    XCTAssert(json["data"].arrayValue.count == 10)
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                         let request = Request {
@@ -52,11 +51,11 @@ class CobaltTestsCache: CobaltTests {
                         self.client.request(request).subscribe { event in
                             switch event {
                             case .success(let json):
-                                expect(json["data"].arrayValue.count) == 10
+                                XCTAssert(json["data"].arrayValue.count == 10)
                             case .error(let error):
                                 XCTAssert(false, "\(error)")
                             }
-                            done()
+                            done?()
                         }.disposed(by: self.disposeBag)
                     }
 
@@ -80,10 +79,7 @@ class CobaltTestsCache: CobaltTests {
 
             self.client.request(request).subscribe { event in
                 switch event {
-                case .success(let json):
-                    expect(json["data"].arrayValue.count) == 10
-
-
+                case .success(let json):XCTAssert(json["data"].arrayValue.count == 10)
                     let request = Request {
                         $0.authentication = .client
                         $0.path = "/api/users"
@@ -95,12 +91,11 @@ class CobaltTestsCache: CobaltTests {
 
                     self.client.request(request).subscribe { event in
                         switch event {
-                        case .success(let json):
-                            expect(json["data"].arrayValue.count) == 5
+                        case .success(let json):XCTAssert(json["data"].arrayValue.count == 5)
                         case .error(let error):
                             XCTAssert(false, "\(error)")
                         }
-                        done()
+                        done?()
                     }.disposed(by: self.disposeBag)
                     
                 case .error(let error):

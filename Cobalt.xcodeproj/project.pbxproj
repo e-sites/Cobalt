@@ -20,7 +20,6 @@
 		C3439A652344A84100817084 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A642344A84100817084 /* Alamofire */; };
 		C3439A682344A84D00817084 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A672344A84D00817084 /* SwiftyJSON */; };
 		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
-		C3439A742344A8DF00817084 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A732344A8DF00817084 /* Nimble */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C36355AE25148A68008C849A /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36355AD25148A68008C849A /* Helpers.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
@@ -104,7 +103,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */,
-				C3439A742344A8DF00817084 /* Nimble in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +281,6 @@
 			);
 			name = CobaltTests;
 			packageProductDependencies = (
-				C3439A732344A8DF00817084 /* Nimble */,
 			);
 			productName = APIBaseClientTests;
 			productReference = DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */;
@@ -323,7 +320,6 @@
 				C3439A632344A84100817084 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				C3439A662344A84D00817084 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */,
 				C321494324A08BDC000816AC /* XCRemoteSwiftPackageReference "RxSwift" */,
 				C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */,
 			);
@@ -659,14 +655,6 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Quick/Nimble.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log.git";
@@ -702,11 +690,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
-		};
-		C3439A732344A8DF00817084 /* Nimble */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C3439A722344A8DF00817084 /* XCRemoteSwiftPackageReference "Nimble" */;
-			productName = Nimble;
 		};
 		C37F875724BC7EF8003EFD5B /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;

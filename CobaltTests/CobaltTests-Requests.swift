@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import Nimble
 import RxSwift
 import RxCocoa
 import Alamofire
@@ -28,12 +27,12 @@ class CobaltTestsRequests: CobaltTests {
             self.client.request(request).subscribe { event in
                 switch event {
                 case .success(let json):
-                    expect(json["data"].arrayValue.count) == 10
+                    XCTAssert(json["data"].arrayValue.count == 10)
 
                 case .error(let error):
                     XCTAssert(false, "\(error)")
                 }
-                done()
+                done?()
             }.disposed(by: self.disposeBag)
         }
     }
@@ -60,12 +59,12 @@ class CobaltTestsRequests: CobaltTests {
                             XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
                             return
                         }
-                        expect((underlyingError as! AFError).responseCode) == 404
+                        XCTAssert((underlyingError as! AFError).responseCode == 404)
                     } else {
                         XCTAssert(false, "Expect to have error 404, got \(apiError)")
                     }
                 }
-                done()
+                done?()
             }.disposed(by: self.disposeBag)
         }
     }
