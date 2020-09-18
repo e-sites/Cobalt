@@ -151,8 +151,9 @@ class AuthenticationProvider {
             $0.parameters = parameters
             $0.loggingOption = LoggingOption(request: [
                 "password": .masked,
-                "refresh_token": .halfMasked,
-                "client_secret": .halfMasked
+                "username": .halfMasked,
+                "refresh_token": client.config.maskTokens ? .halfMasked : .default,
+                "client_secret": client.config.maskTokens ? .halfMasked : .default
             ], response: [
                 "access_token": client.config.maskTokens ? .halfMasked : .default,
                 "refresh_token": client.config.maskTokens ? .halfMasked : .default,

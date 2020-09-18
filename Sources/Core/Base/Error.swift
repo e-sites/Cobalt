@@ -123,9 +123,9 @@ extension Error: CustomStringConvertible {
         }
         
         return "<Error> [ code: \(code), " +
+            "message: \(optionalDescription(message)), " +
             "request: \(optionalDescription(request)), " +
             "json: \(optionalDescription(jsonString)), " +
-            "message: \(optionalDescription(message)), " +
             "underlying: \(optionalDescription(underlyingError)) " +
          "]"
     }

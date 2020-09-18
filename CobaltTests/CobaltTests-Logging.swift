@@ -89,5 +89,15 @@ class CobaltTestsLogging: CobaltTests {
         print("\(error)")
         XCTAssert(debugString.contains("\"password\": \"***\""))
         XCTAssert("\(error)".contains("\"email\": \"bas@e-s***\""))
+        client.config.maskTokens = true
+        waitUntil { done in
+            self.client.login(username: "bas", password: "hello-there").subscribe(onSuccess: { _ in
+                XCTAssert(false, "Should not come here")
+                done?()
+            }, onError: { error in
+                XCTAssert("\(error)".contains("\"password\": \"***\""))
+                done?()
+            }).disposed(by: self.disposeBag)
+        }
     }
 }

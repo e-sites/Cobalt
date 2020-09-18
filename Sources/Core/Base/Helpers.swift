@@ -11,10 +11,10 @@ import Foundation
 class Helpers {
     static func dictionaryForLogging(_ parameters: [String: Any]?,
                               options: [String: KeyLoggingOption]?) -> [String: Any]? {
-        guard let theParameters = parameters, let options = options else {
+        guard let theParameters = parameters, let theOptions = options else {
             return parameters
         }
-        return _mask(parameters: theParameters, options: options)
+        return _mask(parameters: theParameters, options: theOptions)
     }
 
     fileprivate static func _mask(parameters: [String: Any],
