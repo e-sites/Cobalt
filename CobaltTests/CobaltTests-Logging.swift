@@ -27,7 +27,7 @@ class CobaltTestsLogging: CobaltTests {
             "password": "Test123"
         ]
 
-        guard let logParams = client.dictionaryForLogging(dictionary, options: [
+        guard let logParams = Helpers.dictionaryForLogging(dictionary, options: [
             "password": .masked,
             "some": .shortened,
             "path.to.token": .replaced("Foobar"),

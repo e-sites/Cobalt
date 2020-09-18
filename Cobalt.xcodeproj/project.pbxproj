@@ -22,6 +22,7 @@
 		C3439A712344A88A00817084 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A702344A88A00817084 /* KeychainAccess */; };
 		C3439A742344A8DF00817084 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3439A732344A8DF00817084 /* Nimble */; };
 		C3502681213FFEBF00FDB0CA /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
+		C36355AE25148A68008C849A /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36355AD25148A68008C849A /* Helpers.swift */; };
 		C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */; };
 		C37900262181DD1F00926793 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900142181DD1F00926793 /* Optional.swift */; };
 		C37900282181DD1F00926793 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900172181DD1F00926793 /* Authentication.swift */; };
@@ -61,6 +62,7 @@
 		C3427AE8230FD444004865D2 /* Client+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Client+Cache.swift"; sourceTree = "<group>"; };
 		C3427AEC230FD5DB004865D2 /* CacheManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Logging.swift"; sourceTree = "<group>"; };
+		C36355AD25148A68008C849A /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		C37900122181DD1F00926793 /* SwiftyJSON+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+Extension.swift"; sourceTree = "<group>"; };
 		C37900142181DD1F00926793 /* Optional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
 		C37900172181DD1F00926793 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				C37900202181DD1F00926793 /* Client.swift */,
 				C37900212181DD1F00926793 /* Request.swift */,
 				C3427AD8230FC74E004865D2 /* ClientService.swift */,
+				C36355AD25148A68008C849A /* Helpers.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -357,6 +360,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C316AF9F230FF03C0036E295 /* CachePolicy.swift in Sources */,
+				C36355AE25148A68008C849A /* Helpers.swift in Sources */,
 				C37900302181DD1F00926793 /* Request.swift in Sources */,
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,

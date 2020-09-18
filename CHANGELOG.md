@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.0.9 (18-09-2020)
+- Mask parameters in Request debugDescription
+
 ## v7.0.8 (03-09-2020)
 - Store `OAuthenticationGrantType`
 

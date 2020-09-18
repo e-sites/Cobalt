@@ -46,9 +46,14 @@ public class Request {
 
 extension Request: CustomStringConvertible {
     public var description: String {
+        var parametersDescription = optionalDescription(nil)
+        if let parameters = self.parameters,
+           let dictionary = Helpers.dictionaryForLogging(parameters, options: loggingOption?.request) {
+            parametersDescription = String(describing: dictionary)
+        }
         return "<Request> [ path: \(path), " +
             "httpMethod: \(httpMethod.rawValue), " +
-            "parameters: \(optionalDescription(parameters)), " +
+            "parameters: \(parametersDescription), " +
         "authentication: \(authentication) ]"
     }
 }
