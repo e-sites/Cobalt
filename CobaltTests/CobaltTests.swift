@@ -16,11 +16,12 @@ import RxCocoa
 class CobaltTests: XCTestCase {
     lazy var disposeBag = DisposeBag()
     lazy var config = Config {
-        $0.clientID = "id"
-        $0.clientSecret = "secret"
-        $0.logger = Logger(label: "com.esites.cobalt-test")
-        $0.logger?.logLevel = .trace
-        $0.clientAuthorization = .requestBody
+        $0.authentication.clientID = "id"
+        $0.authentication.clientSecret = "secret"
+        $0.authentication.authorization = .requestBody
+        $0.logging.logger = Logger(label: "com.esites.cobalt-test")
+        $0.logging.logger?.logLevel = .trace
+        
         $0.host = "https://reqres.in"
     }
     lazy var client = Cobalt.Client(config: self.config)

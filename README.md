@@ -43,8 +43,8 @@ class APIClient: Cobalt.Client {
     
    private init() {
       let config = Cobalt.Config {
-         $0.clientID = "my_oauth_client_id"
-         $0.clientSecret = "my_oauth_client_secret"
+         $0.authentication.clientID = "my_oauth_client_id"
+         $0.authentication.clientSecret = "my_oauth_client_secret"
          $0.host = "https://api.domain.com"
       }
       super.init(config: config)

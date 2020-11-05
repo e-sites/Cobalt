@@ -36,11 +36,11 @@ class AuthenticationProvider {
         switch request.authentication {
         case .client:
             // Regular client_id / client_secret
-            guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
+            guard let clientID = client.config.authentication.clientID, let clientSecret = client.config.authentication.clientSecret else {
                 throw Error.missingClientAuthentication.set(request: request)
             }
 
-            switch client.config.clientAuthorization {
+            switch client.config.authentication.authorization {
             case .none:
                 break
             case .basicHeader:
@@ -67,7 +67,7 @@ class AuthenticationProvider {
                     request.parameters = parameters
                 }
 
-                if client.config.maskTokens {
+                if client.config.logging.maskTokens {
                     var parametersLoggingOptions: [String: KeyLoggingOption] = request.loggingOption?.request ?? [:]
                     
                     if parametersLoggingOptions["client_secret"] == nil {
@@ -145,19 +145,20 @@ class AuthenticationProvider {
         parameters["grant_type"] = grantType.rawValue
 
         let request = Request {
-            $0.path = client.config.oauthEndpointPath
+            $0.path = client.config.authentication.path
             $0.httpMethod = .post
+            $0.host = client.config.authentication.host
             $0.encoding = URLEncoding.default
             $0.authentication = .client
             $0.parameters = parameters
             $0.loggingOption = LoggingOption(request: [
                 "password": .masked,
                 "username": .halfMasked,
-                "refresh_token": client.config.maskTokens ? .halfMasked : .default,
-                "client_secret": client.config.maskTokens ? .halfMasked : .default
+                "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
+                "client_secret": client.config.logging.maskTokens ? .halfMasked : .default
             ], response: [
-                "access_token": client.config.maskTokens ? .halfMasked : .default,
-                "refresh_token": client.config.maskTokens ? .halfMasked : .default,
+                "access_token": client.config.logging.maskTokens ? .halfMasked : .default,
+                "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
             ])
 
         }
@@ -166,7 +167,7 @@ class AuthenticationProvider {
 
         return client.request(request).flatMap { [weak self, client] json in
             let accessToken = try json.map(to: AccessToken.self)
-            accessToken.host = (request.host ?? client?.config.host) ?? ""
+            accessToken.host = client?.config.host ?? ""
             accessToken.grantType = grantType
             accessToken.store()
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")

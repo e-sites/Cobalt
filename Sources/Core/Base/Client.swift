@@ -54,7 +54,7 @@ open class Client: ReactiveCompatible {
     }
 
     var logger: Logger? {
-        return config.logger
+        return config.logging.logger
     }
 
     @objc
@@ -173,7 +173,7 @@ open class Client: ReactiveCompatible {
             self.requestID = 1
         }
         var loggingOptions: [String: KeyLoggingOption] = [:]
-        if config.maskTokens {
+        if config.logging.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
 

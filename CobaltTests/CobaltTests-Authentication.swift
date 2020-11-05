@@ -17,9 +17,9 @@ import Foundation
 class CobaltTestsAuthentication: CobaltTests {
     override func setUp() {
         super.setUp()
-        config.clientAuthorization = .basicHeader
+        config.authentication.authorization = .basicHeader
         config.host = "https://apps.e-sites.nl"
-        config.oauthEndpointPath = "/prototypes/cobalt/access_token.json"
+        config.authentication.path = "/prototypes/cobalt/access_token.json"
     }
     
     func testsAuthenticate() {

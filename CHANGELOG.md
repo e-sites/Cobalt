@@ -1,5 +1,9 @@
 # Changelog Cobalt
 
+## v7.1.0 (95-11-2020)
+- Added authentication host
+- Better structure for the `Config` class
+
 ## v7.0.9 (18-09-2020)
 - Mask parameters in Request debugDescription
 
