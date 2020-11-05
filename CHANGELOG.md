@@ -1,6 +1,9 @@
 # Changelog Cobalt
 
-## v7.1.0 (95-11-2020)
+## v7.1.1 (06-11-2020)
+- authorization_code grant_type
+
+## v7.1.0 (05-11-2020)
 - Added authentication host
 - Better structure for the `Config` class
 
