@@ -121,13 +121,13 @@ class AuthenticationProvider {
             } else {
                 client.logger?.warning("Access-token expired, refreshing ...")
             }
-            if grantType == .password, let refreshToken = accessTokenObj.refreshToken {
+            if grantType.refreshUsingRefreshToken, let refreshToken = accessTokenObj.refreshToken {
                 grantType = .refreshToken
                 parameters["refresh_token"] = refreshToken
             }
         }
 
-        if grantType == .password {
+        if grantType.refreshUsingRefreshToken {
             throw Error.missingClientAuthentication.set(request: request)
         }
 

@@ -19,6 +19,15 @@ public enum OAuthenticationGrantType: String {
     case password
     case authorizationCode = "authorization_code"
     case refreshToken = "refresh_token"
+    
+    var refreshUsingRefreshToken: Bool {
+        switch self {
+        case .authorizationCode, .password:
+            return true
+        default:
+            return false
+        }
+    }
 
     var level: Int {
         switch self {

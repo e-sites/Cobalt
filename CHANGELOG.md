@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.1.2 (13-11-2020)
+- authorization_code also needs refresh_token to refresh
+
 ## v7.1.1 (06-11-2020)
 - authorization_code grant_type
 
