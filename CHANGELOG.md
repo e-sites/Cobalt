@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.1.3 (10-12-2020)
+- Shortened logging option with no fallbacks
+
 ## v7.1.2 (13-11-2020)
 - authorization_code also needs refresh_token to refresh
 

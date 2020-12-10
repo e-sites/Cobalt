@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class Helpers {
     static func dictionaryForLogging(_ parameters: [String: Any]?,
@@ -59,8 +60,13 @@ class Helpers {
             return "***"
 
         case .shortened:
-            guard let stringValue = value as? String else {
-                fallthrough
+            let stringValue: String
+            if let tmpValue = value as? String {
+                stringValue = tmpValue
+            } else if let tmpValue = JSON(value).rawString(.utf8, options: []) {
+                stringValue = tmpValue
+            } else {
+                stringValue = String(describing: value)
             }
             if stringValue.count > 128 {
                 let startIndex = stringValue.startIndex
