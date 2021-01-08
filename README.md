@@ -15,7 +15,7 @@ Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite
 
 # Installation
 
-##Swift PM
+## Swift PM
 
 **package.swift** dependency:
 

@@ -193,7 +193,7 @@ class AuthenticationProvider {
         }
     }
     
-    /// Create an authoriazation code request to request an access token
+    /// Create an authorization code request to request an access token
     /// - Returns: `Single<AuthorizationCodeRequest>`
     func createAuthorizationCodeRequest(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
         return Single<AuthorizationCodeRequest>.create { [weak self] observer in
