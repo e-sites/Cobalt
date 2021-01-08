@@ -43,8 +43,11 @@ class APIClient: Cobalt.Client {
     
    private init() {
       let config = Cobalt.Config {
+         $0.authentication.path = "/oauth/v2/token"
+         $0.authentication.authorizationPath = "/oauth/v2/connect"
          $0.authentication.clientID = "my_oauth_client_id"
          $0.authentication.clientSecret = "my_oauth_client_secret"
+         $0.authentication.pkceEnabled = false // Disabled by default
          $0.host = "https://api.domain.com"
       }
       super.init(config: config)
@@ -194,6 +197,95 @@ class APIClient: Cobalt.Client {
 }
 
 ```
+### `authorization_grant`
+
+This grant type requires the user to sign in in a webview or browser. To enable this type of authentication, add `.oauth2(.authorizationCode)` to the `Cobalt.Request`.
+ If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token.
+
+```swift
+class APIClient: Cobalt.Client {
+    // ...
+
+    func profile() -> Promise<User> {
+        let request = Cobalt.Request({
+            $0.authentication = .oauth2(.authorizationCode)
+            $0.path = "/user/profile"
+        })
+
+        return request(request).then { json -> Promise<User> in
+            let user = try json["data"].map(to: User.self)
+            return Promise(user)
+        }
+    }
+}
+
+```
+
+Before requesting the profile, the user needs to sign in. To simplify, Cobalt can create an `AuthorizationCodeRequest` for you, which contains the url you need to redirect the user to:
+
+```swift
+public struct AuthorizationCodeRequest {
+    public var url: URL
+    public var redirectUri: String
+    public var state: String?
+    public var codeVerifier: String?
+}
+
+class OAuthAuthenticator {
+    // ...
+    
+    private var presentedViewController: UIViewController?
+    
+    func login() {
+        // Cobalt uses the credentials you provided in the config
+        // When you enabled PKCE, Cobalt will also create the code challenge and verifier for you
+        // The code verifier is returned to you in the AuthorizationCodeRequest
+        client.startAuthorizationFlow(
+            scope: ["openid", "profile", "email", "offline_access"],
+            redirectUri: "app://oauth/authorized"
+        ).subscribe(onSuccess: { [weak self] request in
+            self?.request = request
+            
+            let safariController = SFSafariViewController(url: request.url)
+            self?.presentedViewController = UINavigationController(rootViewController: safariController)
+            self?.presentedViewController!.setNavigationBarHidden(true, animated: false)
+            
+            viewController.present(
+                (self?.presentedViewController)!,
+                animated: true,
+                completion: nil
+            )
+        }, onError: { error in
+            print("error: \(error)")
+        }).disposed(by: disposeBag)
+    }
+    
+    // You execute this when receiving the callback from: "app://oauth/authorized?code=code&scope=scope&state=state"
+    func getAccessToken(from code: String, scope: String? = nil, state: String? = nil) -> Single<Void> {
+        defer {
+            presentedViewController = nil
+        }
+        
+        if let presentedViewController = presentedViewController {
+            presentedViewController.dismiss(animated: true, completion: nil)
+        }
+        
+        // Validate that the state of the callback equals the state created by Cobalt
+        // Perform some extra validation by your needs
+        if request.state != state {
+            return Single<Void>.error(Error.invalidUrl)
+        }
+        
+        client.requestTokenFromAuthorizationCode(initialRequest: request, code: code).subscribe(onSuccess: {
+            // The user is signed in successfully 
+        }, onError: { error in
+            // Something went wrong, notify the user
+        })
+    }
+}
+```
+
+
 ### `client_credentials`
 
 You have to provide the `.oauth2(.clientCredentials)` authentication for the `Cobalt.Request`
