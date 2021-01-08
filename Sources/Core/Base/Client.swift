@@ -109,14 +109,7 @@ open class Client: ReactiveCompatible {
             return queue.single(of: request) ?? Single<JSON>.error(Error.unknown().set(request: request))
         }
         
-        if host.hasSuffix("/") {
-            host = String(host.dropLast())
-        }
-        var path = request.path
-        if path.hasPrefix("/") {
-            path = String(path.dropFirst())
-        }
-        let urlString = host + "/" + path
+        let urlString = String.combined(host: host, path: request.path)
 
         // Define encoding
         let encoding: ParameterEncoding
@@ -281,6 +274,14 @@ open class Client: ReactiveCompatible {
             "password": password
         ]
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
+    }
+    
+    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
+        return authProvider.createAuthorizationCodeRequest(scope: scope, redirectUri: redirectUri)
+    }
+    
+    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> Single<Void> {
+        return authProvider.requestTokenFromAuthorizationCode(initialRequest: request, code: code)
     }
     
     /// Handle the result of a manual login call
