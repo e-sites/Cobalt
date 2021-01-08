@@ -197,7 +197,7 @@ class APIClient: Cobalt.Client {
 }
 
 ```
-### `authorization_grant`
+### `authorization_code`
 
 This grant type requires the user to sign in in a webview or browser. To enable this type of authentication, add `.oauth2(.authorizationCode)` to the `Cobalt.Request`.
  If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token.
