@@ -245,12 +245,12 @@ open class Client: ReactiveCompatible {
                             self?.logger?.error("#\(requestID) Original: \(error)")
                             self?.logger?.error("#\(requestID) Error: \(apiError)")
                         }
-                        observer(.error(apiError))
+                        observer(.failure(apiError))
                         return
                     }
 
                     guard let responseJSON = json else {
-                        observer(.error(Error.empty.set(request: request)))
+                        observer(.failure(Error.empty.set(request: request)))
                         return
                     }
                     observer(.success(responseJSON))

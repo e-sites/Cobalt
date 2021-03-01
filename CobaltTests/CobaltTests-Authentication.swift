@@ -33,7 +33,7 @@ class CobaltTestsAuthentication: CobaltTests {
                 switch event {
                 case .success(let json):
                     XCTAssert(json["users"].arrayValue.count == 2)
-                case .error(let error):
+                case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
                 done?()

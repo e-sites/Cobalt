@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.1.4 (01-03-2021)
+- RxSwift update to v6
+
 ## v7.1.3 (10-12-2020)
 - Shortened logging option with no fallbacks
 

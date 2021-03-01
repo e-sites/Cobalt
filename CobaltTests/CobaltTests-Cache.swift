@@ -52,14 +52,14 @@ class CobaltTestsCache: CobaltTests {
                             switch event {
                             case .success(let json):
                                 XCTAssert(json["data"].arrayValue.count == 10)
-                            case .error(let error):
+                            case .failure(let error):
                                 XCTAssert(false, "\(error)")
                             }
                             done?()
                         }.disposed(by: self.disposeBag)
                     }
 
-                case .error(let error):
+                case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
             }.disposed(by: self.disposeBag)
@@ -92,13 +92,13 @@ class CobaltTestsCache: CobaltTests {
                     self.client.request(request).subscribe { event in
                         switch event {
                         case .success(let json):XCTAssert(json["data"].arrayValue.count == 5)
-                        case .error(let error):
+                        case .failure(let error):
                             XCTAssert(false, "\(error)")
                         }
                         done?()
                     }.disposed(by: self.disposeBag)
                     
-                case .error(let error):
+                case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
             }.disposed(by: self.disposeBag)
