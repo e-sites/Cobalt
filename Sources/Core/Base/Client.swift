@@ -179,11 +179,25 @@ open class Client: ReactiveCompatible {
         }
 
         return Promise<JSON>(on: .main) { [weak self] fulfill, reject in
-            Alamofire.request(request.urlString,
-                              method: request.httpMethod,
-                              parameters: request.parameters,
-                              encoding: request.useEncoding,
-                              headers: request.useHeaders)
+            let dataRequest: DataRequest
+            if let data = request.body {
+                var urlRequest = URLRequest(url: URL(string: request.urlString)!)
+                urlRequest.httpMethod = HTTPMethod.post.rawValue
+                request.headers?.forEach { key, value in
+                    urlRequest.setValue(value, forHTTPHeaderField: key)
+                }
+                urlRequest.httpBody = data
+                dataRequest = Alamofire.request(urlRequest)
+            } else {
+                dataRequest = Alamofire.request(request.urlString,
+                                         method: request.httpMethod,
+                                         parameters: request.parameters,
+                                         encoding: request.useEncoding,
+                                         headers: request.useHeaders)
+            }
+            
+            dataRequest.validate()
+
                 .validate()
                 .responseJSON { response in
 

@@ -16,6 +16,7 @@ public class Request {
     public var host: String?
     public var httpMethod: HTTPMethod = .get
     public var parameters: Parameters?
+    public var body: Data?
     public var headers: HTTPHeaders?
     public var encoding: ParameterEncoding?
     public var authentication: Authentication = .none
