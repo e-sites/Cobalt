@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.2.0 (17-03-2021)
+- Added raw body parameter to Request
+
 ## v7.1.4 (01-03-2021)
 - RxSwift update to v6
 
