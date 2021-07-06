@@ -104,7 +104,7 @@ class AuthenticationProvider {
         var parameters: Parameters = [:]
         var grantType = grantType
 
-        let host = (request.host ?? self.client.config.host) ?? ""
+        let host = (self.client.config.authentication.host ?? (request.host ?? self.client.config.host)) ?? ""
         if let accessTokenObj = AccessToken.get(host: host, grantType: grantType),
             let accessToken = accessTokenObj.accessToken {
 
@@ -168,7 +168,7 @@ class AuthenticationProvider {
 
         return client.request(request).flatMap { [weak self, client] json in
             let accessToken = try json.map(to: AccessToken.self)
-            accessToken.host = client?.config.host ?? ""
+            accessToken.host = client?.authenticationHost ?? ""
             accessToken.grantType = grantType
             accessToken.store()
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
@@ -318,7 +318,7 @@ class AuthenticationProvider {
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
-            let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
+            let accessToken = AccessToken(host: (client.config.authentication.host ?? (request.host ?? client.config.host)) ?? "")
             if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
             } else {
                 client.logger?.warning("Access-token expired; invalidating access-token")

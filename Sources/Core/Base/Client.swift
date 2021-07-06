@@ -47,7 +47,7 @@ open class Client: ReactiveCompatible {
     }
 
     public var accessToken: AccessToken? {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             return nil
         }
         return AccessToken(host: host)
@@ -55,6 +55,10 @@ open class Client: ReactiveCompatible {
 
     var logger: Logger? {
         return config.logging.logger
+    }
+    
+    var authenticationHost: String? {
+        return config.authentication.host ?? config.host
     }
 
     @objc
@@ -298,7 +302,7 @@ open class Client: ReactiveCompatible {
                          accessToken: String,
                          refreshToken: String,
                          expireDate: Date) {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             fatalError("No valid host set in the config")
         }
         
@@ -307,7 +311,7 @@ open class Client: ReactiveCompatible {
 
     public func clearAccessToken(forHost host: String? = nil) {
         authorizationGrantTypeSubject.onNext(nil)
-        guard let host = (host ?? config.host) else {
+        guard let host = (host ?? authenticationHost) else {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
         AccessToken(host: host).clear()
