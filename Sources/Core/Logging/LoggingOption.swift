@@ -17,9 +17,9 @@ public enum KeyLoggingOption {
     case ignore
 }
 
-public struct LoggingOption {
-    public let response: [String: KeyLoggingOption]?
-    public let request: [String: KeyLoggingOption]?
+public class LoggingOption {
+    internal(set) public var response: [String: KeyLoggingOption]?
+    internal(set) public var request: [String: KeyLoggingOption]?
 
     public init(request: [String: KeyLoggingOption]? = nil, response: [String: KeyLoggingOption]? = nil) {
         self.request = request

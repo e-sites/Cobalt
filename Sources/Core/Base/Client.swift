@@ -29,14 +29,18 @@ open class Client {
     var cancellables = Set<AnyCancellable>()
 
     public var accessToken: AccessToken? {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             return nil
         }
         return AccessToken(host: host)
     }
 
     var logger: Logger? {
-        return config.logger
+        return config.logging.logger
+    }
+    
+    var authenticationHost: String? {
+        return config.authentication.host ?? config.host
     }
 
     @objc
@@ -76,7 +80,6 @@ open class Client {
             
             return publisher
         }
-        
         if host.hasSuffix("/") {
             host = String(host.dropLast())
         }
@@ -84,7 +87,7 @@ open class Client {
         if path.hasPrefix("/") {
             path = String(path.dropFirst())
         }
-        let urlString = host + "/" + path
+        let urlString = String.combined(host: host, path: request.path)
 
         // Define encoding
         let encoding: ParameterEncoding
@@ -140,7 +143,7 @@ open class Client {
             self.requestID = 1
         }
         var loggingOptions: [String: KeyLoggingOption] = [:]
-        if config.maskTokens {
+        if config.logging.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
 
@@ -148,12 +151,12 @@ open class Client {
         let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
 
         if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
-            let headersDictionary = dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
+            let headersDictionary = Helpers.dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
 
         if !ignoreLoggingRequest {
-            let loggingParameters = dictionaryForLogging(request.parameters,
+            let loggingParameters = Helpers.dictionaryForLogging(request.parameters,
                                                          options: request.loggingOption?.request)
 
             logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
@@ -197,7 +200,7 @@ open class Client {
                         }
 
                         if let error = jsonResponse.error {
-                            let apiError = Error(from: error, response: response)
+                            let apiError = Error(from: error, response: response).set(request: request)
                             if !ignoreLoggingResponse {
                                 self?.logger?.error("#\(requestID) Original: \(error)")
                                 self?.logger?.error("#\(requestID) Error: \(apiError)")
@@ -212,6 +215,7 @@ open class Client {
                         }
                         promise(.success(cobaltResponse))
                 }
+
             }
         }.eraseToAnyPublisher()
     }
@@ -240,6 +244,14 @@ open class Client {
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
     
+    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, Error> {
+        return authProvider.createAuthorizationCodeRequest(scope: scope, redirectUri: redirectUri)
+    }
+    
+    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, Error> {
+        return authProvider.requestTokenFromAuthorizationCode(initialRequest: request, code: code)
+    }
+    
     /// Handle the result of a manual login call
     ///
     /// - Parameters:
@@ -254,7 +266,7 @@ open class Client {
                          accessToken: String,
                          refreshToken: String,
                          expireDate: Date) {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             fatalError("No valid host set in the config")
         }
         

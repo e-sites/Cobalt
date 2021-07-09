@@ -1,8 +1,34 @@
 # Changelog Cobalt
 
-## v8.0.0 (20-08-2020)
+## v8.0.0 (09-07-2021)
 - Replaced RxSwift with Combine
 - Removed SwiftyJSON dependency
+
+## v7.2.0 (08-01-2021)
+- Added option for PKCE to authorization configuration
+- Added ability to create AuthorizationCodeRequest to simplify authorization_code grant type
+
+## v7.1.3 (10-12-2020)
+- Shortened logging option with no fallbacks
+
+## v7.1.2 (13-11-2020)
+- authorization_code also needs refresh_token to refresh
+
+## v7.1.1 (06-11-2020)
+- authorization_code grant_type
+
+## v7.1.0 (05-11-2020)
+- Added authentication host
+- Better structure for the `Config` class
+
+## v7.0.9 (18-09-2020)
+- Mask parameters in Request debugDescription
+
+## v7.0.8 (03-09-2020)
+- Store `OAuthenticationGrantType`
+
+## v7.0.7 (03-09-2020)
+- Added request to the Error (for logging purposes)
 
 ## v7.0.6 (18-08-2020)
 - Fixed logging for non dictionary json responses

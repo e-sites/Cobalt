@@ -32,7 +32,7 @@ class CobaltTestsRequests: CobaltTests {
                 case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
-                done()
+                done?()
             }, receiveValue: { response in
                 if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
                     expect(data.count) == 10
@@ -40,6 +40,7 @@ class CobaltTestsRequests: CobaltTests {
                     XCTAssert(false, "Response \(response) is not a dictionary")
                 }
             }).store(in: &self.cancellables)
+
         }
     }
 
@@ -60,12 +61,12 @@ class CobaltTestsRequests: CobaltTests {
                             XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
                             return
                         }
-                        expect((underlyingError as! AFError).responseCode) == 404
+                        XCTAssert((underlyingError as! AFError).responseCode == 404)
                     } else {
                         XCTAssert(false, "Expect to have error 404, got \(error)")
                     }
                 }
-                done()
+                done?()
             }, receiveValue: { _ in
                 XCTAssert(false, "Should not get here")
             }).store(in: &self.cancellables)

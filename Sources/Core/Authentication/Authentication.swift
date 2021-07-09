@@ -17,12 +17,22 @@ public enum Authentication {
 public enum OAuthenticationGrantType: String {
     case clientCredentials = "client_credentials"
     case password
+    case authorizationCode = "authorization_code"
     case refreshToken = "refresh_token"
+    
+    var refreshUsingRefreshToken: Bool {
+        switch self {
+        case .authorizationCode, .password:
+            return true
+        default:
+            return false
+        }
+    }
 
     var level: Int {
         switch self {
         case .clientCredentials: return 1
-        case .password, .refreshToken: return 2
+        case .password, .refreshToken, .authorizationCode: return 2
         }
     }
 }

@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import Combine
+import CommonCrypto
 
 class AuthenticationProvider {
     private weak var client: Client!
@@ -34,11 +35,11 @@ class AuthenticationProvider {
         switch request.authentication {
         case .client:
             // Regular client_id / client_secret
-            guard let clientID = client.config.clientID, let clientSecret = client.config.clientSecret else {
+            guard let clientID = client.config.authentication.clientID, let clientSecret = client.config.authentication.clientSecret else {
                 return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
             }
 
-            switch client.config.clientAuthorization {
+            switch client.config.authentication.authorization {
             case .none:
                 break
             case .basicHeader:
@@ -65,15 +66,16 @@ class AuthenticationProvider {
                     request.parameters = parameters
                 }
 
-                if client.config.maskTokens {
+                if client.config.logging.maskTokens {
                     var parametersLoggingOptions: [String: KeyLoggingOption] = request.loggingOption?.request ?? [:]
                     
                     if parametersLoggingOptions["client_secret"] == nil {
                         parametersLoggingOptions["client_secret"] = .halfMasked
-                    }
-                    
-                    if request.loggingOption?.request == nil {
-                        request.loggingOption = LoggingOption(request: parametersLoggingOptions, response: request.loggingOption?.response)
+                        
+                        if request.loggingOption == nil {
+                            request.loggingOption = LoggingOption()
+                        }
+                        request.loggingOption?.request = parametersLoggingOptions
                     }
                 }
             }
@@ -100,7 +102,7 @@ class AuthenticationProvider {
         var parameters: Parameters = [:]
         var grantType = grantType
 
-        let host = (request.host ?? self.client.config.host) ?? ""
+        let host = (self.client.config.authentication.host ?? (request.host ?? self.client.config.host)) ?? ""
         if let accessTokenObj = AccessToken.get(host: host, grantType: grantType),
             let accessToken = accessTokenObj.accessToken {
 
@@ -116,13 +118,13 @@ class AuthenticationProvider {
             if request.loggingOption?.request?.isIgnoreAll != true {
                 client.logger?.warning("Access-token expired, refreshing ...")
             }
-            if grantType == .password, let refreshToken = accessTokenObj.refreshToken {
+            if grantType.refreshUsingRefreshToken, let refreshToken = accessTokenObj.refreshToken {
                 grantType = .refreshToken
                 parameters["refresh_token"] = refreshToken
             }
         }
 
-        if grantType == .password {
+        if grantType.refreshUsingRefreshToken {
             return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
         }
 
@@ -140,18 +142,20 @@ class AuthenticationProvider {
         parameters["grant_type"] = grantType.rawValue
 
         let request = Request {
-            $0.path = client.config.oauthEndpointPath
+            $0.path = client.config.authentication.path
             $0.httpMethod = .post
+            $0.host = client.config.authentication.host
             $0.encoding = URLEncoding.default
             $0.authentication = .client
             $0.parameters = parameters
             $0.loggingOption = LoggingOption(request: [
                 "password": .masked,
-                "refresh_token": .halfMasked,
-                "client_secret": .halfMasked
+                "username": .halfMasked,
+                "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
+                "client_secret": client.config.logging.maskTokens ? .halfMasked : .default
             ], response: [
-                "access_token": client.config.maskTokens ? .halfMasked : .default,
-                "refresh_token": client.config.maskTokens ? .halfMasked : .default,
+                "access_token": client.config.logging.maskTokens ? .halfMasked : .default,
+                "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
             ])
         }
 
@@ -173,16 +177,108 @@ class AuthenticationProvider {
             guard error == Error.invalidGrant, grantType == .refreshToken else {
                 throw error
             }
-            
             // If the server responds with 'invalid_grant' for a refresh_token grantType
-            // then the refresh-token is invalid and therefor the access-token is too.
+            // then the refresh-token is invalid and therefore the access-token is too.
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
             client?.clearAccessToken()
             throw Error.refreshTokenInvalidated
         }.mapError { error in
-            return Error(from: error)
+            return Error(from: error).set(request: request)
         }.eraseToAnyPublisher()
+    }
+    
+    /// Create an authorization code request to request an access token
+    /// - Returns: `Single<AuthorizationCodeRequest>`
+    func createAuthorizationCodeRequest(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, Error> {
+        return Deferred { [weak self] in
+            Future { promise in
+                guard let self = self else {
+                    promise(.failure(Error.unknown()))
+                    return
+                }
+                
+                guard let host = self.client.config.authentication.host,
+                      let clientId = self.client.config.authentication.clientID else {
+                    promise(.failure(Error.invalidRequest("Missing 'host' and/or 'clientId'")))
+                    return
+                }
+                
+                let state = UUID().uuidString
+                let scopes = scope.joined(separator: " ").urlEncoded
+                let urlString = String.combined(host: host, path: self.client.config.authentication.authorizationPath)
+                
+                var authURLString = urlString +
+                    "?client_id=\(clientId)" +
+                    "&response_type=code" +
+                    "&state=\(state)" +
+                    "&scope=\(scopes)" +
+                    "&redirect_uri=\(redirectUri.urlEncoded)"
+                
+                var codeVerifier: String? = nil
+                if self.client.config.authentication.pkceEnabled {
+                    codeVerifier = self._createCodeVerifier()
+                    let codeChallenge = self._createCodeChallenge(from: codeVerifier!)
+                    
+                    authURLString += "&code_challenge=\(codeChallenge)&code_challenge_method=S256"
+                }
+                
+                print("authUrl: \(authURLString)")
+                
+                guard let authURL = URL(string: authURLString) else {
+                    promise(.failure(Error.invalidUrl))
+                    return
+                }
+                
+                let request = AuthorizationCodeRequest(
+                    url: authURL,
+                    redirectUri: redirectUri,
+                    state: state,
+                    codeVerifier: codeVerifier
+                )
+                
+                promise(.success(request))
+                
+            }
+        }.eraseToAnyPublisher()
+    }
+    
+    func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, Error> {
+        var parameters = [
+            "redirect_uri": request.redirectUri,
+            "code": code,
+        ]
+        
+        if client.config.authentication.pkceEnabled, let codeVerifier = request.codeVerifier {
+            parameters["code_verifier"] = codeVerifier
+        }
+        
+        return sendOAuthRequest(grantType: .authorizationCode, parameters: parameters)
+    }
+    
+    private func _createCodeVerifier() -> String {
+        var buffer = [UInt8](repeating: 0, count: 64)
+        _ = SecRandomCopyBytes(kSecRandomDefault, buffer.count, &buffer)
+        
+        return Data(buffer).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: "=", with: "-")
+            .trimmingCharacters(in: .whitespaces)
+    }
+    
+    private func _createCodeChallenge(from verifier: String) -> String {
+        let codeVerifierBytes = verifier.data(using: .ascii)!
+        var buffer = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        codeVerifierBytes.withUnsafeBytes {
+            _ = CC_SHA256($0, CC_LONG(codeVerifierBytes.count), &buffer)
+        }
+        
+        return Data(buffer).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
+            .trimmingCharacters(in: .whitespaces)
     }
     
     ///
@@ -220,8 +316,9 @@ class AuthenticationProvider {
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
-            let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
-            if request.loggingOption?.request?.isIgnoreAll != true {
+            let accessToken = AccessToken(host: (client.config.authentication.host ?? (request.host ?? client.config.host)) ?? "")
+            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+            } else {
                 client.logger?.warning("Access-token expired; invalidating access-token")
             }
 

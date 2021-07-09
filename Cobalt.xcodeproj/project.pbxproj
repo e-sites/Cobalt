@@ -28,13 +28,15 @@
 		C37900302181DD1F00926793 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37900212181DD1F00926793 /* Request.swift */; };
 		C37900332181E26200926793 /* Cobalt.h in Headers */ = {isa = PBXBuildFile; fileRef = C37900322181E26200926793 /* Cobalt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F875824BC7EF8003EFD5B /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = C37F875724BC7EF8003EFD5B /* Logging */; };
-		C387776E24E68BDF00FAD2D8 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C387776D24E68BDF00FAD2D8 /* Nimble */; };
 		C387776F24E68BEF00FAD2D8 /* CobaltTests-Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */; };
 		C387777024E68D9800FAD2D8 /* CobaltTests-Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */; };
 		C387777124E68DB000FAD2D8 /* CobaltTests-Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */; };
 		C387777224E6905B00FAD2D8 /* CobaltTests-Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */; };
-		C387777524E6971100FAD2D8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C387777424E6971100FAD2D8 /* Alamofire */; };
 		C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B5C5D022A16796004331A9 /* LoggingOption.swift */; };
+		C3E44C5926982C96001FF6E2 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3E44C5826982C96001FF6E2 /* Alamofire */; };
+		C3E44C5E26982CB4001FF6E2 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E44C5D26982CB4001FF6E2 /* Helpers.swift */; };
+		C3E44C6026982D4B001FF6E2 /* AuthorizationCodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E44C5F26982D4B001FF6E2 /* AuthorizationCodeRequest.swift */; };
+		C3E44C6326982EBE001FF6E2 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = C3E44C6226982EBE001FF6E2 /* Nimble */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
 /* End PBXBuildFile section */
@@ -74,6 +76,8 @@
 		C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Requests.swift"; sourceTree = "<group>"; };
 		C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Authentication.swift"; sourceTree = "<group>"; };
 		C3B5C5D022A16796004331A9 /* LoggingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingOption.swift; sourceTree = "<group>"; };
+		C3E44C5D26982CB4001FF6E2 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		C3E44C5F26982D4B001FF6E2 /* AuthorizationCodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizationCodeRequest.swift; sourceTree = "<group>"; };
 		DFDA21F41D6741AD00683D7D /* Cobalt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cobalt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobaltTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA22031D6741AE00683D7D /* CobaltTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobaltTests.swift; sourceTree = "<group>"; };
@@ -87,8 +91,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C300416C24EEAAAD0052EF95 /* CryptoKit.framework in Frameworks */,
+				C3E44C5926982C96001FF6E2 /* Alamofire in Frameworks */,
 				C37F875824BC7EF8003EFD5B /* Logging in Frameworks */,
-				C387777524E6971100FAD2D8 /* Alamofire in Frameworks */,
 				C3439A712344A88A00817084 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,7 +102,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */,
-				C387776E24E68BDF00FAD2D8 /* Nimble in Frameworks */,
+				C3E44C6326982EBE001FF6E2 /* Nimble in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +154,7 @@
 			children = (
 				C37900172181DD1F00926793 /* Authentication.swift */,
 				C37900182181DD1F00926793 /* AccessToken.swift */,
+				C3E44C5F26982D4B001FF6E2 /* AuthorizationCodeRequest.swift */,
 				C37900192181DD1F00926793 /* AuthenticationProvider.swift */,
 			);
 			path = Authentication;
@@ -170,6 +175,7 @@
 				C379001D2181DD1F00926793 /* Error.swift */,
 				C379001E2181DD1F00926793 /* Config.swift */,
 				C379001F2181DD1F00926793 /* RequestQueue.swift */,
+				C3E44C5D26982CB4001FF6E2 /* Helpers.swift */,
 				C37900202181DD1F00926793 /* Client.swift */,
 				C37900212181DD1F00926793 /* Request.swift */,
 				C3427AD8230FC74E004865D2 /* ClientService.swift */,
@@ -252,7 +258,7 @@
 			packageProductDependencies = (
 				C3439A702344A88A00817084 /* KeychainAccess */,
 				C37F875724BC7EF8003EFD5B /* Logging */,
-				C387777424E6971100FAD2D8 /* Alamofire */,
+				C3E44C5826982C96001FF6E2 /* Alamofire */,
 			);
 			productName = APIBaseClient;
 			productReference = DFDA21F41D6741AD00683D7D /* Cobalt.framework */;
@@ -273,7 +279,7 @@
 			);
 			name = CobaltTests;
 			packageProductDependencies = (
-				C387776D24E68BDF00FAD2D8 /* Nimble */,
+				C3E44C6226982EBE001FF6E2 /* Nimble */,
 			);
 			productName = APIBaseClientTests;
 			productReference = DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */;
@@ -312,8 +318,8 @@
 			packageReferences = (
 				C3439A6F2344A88A00817084 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */,
-				C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */,
-				C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				C3E44C5726982C96001FF6E2 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				C3E44C6126982EBE001FF6E2 /* XCRemoteSwiftPackageReference "Nimble" */,
 			);
 			productRefGroup = DFDA21F51D6741AD00683D7D /* Products */;
 			projectDirPath = "";
@@ -348,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C316AF9F230FF03C0036E295 /* CachePolicy.swift in Sources */,
+				C3E44C5E26982CB4001FF6E2 /* Helpers.swift in Sources */,
 				C37900302181DD1F00926793 /* Request.swift in Sources */,
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
 				C379002F2181DD1F00926793 /* Client.swift in Sources */,
@@ -356,6 +363,7 @@
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
 				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
 				C37900242181DD1F00926793 /* CobaltResponse.swift in Sources */,
+				C3E44C6026982D4B001FF6E2 /* AuthorizationCodeRequest.swift in Sources */,
 				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
 				C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */,
@@ -634,20 +642,20 @@
 				minimumVersion = 1.3.0;
 			};
 		};
-		C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */ = {
+		C3E44C5726982C96001FF6E2 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mRs-/Nimble.git";
-			requirement = {
-				branch = Swift5.3;
-				kind = branch;
-			};
-		};
-		C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:Alamofire/Alamofire.git";
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.1;
+				minimumVersion = 5.4.3;
+			};
+		};
+		C3E44C6126982EBE001FF6E2 /* XCRemoteSwiftPackageReference "Nimble" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Quick/Nimble.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -663,15 +671,15 @@
 			package = C37F875624BC7EF8003EFD5B /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
 		};
-		C387776D24E68BDF00FAD2D8 /* Nimble */ = {
+		C3E44C5826982C96001FF6E2 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C387776A24E68BB800FAD2D8 /* XCRemoteSwiftPackageReference "Nimble" */;
-			productName = Nimble;
-		};
-		C387777424E6971100FAD2D8 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C387777324E6971100FAD2D8 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = C3E44C5726982C96001FF6E2 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		C3E44C6226982EBE001FF6E2 /* Nimble */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3E44C6126982EBE001FF6E2 /* XCRemoteSwiftPackageReference "Nimble" */;
+			productName = Nimble;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

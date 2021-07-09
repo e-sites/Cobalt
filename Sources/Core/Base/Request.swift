@@ -21,9 +21,6 @@ public class Request {
     public var authentication: Authentication = .none
     public var loggingOption: LoggingOption?
 
-    @available(*, deprecated, renamed: "loggingOption")
-    public var parametersLoggingOptions: [String: Any]?
-
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = HTTPHeaders()
     internal(set) public var urlString: String = ""
@@ -46,9 +43,14 @@ public class Request {
 
 extension Request: CustomStringConvertible {
     public var description: String {
-        return "<Request> [ uuid: \(uuid), " +
-            "path: \(path), " +
-            "httpMethod: \(httpMethod), " +
+        var parametersDescription = optionalDescription(nil)
+        if let parameters = self.parameters,
+           let dictionary = Helpers.dictionaryForLogging(parameters, options: loggingOption?.request) {
+            parametersDescription = String(describing: dictionary)
+        }
+        return "<Request> [ path: \(path), " +
+            "httpMethod: \(httpMethod.rawValue), " +
+            "parameters: \(parametersDescription), " +
         "authentication: \(authentication) ]"
     }
 }

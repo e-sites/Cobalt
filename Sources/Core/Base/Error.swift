@@ -15,6 +15,8 @@ public class Error: Swift.Error {
     private(set) public var response: CobaltResponse?
     private(set) public var message: String?
     private(set) public var underlyingError: Swift.Error?
+    
+    internal(set) public var request: Request?
 
     public var domain: String {
         return "com.esites.Cobalt"
@@ -34,13 +36,17 @@ public class Error: Swift.Error {
     public static var invalidClient: Error {
         return Error(code: 202, message: "invalid_client")
     }
-
+    
     public static var refreshTokenInvalidated: Error {
         return Error(code: 203, message: "Refresh token is invalidated")
     }
 
     public static var missingClientAuthentication: Error {
         return Error(code: 204, message: "Missing client authentication")
+    }
+    
+    public static var invalidUrl: Error {
+        return Error(code: 205, message: "Authorization code request url is invalid")
     }
 
     public static func unknown(_ response: CobaltResponse? = nil) -> Error {
@@ -60,6 +66,11 @@ public class Error: Swift.Error {
         }
         
         return apiError
+    }
+    
+    func set(request: Request) -> Error {
+        self.request = request
+        return self
     }
 
     // MARK: - Constructor
@@ -101,6 +112,7 @@ public class Error: Swift.Error {
         self.message = error.message
         self.underlyingError = error.underlyingError
         self.response = error.response
+        self.request = error.request
     }
 }
 
@@ -108,11 +120,13 @@ extension Error: CustomStringConvertible {
     public var description: String {
         let jsonString = response?.flatJSONString ?? "nil"
         
-        return "<Error> [ code: \(code), " +
+        return "<Cobalt.Error> [ code: \(code), " +
             "response: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
+            "request: \(optionalDescription(request)), " +
+            "json: \(jsonString), " +
             "underlying: \(optionalDescription(underlyingError)) " +
-        "]"
+         "]"
     }
 }
 

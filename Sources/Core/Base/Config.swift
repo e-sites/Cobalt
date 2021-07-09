@@ -10,18 +10,30 @@ import Foundation
 import Logging
 
 public class Config {
+    
     public enum ClientAuthorization: String {
         case basicHeader
         case requestBody
     }
+    
+    public class Authentication {
+        public var path = "/oauth/v2/token"
+        public var authorizationPath = "/oauth/v2/authorize"
+        public var authorization: Config.ClientAuthorization? = .basicHeader
+        public var clientID: String?
+        public var clientSecret: String?
+        public var host: String?
+        public var pkceEnabled: Bool = false
+    }
+    
+    public class Logging {
+        public var logger: Logger?
+        public var maskTokens = false
+    }
 
-    public var clientID: String?
-    public var clientSecret: String?
-    public var logger: Logging.Logger?
+    public let authentication = Authentication()
+    public let logging = Logging()
     public var host: String?
-    public var maskTokens = false
-    public var oauthEndpointPath = "/oauth/v2/token"
-    public var clientAuthorization: Config.ClientAuthorization? = .basicHeader
 
     public init(_ builder: ((Config) -> Void)) {
         builder(self)

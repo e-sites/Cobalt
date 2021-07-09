@@ -3,11 +3,29 @@
     "pins": [
       {
         "package": "Alamofire",
-        "repositoryURL": "git@github.com:Alamofire/Alamofire.git",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
-          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
-          "version": "5.2.2"
+          "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
+          "version": "5.4.3"
+        }
+      },
+      {
+        "package": "CwlCatchException",
+        "repositoryURL": "https://github.com/mattgallagher/CwlCatchException.git",
+        "state": {
+          "branch": null,
+          "revision": "682841464136f8c66e04afe5dbd01ab51a3a56f2",
+          "version": "2.1.0"
+        }
+      },
+      {
+        "package": "CwlPreconditionTesting",
+        "repositoryURL": "https://github.com/mattgallagher/CwlPreconditionTesting.git",
+        "state": {
+          "branch": null,
+          "revision": "02b7a39a99c4da27abe03cab2053a9034379639f",
+          "version": "2.0.0"
         }
       },
       {
@@ -21,11 +39,11 @@
       },
       {
         "package": "Nimble",
-        "repositoryURL": "https://github.com/mRs-/Nimble.git",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
         "state": {
-          "branch": "Swift5.3",
-          "revision": "a0b0ab7db759ebf72b843f37370ea3da0eb2fb29",
-          "version": null
+          "branch": null,
+          "revision": "af1730dde4e6c0d45bf01b99f8a41713ce536790",
+          "version": "9.2.0"
         }
       },
       {

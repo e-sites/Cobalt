@@ -7,31 +7,37 @@
 //
 
 import XCTest
-import Nimble
 import Logging
 import Alamofire
 import Combine
+import Nimble
 @testable import Cobalt
 
 class CobaltTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
     lazy var config = Config {
-        $0.clientID = "id"
-        $0.clientSecret = "secret"
-        $0.logger = Logger(label: "com.esites.cobalt-test")
-        $0.logger?.logLevel = .trace
-        $0.clientAuthorization = .requestBody
+        $0.authentication.clientID = "id"
+        $0.authentication.clientSecret = "secret"
+        $0.authentication.authorization = .requestBody
+        $0.logging.logger = Logger(label: "com.esites.cobalt-test")
+        $0.logging.logger?.logLevel = .trace
+        
         $0.host = "https://reqres.in"
     }
     lazy var client = Cobalt.Client(config: self.config)
-
     override func setUp() {
         super.setUp()
-        Nimble.AsyncDefaults.Timeout = 15
-        Nimble.AsyncDefaults.PollInterval = 0.1
+        Nimble.AsyncDefaults.timeout = .seconds(15)
+        Nimble.AsyncDefaults.pollInterval = .milliseconds(100)
     }
     
     override func tearDown() {
         super.tearDown()
+    }
+    
+    func waitUntil(_ handler: @escaping (((() -> Void)?) -> Void)) {
+        let expectation = self.expectation(description: "test")
+        handler({ expectation.fulfill() })
+        waitForExpectations(timeout: 15, handler: nil)
     }
 }
