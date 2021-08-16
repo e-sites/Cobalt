@@ -29,7 +29,7 @@ class CobaltTestsRequests: CobaltTests {
                 case .success(let json):
                     XCTAssert(json["data"].arrayValue.count == 10)
 
-                case .error(let error):
+                case .failure(let error):
                     XCTAssert(false, "\(error)")
                 }
                 done?()
@@ -48,7 +48,7 @@ class CobaltTestsRequests: CobaltTests {
                 case .success:
                     XCTAssert(false, "Should not get here")
 
-                case .error(let error):
+                case .failure(let error):
                     if !(error is Cobalt.Error) {
                         XCTAssert(false, "Expect to be a Error, got: \(error)")
                         return
