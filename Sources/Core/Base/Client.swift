@@ -47,7 +47,7 @@ open class Client: ReactiveCompatible {
     }
 
     public var accessToken: AccessToken? {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             return nil
         }
         return AccessToken(host: host)
@@ -55,6 +55,10 @@ open class Client: ReactiveCompatible {
 
     var logger: Logger? {
         return config.logging.logger
+    }
+    
+    var authenticationHost: String? {
+        return config.authentication.host ?? config.host
     }
 
     @objc
@@ -109,14 +113,7 @@ open class Client: ReactiveCompatible {
             return queue.single(of: request) ?? Single<JSON>.error(Error.unknown().set(request: request))
         }
         
-        if host.hasSuffix("/") {
-            host = String(host.dropLast())
-        }
-        var path = request.path
-        if path.hasPrefix("/") {
-            path = String(path.dropFirst())
-        }
-        let urlString = host + "/" + path
+        let urlString = String.combined(host: host, path: request.path)
 
         // Define encoding
         let encoding: ParameterEncoding
@@ -295,6 +292,14 @@ open class Client: ReactiveCompatible {
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
     
+    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
+        return authProvider.createAuthorizationCodeRequest(scope: scope, redirectUri: redirectUri)
+    }
+    
+    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> Single<Void> {
+        return authProvider.requestTokenFromAuthorizationCode(initialRequest: request, code: code)
+    }
+    
     /// Handle the result of a manual login call
     ///
     /// - Parameters:
@@ -309,7 +314,7 @@ open class Client: ReactiveCompatible {
                          accessToken: String,
                          refreshToken: String,
                          expireDate: Date) {
-        guard let host = config.host else {
+        guard let host = authenticationHost else {
             fatalError("No valid host set in the config")
         }
         
@@ -318,7 +323,7 @@ open class Client: ReactiveCompatible {
 
     public func clearAccessToken(forHost host: String? = nil) {
         authorizationGrantTypeSubject.onNext(nil)
-        guard let host = (host ?? config.host) else {
+        guard let host = (host ?? authenticationHost) else {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
         AccessToken(host: host).clear()

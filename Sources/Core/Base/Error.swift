@@ -38,13 +38,17 @@ public class Error: Swift.Error {
     public static var invalidClient: Error {
         return Error(code: 202, message: "invalid_client")
     }
-
+    
     public static var refreshTokenInvalidated: Error {
         return Error(code: 203, message: "Refresh token is invalidated")
     }
 
     public static var missingClientAuthentication: Error {
         return Error(code: 204, message: "Missing client authentication")
+    }
+    
+    public static var invalidUrl: Error {
+        return Error(code: 205, message: "Authorization code request url is invalid")
     }
 
     public static func unknown(_ json: JSON? = nil) -> Error {

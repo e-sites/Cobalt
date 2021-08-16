@@ -1,5 +1,9 @@
 # Changelog Cobalt
 
+## v7.3.0 (16-08-2021)
+- Added option for PKCE to authorization configuration
+- Added ability to create AuthorizationCodeRequest to simplify authorization_code grant type
+
 ## v7.2.0 (17-03-2021)
 - Added raw body parameter to Request
 

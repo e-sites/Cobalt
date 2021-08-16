@@ -18,10 +18,12 @@ public class Config {
     
     public class Authentication {
         public var path = "/oauth/v2/token"
+        public var authorizationPath = "/oauth/v2/authorize"
         public var authorization: Config.ClientAuthorization? = .basicHeader
         public var clientID: String?
         public var clientSecret: String?
         public var host: String?
+        public var pkceEnabled: Bool = false
     }
     
     public class Logging {

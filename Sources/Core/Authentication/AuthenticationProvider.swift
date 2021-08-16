@@ -11,6 +11,7 @@ import Alamofire
 import RxCocoa
 import RxSwift
 import SwiftyJSON
+import CommonCrypto
 
 class AuthenticationProvider {
     private weak var client: Client!
@@ -103,7 +104,7 @@ class AuthenticationProvider {
         var parameters: Parameters = [:]
         var grantType = grantType
 
-        let host = (request.host ?? self.client.config.host) ?? ""
+        let host = (self.client.config.authentication.host ?? (request.host ?? self.client.config.host)) ?? ""
         if let accessTokenObj = AccessToken.get(host: host, grantType: grantType),
             let accessToken = accessTokenObj.accessToken {
 
@@ -167,7 +168,7 @@ class AuthenticationProvider {
 
         return client.request(request).flatMap { [weak self, client] json in
             let accessToken = try json.map(to: AccessToken.self)
-            accessToken.host = client?.config.host ?? ""
+            accessToken.host = client?.authenticationHost ?? ""
             accessToken.grantType = grantType
             accessToken.store()
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
@@ -183,13 +184,103 @@ class AuthenticationProvider {
                 throw error
             }
 
-            // If the server responds with 'invalid_grant' for a refresh_token granType
-            // then the refresh-token is invalid and therefor the access-token is too.
+            // If the server responds with 'invalid_grant' for a refresh_token grantType
+            // then the refresh-token is invalid and therefore the access-token is too.
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
             client?.clearAccessToken()
             throw Error.refreshTokenInvalidated
         }
+    }
+    
+    /// Create an authorization code request to request an access token
+    /// - Returns: `Single<AuthorizationCodeRequest>`
+    func createAuthorizationCodeRequest(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
+        return Single<AuthorizationCodeRequest>.create { [weak self] observer in
+            guard let self = self else {
+                return Disposables.create()
+            }
+            
+            guard let host = self.client.config.authentication.host,
+                  let clientId = self.client.config.authentication.clientID else {
+                observer(.error(Error.invalidRequest("Missing 'host' and/or 'clientId'")))
+                return Disposables.create()
+            }
+            
+            let state = UUID().uuidString
+            let scopes = scope.joined(separator: " ").urlEncoded
+            let urlString = String.combined(host: host, path: self.client.config.authentication.authorizationPath)
+
+            var authURLString = urlString +
+                "?client_id=\(clientId)" +
+                "&response_type=code" +
+                "&state=\(state)" +
+                "&scope=\(scopes)" +
+                "&redirect_uri=\(redirectUri.urlEncoded)"
+            
+            var codeVerifier: String? = nil
+            if self.client.config.authentication.pkceEnabled {
+                codeVerifier = self._createCodeVerifier()
+                let codeChallenge = self._createCodeChallenge(from: codeVerifier!)
+                    
+                authURLString += "&code_challenge=\(codeChallenge)&code_challenge_method=S256"
+            }
+            
+            print("authUrl: \(authURLString)")
+                    
+            guard let authURL = URL(string: authURLString) else {
+                observer(.error(Error.invalidUrl))
+                return Disposables.create()
+            }
+            
+            let request = AuthorizationCodeRequest(
+                url: authURL,
+                redirectUri: redirectUri,
+                state: state,
+                codeVerifier: codeVerifier
+            )
+
+            observer(.success(request))
+            return Disposables.create()
+        }
+    }
+    
+    func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> Single<Void> {
+        var parameters = [
+            "redirect_uri": request.redirectUri,
+            "code": code,
+        ]
+        
+        if self.client.config.authentication.pkceEnabled, let codeVerifier = request.codeVerifier {
+            parameters["code_verifier"] = codeVerifier
+        }
+        
+        return sendOAuthRequest(grantType: .authorizationCode, parameters: parameters)
+    }
+    
+    private func _createCodeVerifier() -> String {
+        var buffer = [UInt8](repeating: 0, count: 64)
+        _ = SecRandomCopyBytes(kSecRandomDefault, buffer.count, &buffer)
+        
+        return Data(buffer).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: "=", with: "-")
+            .trimmingCharacters(in: .whitespaces)
+    }
+    
+    private func _createCodeChallenge(from verifier: String) -> String {
+        let codeVerifierBytes = verifier.data(using: .ascii)!
+        var buffer = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        codeVerifierBytes.withUnsafeBytes {
+            _ = CC_SHA256($0, CC_LONG(codeVerifierBytes.count), &buffer)
+        }
+        
+        return Data(buffer).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
+            .trimmingCharacters(in: .whitespaces)
     }
     
     ///
@@ -227,7 +318,7 @@ class AuthenticationProvider {
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
-            let accessToken = AccessToken(host: (request.host ?? client.config.host) ?? "")
+            let accessToken = AccessToken(host: (client.config.authentication.host ?? (request.host ?? client.config.host)) ?? "")
             if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
             } else {
                 client.logger?.warning("Access-token expired; invalidating access-token")
