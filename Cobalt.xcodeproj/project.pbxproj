@@ -39,6 +39,7 @@
 		C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B5C5D022A16796004331A9 /* LoggingOption.swift */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
+		E90155A126CA359D000610C2 /* AuthorizationCodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90155A026CA359D000610C2 /* AuthorizationCodeRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		DFDA22031D6741AE00683D7D /* CobaltTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobaltTests.swift; sourceTree = "<group>"; };
 		DFDA22051D6741AE00683D7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DFDA22131D6741C200683D7D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E90155A026CA359D000610C2 /* AuthorizationCodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizationCodeRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +157,7 @@
 				C37900172181DD1F00926793 /* Authentication.swift */,
 				C37900182181DD1F00926793 /* AccessToken.swift */,
 				C37900192181DD1F00926793 /* AuthenticationProvider.swift */,
+				E90155A026CA359D000610C2 /* AuthorizationCodeRequest.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -365,6 +368,7 @@
 				C3B5C5D122A16796004331A9 /* LoggingOption.swift in Sources */,
 				C316AFA5230FF5250036E295 /* String+Extension.swift in Sources */,
 				C37900242181DD1F00926793 /* SwiftyJSON+Extension.swift in Sources */,
+				E90155A126CA359D000610C2 /* AuthorizationCodeRequest.swift in Sources */,
 				C37900282181DD1F00926793 /* Authentication.swift in Sources */,
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
 				C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */,

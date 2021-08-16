@@ -101,7 +101,7 @@ open class Client: ReactiveCompatible {
     /// - Returns: `Promise<JSON>`
     open func request(_ request: Request) -> Single<JSON> {
         // Strip slashes to form a valid urlString
-        guard var host = (request.host ?? config.host) else {
+        guard let host = (request.host ?? config.host) else {
             return Single<JSON>.error(Error.invalidRequest("Missing 'host'").set(request: request))
         }
 
