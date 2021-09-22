@@ -19,7 +19,6 @@ public class Request {
     public var body: Data?
     public var headers: HTTPHeaders?
     public var encoding: ParameterEncoding?
-    public var body: Data?
     public var authentication: Authentication = .none
     public var loggingOption: LoggingOption?
 

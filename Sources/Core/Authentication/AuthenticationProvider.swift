@@ -225,9 +225,7 @@ class AuthenticationProvider {
                     
                 authURLString += "&code_challenge=\(codeChallenge)&code_challenge_method=S256"
             }
-            
-            print("authUrl: \(authURLString)")
-                    
+                                
             guard let authURL = URL(string: authURLString) else {
                 observer(.failure(Error.invalidUrl))
                 return Disposables.create()

@@ -216,13 +216,13 @@ open class Client: ReactiveCompatible {
             if let data = request.body {
                 var urlRequest = URLRequest(url: URL(string: request.urlString)!)
                 urlRequest.httpMethod = HTTPMethod.post.rawValue
-                request.headers?.forEach { key, value in
-                    urlRequest.setValue(value, forHTTPHeaderField: key)
+                request.headers?.forEach { header in
+                    urlRequest.setValue(header.value, forHTTPHeaderField: header.name)
                 }
                 urlRequest.httpBody = data
-                dataRequest = Alamofire.request(urlRequest)
+                dataRequest = AF.request(urlRequest)
             } else {
-                dataRequest = Alamofire.request(request.urlString,
+                dataRequest = AF.request(request.urlString,
                                          method: request.httpMethod,
                                          parameters: request.parameters,
                                          encoding: request.useEncoding,
