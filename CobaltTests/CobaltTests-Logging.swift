@@ -8,8 +8,6 @@
 
 import Foundation
 import XCTest
-import Nimble
-import Promises
 import Alamofire
 import Foundation
 @testable import Cobalt
@@ -28,7 +26,7 @@ class CobaltTestsLogging: CobaltTests {
             "password": "Test123"
         ]
 
-        guard let logParams = client.dictionaryForLogging(dictionary, options: [
+        guard let logParams = Helpers.dictionaryForLogging(dictionary, options: [
             "password": .masked,
             "some": .shortened,
             "path.to.token": .replaced("Foobar"),
@@ -62,6 +60,44 @@ class CobaltTestsLogging: CobaltTests {
         } else {
             XCTAssert(false, "Expected 'path.to' in dictionary")
         }
-
+    }
+    
+    func testMaskRequest() {
+        let request = Request {
+            $0.httpMethod = .post
+            $0.path = "/oauth/v2/token"
+            $0.parameters = [
+                "password": "hello-there",
+                "username": "bas",
+                "email": "bas@e-sites.nl"
+            ]
+            $0.loggingOption = LoggingOption(request: [
+                "password": .masked,
+                "email": .halfMasked
+            ], response: [
+                "access_token": .halfMasked
+            ])
+        }
+        
+        var debugString = String(describing: request)
+        print("\(request)")
+        XCTAssert(debugString.contains("\"password\": \"***\""))
+        XCTAssert("\(request)".contains("\"email\": \"bas@e-s***\""))
+        
+        let error = Cobalt.Error(code: 100).set(request: request)
+        debugString = String(describing: error)
+        print("\(error)")
+        XCTAssert(debugString.contains("\"password\": \"***\""))
+        XCTAssert("\(error)".contains("\"email\": \"bas@e-s***\""))
+        client.config.logging.maskTokens = true
+        waitUntil { done in
+            self.client.login(username: "bas", password: "hello-there").subscribe(onSuccess: { _ in
+                XCTAssert(false, "Should not come here")
+                done?()
+            }, onError: { error in
+                XCTAssert("\(error)".contains("\"password\": \"***\""))
+                done?()
+            }).disposed(by: self.disposeBag)
+        }
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 
 func optionalDescription(_ obj: Any?, _ placeholder: String = "(nil)") -> String {
     if let obj = obj {
-        return "\(obj)"
+        return String(describing: obj)
     }
     return placeholder
 }

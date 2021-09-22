@@ -7,8 +7,8 @@
 //
 
 import XCTest
-import Nimble
-import Promises
+import RxSwift
+import RxCocoa
 import Alamofire
 import Foundation
 @testable import Cobalt
@@ -24,14 +24,16 @@ class CobaltTestsRequests: CobaltTests {
                 ]
             }
 
-            self.client.request(request)
-            .then { json in
-                expect(json["data"].arrayValue.count) == 10
-            }.catch { error in
-                XCTAssert(false, "\(error)")
-            }.always {
-                done()
-            }
+            self.client.request(request).subscribe { event in
+                switch event {
+                case .success(let json):
+                    XCTAssert(json["data"].arrayValue.count == 10)
+
+                case .failure(let error):
+                    XCTAssert(false, "\(error)")
+                }
+                done?()
+            }.disposed(by: self.disposeBag)
         }
     }
 
@@ -41,27 +43,29 @@ class CobaltTestsRequests: CobaltTests {
                 $0.path = "/some_strange_request"
             }
 
-            self.client.request(request).then { json in
-                XCTAssert(false, "Should not get here")
-            }.catch { error in
-                if !(error is Cobalt.Error) {
-                    XCTAssert(false, "Expect to be a Error, got: \(error)")
-                    return
-                }
-                let apiError = error as! Cobalt.Error
-                if let underlyingError = apiError.underlyingError {
-                    if !(underlyingError is AFError) {
-                        XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
+            self.client.request(request).subscribe { event in
+                switch event {
+                case .success:
+                    XCTAssert(false, "Should not get here")
+
+                case .failure(let error):
+                    if !(error is Cobalt.Error) {
+                        XCTAssert(false, "Expect to be a Error, got: \(error)")
                         return
                     }
-                    expect((underlyingError as! AFError).responseCode) == 404
-                } else {
-                    XCTAssert(false, "Expect to have error 404, got \(apiError)")
+                    let apiError = error as! Cobalt.Error
+                    if let underlyingError = apiError.underlyingError {
+                        if !(underlyingError is AFError) {
+                            XCTAssert(false, "Expect to be a underlying AFError, got: \(underlyingError)")
+                            return
+                        }
+                        XCTAssert((underlyingError as! AFError).responseCode == 404)
+                    } else {
+                        XCTAssert(false, "Expect to have error 404, got \(apiError)")
+                    }
                 }
-
-            }.always {
-                done()
-            }
+                done?()
+            }.disposed(by: self.disposeBag)
         }
     }
 }

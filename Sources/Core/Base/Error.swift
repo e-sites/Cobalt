@@ -17,6 +17,8 @@ public class Error: Swift.Error {
     private(set) public var json: JSON?
     private(set) public var message: String?
     private(set) public var underlyingError: Swift.Error?
+    
+    internal(set) public var request: Request?
 
     public var domain: String {
         return "com.esites.Cobalt"
@@ -36,13 +38,17 @@ public class Error: Swift.Error {
     public static var invalidClient: Error {
         return Error(code: 202, message: "invalid_client")
     }
-
+    
     public static var refreshTokenInvalidated: Error {
         return Error(code: 203, message: "Refresh token is invalidated")
     }
 
     public static var missingClientAuthentication: Error {
         return Error(code: 204, message: "Missing client authentication")
+    }
+    
+    public static var invalidUrl: Error {
+        return Error(code: 205, message: "Authorization code request url is invalid")
     }
 
     public static func unknown(_ json: JSON? = nil) -> Error {
@@ -62,6 +68,11 @@ public class Error: Swift.Error {
         }
         
         return apiError
+    }
+    
+    func set(request: Request) -> Error {
+        self.request = request
+        return self
     }
 
     // MARK: - Constructor
@@ -103,20 +114,24 @@ public class Error: Swift.Error {
         self.message = error.message
         self.underlyingError = error.underlyingError
         self.json = error.json
+        self.request = error.request
     }
 }
 
 extension Error: CustomStringConvertible {
     public var description: String {
-        var jsonString = "nil"
+        var jsonString = "(nil)"
+        
         if let json = self.json {
-            jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "nil"
+            jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "(nil)"
         }
+        
         return "<Error> [ code: \(code), " +
-            "json: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
+            "request: \(optionalDescription(request)), " +
+            "json: \(optionalDescription(jsonString)), " +
             "underlying: \(optionalDescription(underlyingError)) " +
-        "]"
+         "]"
     }
 }
 

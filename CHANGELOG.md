@@ -1,5 +1,71 @@
 # Changelog Cobalt
 
+## v7.3.0 (16-08-2021)
+- Added option for PKCE to authorization configuration
+- Added ability to create AuthorizationCodeRequest to simplify authorization_code grant type
+
+## v7.2.0 (17-03-2021)
+- Added raw body parameter to Request
+
+## v7.1.4 (01-03-2021)
+- RxSwift update to v6
+
+## v7.1.3 (10-12-2020)
+- Shortened logging option with no fallbacks
+
+## v7.1.2 (13-11-2020)
+- authorization_code also needs refresh_token to refresh
+
+## v7.1.1 (06-11-2020)
+- authorization_code grant_type
+
+## v7.1.0 (05-11-2020)
+- Added authentication host
+- Better structure for the `Config` class
+
+## v7.0.9 (18-09-2020)
+- Mask parameters in Request debugDescription
+
+## v7.0.8 (03-09-2020)
+- Store `OAuthenticationGrantType`
+
+## v7.0.7 (03-09-2020)
+- Added request to the Error (for logging purposes)
+
+## v7.0.6 (18-08-2020)
+- Fixed logging for non dictionary json responses
+
+## v7.0.5 (17-08-2020)
+- Fixed a bug where an error was thrown when no authentication is required
+
+## v7.0.4 (16-07-2020)
+- LoggingOption "*" ignore available
+
+## v7.0.2 (16-07-2020)
+- Minimum requirement: 10.0
+- Updated Alamofire to v5
+
+## v7.0.1 (16-07-2020)
+- CocoaPods
+
+## v7.0.0 (13-07-2020)
+- Use swift-log as logging framework
+
+## v6.0.1 (22-06-2020)
+- Fixed a bug where request would be send twice
+
+## v6.0.0 (22-06-2020)
+- Replaced Promises with RxSwift
+
+## v5.10.7 (13-05-2020)
+- `open` login
+
+## v5.10.6 (11-05-2020)
+- Fixed a bug with custom headers
+
+## v5.10.5 (17-04-2020)
+- Fixed bug in logging request options for dictionaries
+
 ## v5.10.3 (15-11-2019)
 - Make `request` open
 

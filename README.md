@@ -10,65 +10,23 @@ Cobalt is part of the **[E-sites iOS Suite](https://github.com/e-sites/iOS-Suite
 
 [![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 
-[![Platform](https://img.shields.io/cocoapods/p/Cobalt.svg?style=flat)](http://cocoadocs.org/docsets/Cobalt)
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Cobalt.svg)](http://cocoadocs.org/docsets/Cobalt)
-[![Accio compatible](https://img.shields.io/badge/Accio-supported-0A7CF5.svg?style=flat)](https://github.com/JamitLabs/Accio)
 [![Travis-ci](https://travis-ci.org/e-sites/Cobalt.svg?branch=master&001)](https://travis-ci.org/e-sites/Cobalt)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-
 
 
 # Installation
 
-## CocoaPods
+## Swift PM
 
-Podfile:
-
-```ruby
-pod 'Cobalt'
-```
-
-And then
-
-```
-pod install
-```
-
-
-## Carthage
-
-Cartfile:
-
-```ruby
-github "e-sites/Cobalt"
-```
-
-And then
-
-```
-carthage update
-```
-
-## SwiftPM
-
-Add the following dependency to your Package.swift:
+**package.swift** dependency:
 
 ```swift
- .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
+.package(url: "https://github.com/e-sites/cobalt.git", from: "7.0.0"),
 ```
 
-## Accio
-
-Add the following dependency to your Package.swift:
+and to your application/library target, add `"Cobalt"` to your `dependencies`, e.g. like this:
 
 ```swift
- .package(url: "https://github.com/e-sites/Cobalt.git", .branch("master"))
-```
-
-And run:
-
-```shell
-accio install
+.target(name: "BestExampleApp", dependencies: ["Cobalt"]),
 ```
 
 # Implementation
@@ -85,8 +43,11 @@ class APIClient: Cobalt.Client {
     
    private init() {
       let config = Cobalt.Config {
-         $0.clientID = "my_oauth_client_id"
-         $0.clientSecret = "my_oauth_client_secret"
+         $0.authentication.path = "/oauth/v2/token"
+         $0.authentication.authorizationPath = "/oauth/v2/connect"
+         $0.authentication.clientID = "my_oauth_client_id"
+         $0.authentication.clientSecret = "my_oauth_client_secret"
+         $0.authentication.pkceEnabled = false // Disabled by default
          $0.host = "https://api.domain.com"
       }
       super.init(config: config)
@@ -236,6 +197,95 @@ class APIClient: Cobalt.Client {
 }
 
 ```
+### `authorization_code`
+
+This grant type requires the user to sign in in a webview or browser. To enable this type of authentication, add `.oauth2(.authorizationCode)` to the `Cobalt.Request`.
+ If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token.
+
+```swift
+class APIClient: Cobalt.Client {
+    // ...
+
+    func profile() -> Promise<User> {
+        let request = Cobalt.Request({
+            $0.authentication = .oauth2(.authorizationCode)
+            $0.path = "/user/profile"
+        })
+
+        return request(request).then { json -> Promise<User> in
+            let user = try json["data"].map(to: User.self)
+            return Promise(user)
+        }
+    }
+}
+
+```
+
+Before requesting the profile, the user needs to sign in. To simplify, Cobalt can create an `AuthorizationCodeRequest` for you, which contains the url you need to redirect the user to:
+
+```swift
+public struct AuthorizationCodeRequest {
+    public var url: URL
+    public var redirectUri: String
+    public var state: String?
+    public var codeVerifier: String?
+}
+
+class OAuthAuthenticator {
+    // ...
+    
+    private var presentedViewController: UIViewController?
+    
+    func login() {
+        // Cobalt uses the credentials you provided in the config
+        // When you enabled PKCE, Cobalt will also create the code challenge and verifier for you
+        // The code verifier is returned to you in the AuthorizationCodeRequest
+        client.startAuthorizationFlow(
+            scope: ["openid", "profile", "email", "offline_access"],
+            redirectUri: "app://oauth/authorized"
+        ).subscribe(onSuccess: { [weak self] request in
+            self?.request = request
+            
+            let safariController = SFSafariViewController(url: request.url)
+            self?.presentedViewController = UINavigationController(rootViewController: safariController)
+            self?.presentedViewController!.setNavigationBarHidden(true, animated: false)
+            
+            viewController.present(
+                (self?.presentedViewController)!,
+                animated: true,
+                completion: nil
+            )
+        }, onError: { error in
+            print("error: \(error)")
+        }).disposed(by: disposeBag)
+    }
+    
+    // You execute this when receiving the callback from: "app://oauth/authorized?code=code&scope=scope&state=state"
+    func getAccessToken(from code: String, scope: String? = nil, state: String? = nil) -> Single<Void> {
+        defer {
+            presentedViewController = nil
+        }
+        
+        if let presentedViewController = presentedViewController {
+            presentedViewController.dismiss(animated: true, completion: nil)
+        }
+        
+        // Validate that the state of the callback equals the state created by Cobalt
+        // Perform some extra validation by your needs
+        if request.state != state {
+            return Single<Void>.error(Error.invalidUrl)
+        }
+        
+        client.requestTokenFromAuthorizationCode(initialRequest: request, code: code).subscribe(onSuccess: {
+            // The user is signed in successfully 
+        }, onError: { error in
+            // Something went wrong, notify the user
+        })
+    }
+}
+```
+
+
 ### `client_credentials`
 
 You have to provide the `.oauth2(.clientCredentials)` authentication for the `Cobalt.Request`
@@ -272,25 +322,6 @@ To remove the access_token from its memory and keychain, use:
 ```swift
 func clearAccessToken()
 ```
-
-# Logging
-If you want to use (debug) logging, create a custom logger class which implements `Cobalt.Logger`:
-
-```swift
-public protocol Cobalt.Logger {
-    func verbose(_ items: Any...)
-    func warning(_ items: Any...)
-    func debug(_ items: Any...)
-    func success(_ items: Any...)
-    func error(_ items: Any...)
-    func request(_ items: Any...)
-    func response(_ items: Any...)
-    func info(_ items: Any...)
-    func log(_ items: Any...)
-}
-```
-
-And then use the `Cobalt.Config.logger` property to assign your logged to the `Cobalt` configuration.
 
 # Development
 

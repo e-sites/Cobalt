@@ -7,14 +7,15 @@
 //
 
 import Foundation
-import Promises
+import RxSwift
+import RxCocoa
 import Alamofire
 import SwiftyJSON
 
 class RequestQueue {
     private weak var apiClient: Client!
     private(set) var requests: [Request] = []
-    private var _promiseMap: [Request: Promise<JSON>] = [:]
+    private var _map: [Request: PublishRelay<Swift.Result<JSON, Swift.Error>>] = [:]
 
     var count: Int {
         return requests.count
@@ -28,9 +29,9 @@ class RequestQueue {
         if requests.contains(request) {
             return
         }
-        _promiseMap[request] = Promise<JSON>.pending()
+        _map[request] = PublishRelay<Swift.Result<JSON, Swift.Error>>()
         requests.append(request)
-        apiClient.logger?.verbose("Added to queue [\(count)]: \(request)")
+        apiClient.logger?.notice("Added to queue [\(count)]: \(request)")
     }
 
     func removeFirst() {
@@ -38,7 +39,7 @@ class RequestQueue {
             return
         }
         let request = requests.removeFirst()
-        _promiseMap.removeValue(forKey: request)
+        _map.removeValue(forKey: request)
     }
 
     func next() {
@@ -48,27 +49,34 @@ class RequestQueue {
     }
 
     func clear() {
-        _promiseMap.removeAll()
+        _map.removeAll()
         requests.removeAll()
     }
 
-    func promise(of request: Request) -> Promise<JSON>? {
-        return _promiseMap[request]
+    func single(of request: Request) -> Single<JSON>? {
+        return _map[request]?.map { result throws -> JSON in
+            switch result {
+            case .success(let json):
+                return json
+            case .failure(let error):
+                throw error
+            }
+        }.take(1).asSingle()
     }
 
     func handle(request: Request) {
-        let promise = self.promise(of: request)
+        let relay = _map[request]
         removeFirst()
-        if promise == nil {
+        if relay == nil {
             return
         }
         
         apiClient.request(request) { result in
             switch result {
             case .success(let json):
-                promise?.fulfill(json)
+                relay?.accept(.success(json))
             case .failure(let error):
-                promise?.reject(error)
+                relay?.accept(.failure(error))
             }
         }
     }

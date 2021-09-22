@@ -14,6 +14,7 @@ import KeychainAccess
 public class AccessToken: Decodable, CustomStringConvertible {
     fileprivate struct Constant {
         fileprivate static let accessTokenKey = "AccessToken._accessToken"
+        fileprivate static let idTokenKey = "AccessToken._idToken"
         fileprivate static let refreshTokenKey = "AccessToken._refreshToken"
         fileprivate static let expireDateKey = "AccessToken._expireDate"
         fileprivate static let grantTypeKey = "AccessToken._grantType"
@@ -23,6 +24,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
         case expiresIn = "expires_in"
+        case idToken = "id_token"
         case host
     }
 
@@ -31,6 +33,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
     #endif
 
     public internal(set) var accessToken: String?
+    public internal(set) var idToken: String?
     public internal(set) var refreshToken: String?
     public internal(set) var expireDate: Date?
     public internal(set) var grantType: OAuthenticationGrantType? {
@@ -93,6 +96,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
 
         #if targetEnvironment(simulator)
         accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
+        idToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.idTokenKey)")
         refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
         if let rawValue = UserDefaults.standard.string(forKey: "\(host):\(Constant.grantTypeKey)") {
             self.grantType = OAuthenticationGrantType(rawValue: rawValue)
@@ -101,6 +105,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         expireDate = Date(timeIntervalSince1970: timeInterval)
 
         #else
+        idToken = keychain[Constant.idTokenKey]
         accessToken = keychain[Constant.accessTokenKey]
         refreshToken = keychain[Constant.refreshTokenKey]
         if let timeString = keychain[Constant.expireDateKey], let timeInterval = TimeInterval(timeString) {
@@ -122,6 +127,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         accessToken = try container.decode(String.self, forKey: .accessToken)
+        idToken = try container.decodeIfPresent(String.self, forKey: .idToken)
         refreshToken = try container.decodeIfPresent(String.self, forKey: .refreshToken)
 
         let expiresIn = try container.decode(Int.self, forKey: .expiresIn)
@@ -137,12 +143,14 @@ public class AccessToken: Decodable, CustomStringConvertible {
 
         #if targetEnvironment(simulator)
         UserDefaults.standard.set(accessToken, forKey: "\(host):\(Constant.accessTokenKey)")
+        UserDefaults.standard.set(idToken, forKey: "\(host):\(Constant.idTokenKey)")
         UserDefaults.standard.set(refreshToken, forKey: "\(host):\(Constant.refreshTokenKey)")
         UserDefaults.standard.set(grantType?.rawValue, forKey: "\(host):\(Constant.grantTypeKey)")
         UserDefaults.standard.set(expireDate?.timeIntervalSince1970, forKey: "\(host):\(Constant.expireDateKey)")
         #else
         keychain[Constant.accessTokenKey] = accessToken
         keychain[Constant.refreshTokenKey] = refreshToken
+        keychain[Constant.idTokenKey] = idToken
         if let expireDateInterval = expireDate?.timeIntervalSince1970 {
             keychain[Constant.expireDateKey] = "\(Int(expireDateInterval))"
         } else {
@@ -159,6 +167,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         refreshToken = nil
         expireDate = nil
         grantType = nil
+        idToken = nil
         store()
     }
 
@@ -173,8 +182,9 @@ public class AccessToken: Decodable, CustomStringConvertible {
             expiresIn = Int(expireDate.timeIntervalSinceNow)
         }
         return "<AccessToken> [ server: \(host), " +
-            "accessToken: \(optionalDescription(Client.mask(string: accessToken, type: .halfMasked))), " +
-            "refreshToken: \(optionalDescription(Client.mask(string: refreshToken, type: .halfMasked))), " +
+            "idToken: \(optionalDescription(Helpers.mask(string: idToken, type: .halfMasked))), " +
+            "accessToken: \(optionalDescription(Helpers.mask(string: accessToken, type: .halfMasked))), " +
+            "refreshToken: \(optionalDescription(Helpers.mask(string: refreshToken, type: .halfMasked))), " +
         "grantType: \(optionalDescription(grantType)), expires in: \(expiresIn)s ]"
     }
 }
