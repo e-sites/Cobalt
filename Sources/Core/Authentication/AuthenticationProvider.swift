@@ -176,7 +176,7 @@ class AuthenticationProvider {
             self?.isAuthenticating = false
             return Single<Void>.just(())
 
-        }.catchError { [weak self, client] error -> Single<Void> in
+        }.catch { [weak self, client] error -> Single<Void> in
             defer {
                 self?.isAuthenticating = false
             }
@@ -203,7 +203,7 @@ class AuthenticationProvider {
             
             guard let host = self.client.config.authentication.host,
                   let clientId = self.client.config.authentication.clientID else {
-                observer(.error(Error.invalidRequest("Missing 'host' and/or 'clientId'")))
+                observer(.failure(Error.invalidRequest("Missing 'host' and/or 'clientId'")))
                 return Disposables.create()
             }
             
@@ -229,7 +229,7 @@ class AuthenticationProvider {
             print("authUrl: \(authURLString)")
                     
             guard let authURL = URL(string: authURLString) else {
-                observer(.error(Error.invalidUrl))
+                observer(.failure(Error.invalidUrl))
                 return Disposables.create()
             }
             

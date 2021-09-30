@@ -90,7 +90,7 @@ open class Client: ReactiveCompatible {
     open func request(_ request: Request, handler: @escaping ((Result<JSON, Swift.Error>) -> Void)) {
         self.request(request).subscribe(onSuccess: { json in
             handler(.success(json))
-        }, onError: { error in
+        }, onFailure: { error in
             handler(.failure(error))
         }).disposed(by: disposeBag)
     }
@@ -142,7 +142,7 @@ open class Client: ReactiveCompatible {
             return self._request(newRequest)
 
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catchError { [weak self, authProvider] error -> Single<JSON> in
+        }.catch { [weak self, authProvider] error -> Single<JSON> in
             self?.queue.removeFirst()
             return try authProvider.recover(from: error, request: request)
 
@@ -258,12 +258,12 @@ open class Client: ReactiveCompatible {
                             self?.logger?.error("#\(requestID) Original: \(error)")
                             self?.logger?.error("#\(requestID) Error: \(apiError)")
                         }
-                        observer(.error(apiError))
+                        observer(.failure(apiError))
                         return
                     }
 
                     guard let responseJSON = json else {
-                        observer(.error(Error.empty.set(request: request)))
+                        observer(.failure(Error.empty.set(request: request)))
                         return
                     }
                     observer(.success(responseJSON))
