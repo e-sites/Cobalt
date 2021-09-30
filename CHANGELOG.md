@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.3.1 (30-09-2021)
+- Added `session` to define your custom Alamofire Sessions
+
 ## v7.3.0 (16-08-2021)
 - Added option for PKCE to authorization configuration
 - Added ability to create AuthorizationCodeRequest to simplify authorization_code grant type

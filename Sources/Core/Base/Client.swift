@@ -21,6 +21,8 @@ open class Client: ReactiveCompatible {
     fileprivate var requestID = 1
 
     public let config: Config
+    
+    open var session: Session = Session.default
 
     fileprivate lazy var authProvider = AuthenticationProvider(client: self)
 
@@ -88,7 +90,7 @@ open class Client: ReactiveCompatible {
     open func request(_ request: Request, handler: @escaping ((Result<JSON, Swift.Error>) -> Void)) {
         self.request(request).subscribe(onSuccess: { json in
             handler(.success(json))
-        }, onFailure: { error in
+        }, onError: { error in
             handler(.failure(error))
         }).disposed(by: disposeBag)
     }
@@ -140,7 +142,7 @@ open class Client: ReactiveCompatible {
             return self._request(newRequest)
 
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [weak self, authProvider] error -> Single<JSON> in
+        }.catchError { [weak self, authProvider] error -> Single<JSON> in
             self?.queue.removeFirst()
             return try authProvider.recover(from: error, request: request)
 
@@ -210,6 +212,8 @@ open class Client: ReactiveCompatible {
             }
             return Single<JSON>.just(json)
         }
+        
+        let session = self.session
 
         return Single<JSON>.create { [weak self] observer in
             let dataRequest: DataRequest
@@ -220,9 +224,9 @@ open class Client: ReactiveCompatible {
                     urlRequest.setValue(header.value, forHTTPHeaderField: header.name)
                 }
                 urlRequest.httpBody = data
-                dataRequest = AF.request(urlRequest)
+                dataRequest = session.request(urlRequest)
             } else {
-                dataRequest = AF.request(request.urlString,
+                dataRequest = session.request(request.urlString,
                                          method: request.httpMethod,
                                          parameters: request.parameters,
                                          encoding: request.useEncoding,
@@ -254,12 +258,12 @@ open class Client: ReactiveCompatible {
                             self?.logger?.error("#\(requestID) Original: \(error)")
                             self?.logger?.error("#\(requestID) Error: \(apiError)")
                         }
-                        observer(.failure(apiError))
+                        observer(.error(apiError))
                         return
                     }
 
                     guard let responseJSON = json else {
-                        observer(.failure(Error.empty.set(request: request)))
+                        observer(.error(Error.empty.set(request: request)))
                         return
                     }
                     observer(.success(responseJSON))
