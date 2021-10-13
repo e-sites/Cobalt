@@ -271,7 +271,7 @@ class AuthenticationProvider {
         let codeVerifierBytes = verifier.data(using: .ascii)!
         var buffer = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
         codeVerifierBytes.withUnsafeBytes {
-            _ = CC_SHA256($0, CC_LONG(codeVerifierBytes.count), &buffer)
+            _ = CC_SHA256($0.baseAddress, CC_LONG(codeVerifierBytes.count), &buffer)
         }
         
         return Data(buffer).base64EncodedString()

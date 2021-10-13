@@ -4,9 +4,18 @@
 - Replaced RxSwift with Combine
 - Removed SwiftyJSON dependency
 
-## v7.2.0 (08-01-2021)
+## v7.3.1 (30-09-2021)
+- Added `session` to define your custom Alamofire Sessions
+
+## v7.3.0 (16-08-2021)
 - Added option for PKCE to authorization configuration
 - Added ability to create AuthorizationCodeRequest to simplify authorization_code grant type
+
+## v7.2.0 (17-03-2021)
+- Added raw body parameter to Request
+
+## v7.1.4 (01-03-2021)
+- RxSwift update to v6
 
 ## v7.1.3 (10-12-2020)
 - Shortened logging option with no fallbacks

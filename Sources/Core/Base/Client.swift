@@ -19,6 +19,8 @@ open class Client {
     fileprivate var requestID = 1
 
     public let config: Config
+    
+    open var session: Session = Session.default
 
     fileprivate lazy var authProvider = AuthenticationProvider(client: self)
 
@@ -65,7 +67,7 @@ open class Client {
     /// - Returns: `AnyPublisher<CobaltResponse, Error>`
     open func request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         // Strip slashes to form a valid urlString
-        guard var host = (request.host ?? config.host) else {
+        guard let host = (request.host ?? config.host) else {
             return Error.invalidRequest("Missing 'host'").asPublisher(outputType: CobaltResponse.self)
         }
 
@@ -80,15 +82,7 @@ open class Client {
             
             return publisher
         }
-        if host.hasSuffix("/") {
-            host = String(host.dropLast())
-        }
-        var path = request.path
-        if path.hasPrefix("/") {
-            path = String(path.dropFirst())
-        }
-        let urlString = String.combined(host: host, path: request.path)
-
+        
         // Define encoding
         let encoding: ParameterEncoding
         if let requestEncoding = request.encoding {
@@ -100,7 +94,7 @@ open class Client {
         }
 
         request.useEncoding = encoding
-        request.urlString = urlString
+        request.urlString = String.combined(host: host, path: request.path)
         
         // 1. We (optionally) (pre-)authorize the request
         return authProvider.authorize(request: request)
@@ -173,27 +167,40 @@ open class Client {
             return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
         
-        return Deferred { [weak self] in
+        return Deferred { [weak self, logger, service, session] in
             Future { promise in
-                AF.request(request.urlString,
-                                  method: request.httpMethod,
-                                  parameters: request.parameters,
-                                  encoding: request.useEncoding,
-                                  headers: request.useHeaders)
+                let dataRequest: DataRequest
+                if let data = request.body {
+                    var urlRequest = URLRequest(url: URL(string: request.urlString)!)
+                    urlRequest.httpMethod = HTTPMethod.post.rawValue
+                    request.headers?.dictionary.forEach { key, value in
+                        urlRequest.setValue(value, forHTTPHeaderField: key)
+                    }
+                    urlRequest.httpBody = data
+                    dataRequest = session.request(urlRequest)
+                } else {
+                    dataRequest = session.request(request.urlString,
+                                             method: request.httpMethod,
+                                             parameters: request.parameters,
+                                             encoding: request.useEncoding,
+                                             headers: request.useHeaders)
+                }
+                
+                dataRequest
                     .validate()
                     .responseJSON { jsonResponse in
                         let statusCode = jsonResponse.response?.statusCode ?? 500
                         self?.finishRequest(request, response: jsonResponse.response)
                         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                         if !ignoreLoggingResponse {
-                            self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                            logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                         }
 
                         var response: CobaltResponse?
                         if let data = jsonResponse.data {
                             response = data.asCobaltResponse()
-                            self?.service.response = response
-                            self?.service.optionallyWriteToCache()
+                            service.response = response
+                            service.optionallyWriteToCache()
                             if !ignoreLoggingResponse {
                                 self?._responseParsing(response: response, request: request, requestID: requestID)
                             }
@@ -202,8 +209,8 @@ open class Client {
                         if let error = jsonResponse.error {
                             let apiError = Error(from: error, response: response).set(request: request)
                             if !ignoreLoggingResponse {
-                                self?.logger?.error("#\(requestID) Original: \(error)")
-                                self?.logger?.error("#\(requestID) Error: \(apiError)")
+                                logger?.error("#\(requestID) Original: \(error)")
+                                logger?.error("#\(requestID) Error: \(apiError)")
                             }
                             promise(.failure(apiError))
                             return
