@@ -36,8 +36,11 @@ class CobaltTests: XCTestCase {
     }
     
     func waitUntil(_ handler: @escaping (((() -> Void)?) -> Void)) {
-        let expectation = self.expectation(description: "test")
-        handler({ expectation.fulfill() })
+        let expectation = self.expectation(description: UUID().uuidString)
+        
+        handler {
+            expectation.fulfill()
+        }
         waitForExpectations(timeout: 15, handler: nil)
     }
 }

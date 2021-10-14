@@ -21,30 +21,30 @@ class CobaltTestsAuthentication: CobaltTests {
         config.authentication.path = "/prototypes/cobalt/access_token.json"
     }
     
-//    func testsAuthenticate() {
-//        waitUntil { done in
-//            let request = Request {
-//                $0.authentication = .oauth2(.clientCredentials)
-//                $0.path = "/prototypes/cobalt/users.php"
-//            }
-//
-//            self.client.request(request)
-//                .sink(receiveCompletion: { event in
-//                    switch event {
-//                    case .finished:
-//                        break
-//                    case .failure(let error):
-//                        XCTAssert(false, "\(error)")
-//                    }
-//                    done?()
-//                }, receiveValue: { response in
-//                    guard let dic = response as? [String: Any], let users = dic["users"] as? [Any] else {
-//                        return
-//                    }
-//                    XCTAssert(users.count == 2)
-//                }).store(in: &self.cancellables)
-//        }
-//    }
+    func testsAuthenticate() {
+        waitUntil { done in
+            let request = Request {
+                $0.authentication = .oauth2(.clientCredentials)
+                $0.path = "/prototypes/cobalt/users.php"
+            }
+
+            self.client.request(request)
+                .sink(receiveCompletion: { event in
+                    switch event {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        XCTAssert(false, "\(error)")
+                    }
+                    done?()
+                }, receiveValue: { response in
+                    guard let dic = response as? [String: Any], let users = dic["users"] as? [Any] else {
+                        return
+                    }
+                    XCTAssert(users.count == 2)
+                }).store(in: &self.cancellables)
+        }
+    }
 
     func testDoubleAccessTokens() {
         let host1 = "https://www.e-sites.nl"

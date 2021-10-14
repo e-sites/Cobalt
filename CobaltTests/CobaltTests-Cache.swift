@@ -39,8 +39,8 @@ class CobaltTestsCache: CobaltTests {
                     break
                 case .failure(let error):
                     XCTAssert(false, "\(error)")
+                    done?()
                 }
-                done?()
             }, receiveValue: { response in
                 if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
                     expect(data.count) == 10
