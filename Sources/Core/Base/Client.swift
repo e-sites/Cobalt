@@ -188,16 +188,16 @@ open class Client {
                 
                 dataRequest
                     .validate()
-                    .responseJSON { jsonResponse in
-                        let statusCode = jsonResponse.response?.statusCode ?? 500
-                        self?.finishRequest(request, response: jsonResponse.response)
+                    .responseData { dataResponse in
+                        let statusCode = dataResponse.response?.statusCode ?? 500
+                        self?.finishRequest(request, response: dataResponse.response)
                         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                         if !ignoreLoggingResponse {
                             logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                         }
 
                         var response: CobaltResponse?
-                        if let data = jsonResponse.data {
+                        if let data = dataResponse.value {
                             response = data.asCobaltResponse()
                             service.response = response
                             service.optionallyWriteToCache()
@@ -206,7 +206,7 @@ open class Client {
                             }
                         }
 
-                        if let error = jsonResponse.error {
+                        if let error = dataResponse.error {
                             let apiError = Error(from: error, response: response).set(request: request)
                             if !ignoreLoggingResponse {
                                 logger?.error("#\(requestID) Original: \(error)")

@@ -14,7 +14,63 @@ import Combine
 @testable import Cobalt
 
 class CobaltTestsRequests: CobaltTests {
-    
+    func testRequestQueue() {
+        waitUntil(expectedFulfillmentCount: 2) { done in
+            
+            let accessToken = AccessToken(host: self.config.host!)
+            accessToken.accessToken = "access_token1"
+            accessToken.expireDate = Date(timeIntervalSinceNow: 10)
+            accessToken.grantType = .clientCredentials
+            accessToken.store()
+            
+            let request1 = Request {
+                $0.authentication = .client
+                $0.path = "/some_strange_request"
+                $0.authentication = .oauth2(.clientCredentials)
+            }
+
+            self.client.request(request1).sink(receiveCompletion: { event in
+                switch event {
+                case .finished:
+                    XCTAssert(false, "Should not get here")
+
+                case .failure:
+                    break
+                }
+                done?()
+            }, receiveValue: { _ in
+                
+            }).store(in: &self.cancellables)
+            
+            let request2 = Request {
+                $0.authentication = .client
+                $0.path = "/api/users"
+                $0.parameters = [
+                    "per_page": 10
+                ]
+                $0.authentication = .oauth2(.clientCredentials)
+            }
+
+            self.client.request(request2).sink(receiveCompletion: { event in
+                switch event {
+                case .finished:
+                    break
+
+                case .failure(let error):
+                    XCTAssert(false, "\(error)")
+                }
+                done?()
+            }, receiveValue: { response in
+                if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [Any] {
+                    expect(data.count) == 10
+                } else {
+                    XCTAssert(false, "Response \(response) is not a dictionary")
+                }
+
+            }).store(in: &self.cancellables)
+        }
+    }
+
     func testRequestGET() {
         waitUntil { done in
             let request = Request {
