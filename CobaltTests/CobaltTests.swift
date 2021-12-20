@@ -30,8 +30,9 @@ class CobaltTests: XCTestCase {
         super.tearDown()
     }
     
-    func waitUntil(_ handler: @escaping (((() -> Void)?) -> Void)) {
+    func waitUntil(expectedFulfillmentCount: Int = 1, _ handler: @escaping (((() -> Void)?) -> Void)) {
         let expectation = self.expectation(description: "test")
+        expectation.expectedFulfillmentCount = expectedFulfillmentCount
         handler({ expectation.fulfill() })
         waitForExpectations(timeout: 15, handler: nil)
     }
