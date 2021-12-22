@@ -223,6 +223,11 @@ open class Client: ReactiveCompatible {
                 request.headers?.forEach { header in
                     urlRequest.setValue(header.value, forHTTPHeaderField: header.name)
                 }
+                
+                if let cachePolicy = request.cachePolicy {
+                    urlRequest.cachePolicy = cachePolicy
+                }
+                
                 urlRequest.httpBody = data
                 dataRequest = session.request(urlRequest)
             } else {
