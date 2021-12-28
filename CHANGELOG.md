@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.1 (28-12-2021)
+- Added timing
+
 ## v8.0.0 (09-07-2021)
 - Replaced RxSwift with Combine
 - Removed SwiftyJSON dependency
