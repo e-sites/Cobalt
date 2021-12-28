@@ -21,6 +21,7 @@ public class Request {
     public var body: Data?
     public var authentication: Authentication = .none
     public var loggingOption: LoggingOption?
+    public var cachePolicy: URLRequest.CachePolicy?
 
     var useEncoding: ParameterEncoding = URLEncoding.default
     var useHeaders: HTTPHeaders = HTTPHeaders()

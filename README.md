@@ -101,7 +101,7 @@ class APIClient: Cobalt.Client {
          $0.parameters = [
             "per_page": 10
          ]
-         $0.cachingPolicy = .expires(seconds: 60 * 60 * 24) // expires after 1 day
+         $0.diskCachePolicy = .expires(seconds: 60 * 60 * 24) // expires after 1 day
       }
 		
       return self.request(request).tryMap { response in

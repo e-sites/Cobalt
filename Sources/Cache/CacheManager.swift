@@ -69,7 +69,7 @@ public class CacheManager {
     func getCachedResponse(for request: Request) -> CobaltResponse? {
         let url = _url(for: request)
         do {
-            switch request.cachePolicy {
+            switch request.diskCachePolicy {
             case .never:
                 throw CacheError.neverCached
 
@@ -98,7 +98,7 @@ public class CacheManager {
     }
 
     func write(request: Request, response: CobaltResponse) {
-        switch request.cachePolicy {
+        switch request.diskCachePolicy {
         case .never:
             return
 

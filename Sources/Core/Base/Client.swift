@@ -175,6 +175,10 @@ open class Client {
                 if let data = request.body {
                     var urlRequest = URLRequest(url: URL(string: request.urlString)!)
                     urlRequest.httpMethod = HTTPMethod.post.rawValue
+                    
+                    if let cachePolicy = request.cachePolicy {
+                        urlRequest.cachePolicy = cachePolicy
+                    }
                     request.headers?.dictionary.forEach { key, value in
                         urlRequest.setValue(value, forHTTPHeaderField: key)
                     }

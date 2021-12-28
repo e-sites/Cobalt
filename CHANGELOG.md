@@ -7,6 +7,9 @@
 - Replaced RxSwift with Combine
 - Removed SwiftyJSON dependency
 
+## v7.3.2 (22-12-2021)
+- Added `cachePolicy` to requests, which sets `URLRequest.cachePolicy`
+
 ## v7.3.1 (30-09-2021)
 - Added `session` to define your custom Alamofire Sessions
 

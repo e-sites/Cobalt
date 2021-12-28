@@ -30,7 +30,7 @@ class CobaltTestsCache: CobaltTests {
                 $0.parameters = [
                     "per_page": 10
                 ]
-                $0.cachePolicy = .expires(seconds: 10)
+                $0.diskCachePolicy = .expires(seconds: 10)
             }
             
             self.client.request(request).sink(receiveCompletion: { event in
@@ -55,7 +55,7 @@ class CobaltTestsCache: CobaltTests {
                         $0.parameters = [
                             "per_page": 10
                         ]
-                        $0.cachePolicy = .expires(seconds: 10)
+                        $0.diskCachePolicy = .expires(seconds: 10)
                     }
                     
                     self.client.request(request).sink(receiveCompletion: { event in
@@ -86,7 +86,7 @@ class CobaltTestsCache: CobaltTests {
                 $0.parameters = [
                     "per_page": 10
                 ]
-                $0.cachePolicy = .expires(seconds: 10)
+                $0.diskCachePolicy = .expires(seconds: 10)
             }
             
             self.client.request(request).sink(receiveCompletion: { event in
@@ -110,7 +110,7 @@ class CobaltTestsCache: CobaltTests {
                     $0.parameters = [
                         "per_page": 5
                     ]
-                    $0.cachePolicy = .expires(seconds: 10)
+                    $0.diskCachePolicy = .expires(seconds: 10)
                 }
                 expect(newRequest.cacheKey) != request.cacheKey
                 self.client.request(newRequest).sink(receiveCompletion: { event in
