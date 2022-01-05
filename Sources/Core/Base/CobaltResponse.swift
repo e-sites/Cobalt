@@ -22,6 +22,9 @@ extension CobaltResponse {
 extension Data {
     func asCobaltResponse() -> CobaltResponse? {
         guard let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []) else {
+            if let string = String(data: self, encoding: .utf8) {
+                return string
+            }
             return nil
         }
         

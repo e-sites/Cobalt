@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.2 (05-01-2022)
+- `String` is now a `CobaltResponse` type
+
 ## v8.0.1 (28-12-2021)
 - Added timing
 
