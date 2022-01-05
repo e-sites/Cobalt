@@ -44,15 +44,22 @@ extension Data {
 }
 
 public extension CobaltResponse {
-    
-    func map<T: Decodable>(to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
+    func map<T: Decodable>(key: String? = nil, to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
+        var obj: Any = self
+        if let key = key {
+            guard let dict = obj as? [String: Any], let dictObj = dict[key] else {
+                throw Error.parse("Error parsing. Key '\(key)' not found in response")
+            }
+            obj = dictObj
+        }
         let jsonDecoder = JSONDecoder()
         jsonDecoder.dateDecodingStrategy = .iso8601
         builder?(jsonDecoder)
-        let data = try JSONSerialization.data(withJSONObject: self, options: .fragmentsAllowed)
+        let data = try JSONSerialization.data(withJSONObject: obj, options: .fragmentsAllowed)
         return try jsonDecoder.decode(type, from: data)
     }
 }
 
 extension Array: CobaltResponse { }
+extension String: CobaltResponse { }
 extension Dictionary: CobaltResponse where Key == String { }

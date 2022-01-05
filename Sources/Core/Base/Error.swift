@@ -52,9 +52,13 @@ public class Error: Swift.Error {
     public static func unknown(_ response: CobaltResponse? = nil) -> Error {
         return Error(code: 100, response: response)
     }
-
+    
     public static func invalidRequest(_ message: String) -> Error {
         return Error(code: 301, message: message)
+    }
+    
+    public static func parse(_ message: String) -> Error {
+        return Error(code: 801, message: message)
     }
 
     public static func underlying(_ error: Swift.Error, response: CobaltResponse? = nil) -> Error {

@@ -2,6 +2,7 @@
 
 ## v8.0.2 (05-01-2022)
 - `String` is now a `CobaltResponse` type
+- Define key when parsing an array or dictionary
 
 ## v8.0.1 (28-12-2021)
 - Added timing

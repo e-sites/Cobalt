@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C300416C24EEAAAD0052EF95 /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C300416B24EEAAAD0052EF95 /* CryptoKit.framework */; };
+		C305D62E2785C78600DC60D9 /* CobaltTests-Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C305D62D2785C78500DC60D9 /* CobaltTests-Parsing.swift */; };
 		C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD2230FC49F004865D2 /* Request+Cache.swift */; };
 		C316AF9F230FF03C0036E295 /* CachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427AD4230FC4B0004865D2 /* CachePolicy.swift */; };
 		C316AFA0230FF03C0036E295 /* ClientService+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3427ADA230FC834004865D2 /* ClientService+Cache.swift */; };
@@ -53,6 +54,7 @@
 
 /* Begin PBXFileReference section */
 		C300416B24EEAAAD0052EF95 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/CryptoKit.framework; sourceTree = DEVELOPER_DIR; };
+		C305D62D2785C78500DC60D9 /* CobaltTests-Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Parsing.swift"; sourceTree = "<group>"; };
 		C316AFA4230FF5250036E295 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		C3427AD2230FC49F004865D2 /* Request+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Cache.swift"; sourceTree = "<group>"; };
 		C3427AD4230FC4B0004865D2 /* CachePolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachePolicy.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 			children = (
 				DFDA22031D6741AE00683D7D /* CobaltTests.swift */,
 				C37A6B8720F75B7700A4034E /* CobaltTests-Requests.swift */,
+				C305D62D2785C78500DC60D9 /* CobaltTests-Parsing.swift */,
 				C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */,
 				C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */,
 				C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */,
@@ -383,6 +386,7 @@
 				C387777124E68DB000FAD2D8 /* CobaltTests-Logging.swift in Sources */,
 				C387777024E68D9800FAD2D8 /* CobaltTests-Authentication.swift in Sources */,
 				C387776F24E68BEF00FAD2D8 /* CobaltTests-Requests.swift in Sources */,
+				C305D62E2785C78600DC60D9 /* CobaltTests-Parsing.swift in Sources */,
 				C387777224E6905B00FAD2D8 /* CobaltTests-Cache.swift in Sources */,
 				DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */,
 			);
