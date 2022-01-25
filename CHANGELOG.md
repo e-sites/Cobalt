@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.3.3 (25-01-2022)
+- Preventing concurrency when refreshing the access token simultaneously for multiple requests
+
 ## v7.3.2 (22-12-2021)
 - Added `cachePolicy` to requests, which sets `URLRequest.cachePolicy`
 
