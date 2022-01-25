@@ -128,7 +128,7 @@ class AuthenticationProvider {
             return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
         }
 
-        return sendOAuthRequest(grantType: grantType, parameters: parameters)
+        return sendOAuthRequest(initialRequest: request, grantType: grantType, parameters: parameters)
             .flatMap { [weak self] _ -> AnyPublisher<Request, Error> in
                 guard let self = self else {
                     return AnyPublisher<Request, Error>.never()
@@ -137,7 +137,13 @@ class AuthenticationProvider {
             }.eraseToAnyPublisher()
     }
 
-    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, Error> {
+    func sendOAuthRequest(initialRequest: Request? = nil, grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, Error> {
+        if isAuthenticating && initialRequest?.requiresOAuthentication == true {
+            client.logger?.trace("Already authenticating, stopping the concurrent request")
+            return Error.concurrentAuthentication.asPublisher(outputType: Void.self)
+        }
+        isAuthenticating = true
+        
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
@@ -158,8 +164,6 @@ class AuthenticationProvider {
                 "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
             ])
         }
-
-        isAuthenticating = true
 
         return client.request(request).tryMap { [weak self, client] response -> Void in
             let accessToken = try response.map(to: AccessToken.self)
@@ -323,6 +327,9 @@ class AuthenticationProvider {
             }
 
             accessToken.invalidate()
+            return client.request(request)
+        } else if error == Error.concurrentAuthentication {
+            // Retry the request, which will probably add it to the queue because there's an authentication request pending
             return client.request(request)
         }
         return Fail(error: Error(from: error)).eraseToAnyPublisher()
