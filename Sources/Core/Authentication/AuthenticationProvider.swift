@@ -16,7 +16,7 @@ import CommonCrypto
 class AuthenticationProvider {
     private weak var client: Client!
     private(set) var isAuthenticating = false
-
+    
     required init(client: Client) {
         self.client = client
     }
@@ -132,7 +132,7 @@ class AuthenticationProvider {
             throw Error.missingClientAuthentication.set(request: request)
         }
 
-        return sendOAuthRequest(grantType: grantType, parameters: parameters)
+        return try sendOAuthRequest(grantType: grantType, parameters: parameters)
             .flatMap { [weak self] _ -> Single<Request> in
                 guard let self = self else {
                     return Single<Request>.never()
@@ -141,7 +141,15 @@ class AuthenticationProvider {
             }
     }
 
-    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> Single<Void> {
+    func sendOAuthRequest(grantType: OAuthenticationGrantType, parameters: Parameters? = nil) throws -> Single<Void> {
+                
+        if isAuthenticating {
+            client.logger?.trace("Already authenticating, stopping the concurrent request")
+            throw Error.concurrentAuthentication
+        }
+        
+        isAuthenticating = true
+        
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
 
@@ -161,16 +169,14 @@ class AuthenticationProvider {
                 "access_token": client.config.logging.maskTokens ? .halfMasked : .default,
                 "refresh_token": client.config.logging.maskTokens ? .halfMasked : .default,
             ])
-
         }
-
-        isAuthenticating = true
 
         return client.request(request).flatMap { [weak self, client] json in
             let accessToken = try json.map(to: AccessToken.self)
             accessToken.host = client?.authenticationHost ?? ""
             accessToken.grantType = grantType
             accessToken.store()
+            
             client?.logger?.debug("Store access-token: \(optionalDescription(accessToken))")
             client?.authorizationGrantTypeSubject.onNext(accessToken.grantType)
             self?.isAuthenticating = false
@@ -189,6 +195,7 @@ class AuthenticationProvider {
             // So we can completely remove the access-token, since it is in no way able to revalidate.
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
             client?.clearAccessToken()
+            
             throw Error.refreshTokenInvalidated
         }
     }
@@ -225,9 +232,7 @@ class AuthenticationProvider {
                     
                 authURLString += "&code_challenge=\(codeChallenge)&code_challenge_method=S256"
             }
-            
-            print("authUrl: \(authURLString)")
-                    
+                                
             guard let authURL = URL(string: authURLString) else {
                 observer(.failure(Error.invalidUrl))
                 return Disposables.create()
@@ -255,7 +260,11 @@ class AuthenticationProvider {
             parameters["code_verifier"] = codeVerifier
         }
         
-        return sendOAuthRequest(grantType: .authorizationCode, parameters: parameters)
+        do {
+            return try sendOAuthRequest(grantType: .authorizationCode, parameters: parameters)
+        } catch {
+            return Single<Void>.error(error)
+        }
     }
     
     private func _createCodeVerifier() -> String {
@@ -326,7 +335,12 @@ class AuthenticationProvider {
 
             accessToken.invalidate()
             return client.request(request)
+            
+        } else if error == Error.concurrentAuthentication {
+            // Retry the request, which will probably add it to the queue because there's an authentication request pending
+            return client.request(request)
         }
+        
         throw error
     }
 }

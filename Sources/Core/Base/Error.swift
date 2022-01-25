@@ -54,9 +54,13 @@ public class Error: Swift.Error {
     public static func unknown(_ json: JSON? = nil) -> Error {
         return Error(code: 100, json: json)
     }
-
+    
     public static func invalidRequest(_ message: String) -> Error {
         return Error(code: 301, message: message)
+    }
+    
+    public static var concurrentAuthentication: Error {
+        return Error(code: 401, message: "Concurrent authentication requests")
     }
 
     public static func underlying(_ error: Swift.Error, json: JSON? = nil) -> Error {

@@ -102,6 +102,7 @@ open class Client: ReactiveCompatible {
     ///
     /// - Returns: `Promise<JSON>`
     open func request(_ request: Request) -> Single<JSON> {
+        
         // Strip slashes to form a valid urlString
         guard let host = (request.host ?? config.host) else {
             return Single<JSON>.error(Error.invalidRequest("Missing 'host'").set(request: request))
@@ -142,14 +143,14 @@ open class Client: ReactiveCompatible {
             return self._request(newRequest)
 
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [weak self, authProvider] error -> Single<JSON> in
+        }.catch { [weak self, authProvider, logger] error -> Single<JSON> in
             self?.queue.removeFirst()
             return try authProvider.recover(from: error, request: request)
 
         // 4. If any other requests are queued, fire up the next one
         }.flatMap { [queue] json -> Single<JSON> in
             // When a request is finished, no matter if its succesful or not
-            // We try to clear th queue
+            // We try to clear the queue
             if request.requiresOAuthentication {
                 queue.next()
             }
@@ -298,7 +299,12 @@ open class Client: ReactiveCompatible {
             "username": username,
             "password": password
         ]
-        return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
+        
+        do {
+            return try authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
+        } catch {
+            return Single<Void>.error(error)
+        }
     }
     
     open func startAuthorizationFlow(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
