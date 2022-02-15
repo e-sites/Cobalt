@@ -12,6 +12,9 @@ public protocol CobaltResponse {}
 
 extension CobaltResponse {
     var flatJSONString: String? {
+        if let string = self as? String {
+            return string
+        }
         guard let data = try? JSONSerialization.data(withJSONObject: self, options: []) else {
             return nil
         }
