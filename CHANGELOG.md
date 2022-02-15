@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.3 (15-02-2022)
+- Fixed `isIgnoreAll`
+
 ## v8.0.2 (05-01-2022)
 - `String` is now a `CobaltResponse` type
 - Define key when parsing an array or dictionary
