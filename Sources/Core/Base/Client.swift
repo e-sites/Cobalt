@@ -209,7 +209,7 @@ open class Client {
                         }
 
                         var response: CobaltResponse?
-                        if let data = dataResponse.value {
+                        if let data = dataResponse.data {
                             response = data.asCobaltResponse()
                             service.response = response
                             service.optionallyWriteToCache()
