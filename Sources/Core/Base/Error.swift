@@ -94,7 +94,7 @@ public class Error: Swift.Error {
         if let cobaltError = error as? Error {
             _clone(from: cobaltError)
             return
-        } else if let dictionary = response as? [String: Any], let errorValue = dictionary["eror"] as? String {
+        } else if let dictionary = response as? [String: Any], let errorValue = dictionary["error"] as? String {
             switch errorValue {
             case "invalid_grant":
                 _clone(from: Error.invalidGrant)
