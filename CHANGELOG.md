@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.4 (08-03-2022)
+- Removed timing
+
 ## v8.0.3 (15-02-2022)
 - Fixed `isIgnoreAll`
 

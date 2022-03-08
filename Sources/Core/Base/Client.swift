@@ -17,7 +17,6 @@ open class Client {
     // --------------------------------------------------------
 
     fileprivate var requestID = 1
-    fileprivate var timeMapping: [Int: CFAbsoluteTime] = [:]
 
     public let config: Config
     
@@ -133,7 +132,6 @@ open class Client {
 
     private func _request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         let requestID = self.requestID
-        timeMapping[requestID] = CFAbsoluteTimeGetCurrent()
         self.requestID += 1
         if self.requestID == 100 {
             self.requestID = 1
@@ -195,17 +193,11 @@ open class Client {
                 dataRequest
                     .validate()
                     .responseData { dataResponse in
-                        var timeString = ""
-                        if !ignoreLoggingResponse, let requestTime = self?.timeMapping[requestID] {
-                            let diff = CFAbsoluteTimeGetCurrent() - requestTime
-                            timeString = " ~ \(String(format: "%.3f", diff)) seconds"
-                            self?.timeMapping.removeValue(forKey: requestID)
-                        }
                         let statusCode = dataResponse.response?.statusCode ?? 500
                         self?.finishRequest(request, response: dataResponse.response)
                         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
                         if !ignoreLoggingResponse {
-                            logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')\(timeString)")
+                            logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
                         }
 
                         var response: CobaltResponse?
