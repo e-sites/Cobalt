@@ -18,6 +18,7 @@ public class Config {
     
     public class Authentication {
         public var path = "/oauth/v2/token"
+        public var refreshTokenPath: String?
         public var authorizationPath = "/oauth/v2/authorize"
         public var authorization: Config.ClientAuthorization? = .basicHeader
         public var clientID: String?

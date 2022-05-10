@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.5 (10-05-2022)
+- Added `refreshTokenPath` to config
+
 ## v8.0.4 (08-03-2022)
 - Removed timing
 

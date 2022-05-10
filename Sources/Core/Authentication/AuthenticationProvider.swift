@@ -149,6 +149,9 @@ class AuthenticationProvider {
 
         let request = Request {
             $0.path = client.config.authentication.path
+            if grantType == .refreshToken, let path = client.config.authentication.refreshTokenPath {
+                $0.path = path
+            }
             $0.httpMethod = .post
             $0.host = client.config.authentication.host
             $0.encoding = URLEncoding.default
