@@ -36,7 +36,7 @@ class CobaltTestsParsing: CobaltTests {
         let array = testObjects
         
         do {
-            try array.map(key: "objects", to: [SomeObject].self)
+            _ = try array.map(key: "objects", to: [SomeObject].self)
             XCTAssert(false, "Should not parse")
         } catch {
             if let error = error as? Cobalt.Error {

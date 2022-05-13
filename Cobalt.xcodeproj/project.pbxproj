@@ -248,10 +248,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DFDA22081D6741AE00683D7D /* Build configuration list for PBXNativeTarget "Cobalt" */;
 			buildPhases = (
+				DFDA21F21D6741AD00683D7D /* Resources */,
+				DFDA21F11D6741AD00683D7D /* Headers */,
 				DFDA21EF1D6741AD00683D7D /* Sources */,
 				DFDA21F01D6741AD00683D7D /* Frameworks */,
-				DFDA21F11D6741AD00683D7D /* Headers */,
-				DFDA21F21D6741AD00683D7D /* Resources */,
 			);
 			buildRules = (
 			);
@@ -271,9 +271,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DFDA220B1D6741AE00683D7D /* Build configuration list for PBXNativeTarget "CobaltTests" */;
 			buildPhases = (
+				DFDA21FC1D6741AE00683D7D /* Resources */,
 				DFDA21FA1D6741AE00683D7D /* Sources */,
 				DFDA21FB1D6741AE00683D7D /* Frameworks */,
-				DFDA21FC1D6741AE00683D7D /* Resources */,
 			);
 			buildRules = (
 			);
@@ -524,6 +524,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 10;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -536,6 +537,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 8.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.library.cobalt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -547,6 +549,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 10;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -559,6 +562,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MARKETING_VERSION = 8.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.esites.library.cobalt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

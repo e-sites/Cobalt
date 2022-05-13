@@ -98,7 +98,7 @@ open class Client {
         
         // 1. We (optionally) (pre-)authorize the request
         return authProvider.authorize(request: request)
-            
+        .prefix(1)
         // 2. We actually send the request with Alamofire
         .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
             guard let self = self else {
@@ -107,9 +107,16 @@ open class Client {
             return self._request(newRequest)
             
         // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Error> in
-            queue.removeFirst()
+        }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Cobalt.Error> in
             return authProvider.recover(from: error, request: request)
+                .tryCatch { authError -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                    if request.requiresOAuthentication {
+                        queue.next()
+                    }
+                    throw authError
+                }
+                .mapError { Error(from: $0) }
+                .eraseToAnyPublisher()
         
         // 4. If any other requests are queued, fire up the next one
         }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in

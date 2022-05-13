@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.0.6 (13-05-2022)
+- Fixed a bug where the queue was not handled when a auth error occurred
+
 ## v8.0.5 (10-05-2022)
 - Added `refreshTokenPath` to config
 
