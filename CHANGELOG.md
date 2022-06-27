@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.1.0 (27-07-2022)
+- Added headers logging options
+
 ## v8.0.6 (13-05-2022)
 - Fixed a bug where the queue was not handled when a auth error occurred
 

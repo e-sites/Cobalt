@@ -143,15 +143,16 @@ open class Client {
         if self.requestID == 100 {
             self.requestID = 1
         }
-        var loggingOptions: [String: KeyLoggingOption] = [:]
+        var loggingOptions: [String: KeyLoggingOption] = request.loggingOption?.headers ?? [:]
         if config.logging.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
 
         let ignoreLoggingRequest = request.loggingOption?.request?.isIgnoreAll == true
+        let ignoreLoggingHeaders = request.loggingOption?.headers?.isIgnoreAll == true
         let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
 
-        if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
+        if !request.useHeaders.isEmpty, !ignoreLoggingHeaders {
             let headersDictionary = Helpers.dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }

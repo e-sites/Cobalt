@@ -105,10 +105,10 @@ class AuthenticationProvider {
         let host = (self.client.config.authentication.host ?? (request.host ?? self.client.config.host)) ?? ""
         if let accessTokenObj = AccessToken.get(host: host, grantType: grantType),
             let accessToken = accessTokenObj.accessToken {
-
+            let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
+            
             if !accessTokenObj.isExpired {
                 if request.loggingOption?.request?.isIgnoreAll != true {
-                    let expiresIn = Int((accessTokenObj.expireDate ?? Date()).timeIntervalSinceNow)
                     client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 }
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
@@ -116,7 +116,7 @@ class AuthenticationProvider {
             }
 
             if request.loggingOption?.request?.isIgnoreAll != true {
-                client.logger?.warning("Access-token expired, refreshing ...")
+                client.logger?.warning("Access-token expired \(-expiresIn)s ago, refreshing ...")
             }
             if grantType.refreshUsingRefreshToken, let refreshToken = accessTokenObj.refreshToken {
                 grantType = .refreshToken
