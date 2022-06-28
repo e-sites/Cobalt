@@ -82,13 +82,13 @@ class CobaltTestsLogging: CobaltTests {
         var debugString = String(describing: request)
         print("\(request)")
         XCTAssert(debugString.contains("\"password\": \"***\""))
-        XCTAssert("\(request)".contains("\"email\": \"bas@e-s***\""))
+        XCTAssert("\(request)".contains("\"email\": \"b***@e-sit***\""))
         
         let error = Cobalt.Error(code: 100).set(request: request)
         debugString = String(describing: error)
         print("\(error)")
         XCTAssert(debugString.contains("\"password\": \"***\""))
-        XCTAssert("\(error)".contains("\"email\": \"bas@e-s***\""))
+        XCTAssert("\(error)".contains("\"email\": \"b***@e-sit***\""))
         client.config.logging.maskTokens = true
         waitUntil { done in
             self.client.login(username: "bas", password: "hello-there")

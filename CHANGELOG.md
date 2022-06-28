@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.1.1 (28-07-2022)
+- Half masked email addresses
+
 ## v8.1.0 (27-07-2022)
 - Added headers logging options
 

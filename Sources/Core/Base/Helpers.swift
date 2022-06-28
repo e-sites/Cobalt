@@ -34,6 +34,16 @@ class Helpers {
         }
         return logParameters
     }
+    
+    private class func halfMasked(string: String) -> String {
+        if string.isEmpty {
+            return "***"
+        }
+        let length = Int(floor(Double(string.count) / 2.0))
+        let startIndex = string.startIndex
+        let midIndex = string.index(startIndex, offsetBy: length)
+        return String(describing: string[startIndex..<midIndex]) + "***"
+    }
 
     class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
         guard let value = value else {
@@ -44,10 +54,13 @@ class Helpers {
             guard let stringValue = value as? String, !stringValue.isEmpty else {
                 return value
             }
-            let length = Int(floor(Double(stringValue.count) / 2.0))
-            let startIndex = stringValue.startIndex
-            let midIndex = stringValue.index(startIndex, offsetBy: length)
-            return String(describing: stringValue[startIndex..<midIndex]) + "***"
+            
+            if stringValue.components(separatedBy: "@").count == 2 && stringValue.contains(".") {
+                let sep = stringValue.components(separatedBy: "@")
+                return halfMasked(string: sep[0]) + "@" + halfMasked(string: sep[1])
+            }
+            
+            return halfMasked(string: stringValue)
 
         case .ignore:
             return nil
