@@ -112,7 +112,7 @@ public class Error: Swift.Error {
             return
         }
         
-        _clone(from: Error.underlying(error))
+        _clone(from: Error.underlying(error, response: response))
     }
 
     private func _clone(from error: Error) {

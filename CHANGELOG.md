@@ -1,9 +1,12 @@
 # Changelog Cobalt
 
-## v8.1.1 (28-07-2022)
+## v8.1.2 (05-07-2022)
+- Fixed a bug that loses response data in underlying errors
+
+## v8.1.1 (28-06-2022)
 - Half masked email addresses
 
-## v8.1.0 (27-07-2022)
+## v8.1.0 (27-06-2022)
 - Added headers logging options
 
 ## v8.0.6 (13-05-2022)
