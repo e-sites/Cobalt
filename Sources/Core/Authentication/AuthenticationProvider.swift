@@ -65,7 +65,7 @@ class AuthenticationProvider {
                 if !parameters.keys.isEmpty {
                     request.parameters = parameters
                 }
-
+                
                 if client.config.logging.maskTokens {
                     var parametersLoggingOptions: [String: KeyLoggingOption] = request.loggingOption?.request ?? [:]
                     
@@ -146,7 +146,7 @@ class AuthenticationProvider {
         
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
-
+        
         let request = Request {
             $0.path = client.config.authentication.path
             if grantType == .refreshToken, let path = client.config.authentication.refreshTokenPath {
@@ -154,7 +154,7 @@ class AuthenticationProvider {
             }
             $0.httpMethod = .post
             $0.host = client.config.authentication.host
-            $0.encoding = URLEncoding.default
+            $0.encoding = client.config.authentication.encoding ?? URLEncoding.default
             $0.authentication = .client
             $0.parameters = parameters
             $0.loggingOption = LoggingOption(request: [

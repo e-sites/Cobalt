@@ -8,6 +8,7 @@
 
 import Foundation
 import Logging
+import Alamofire
 
 public class Config {
     
@@ -21,6 +22,7 @@ public class Config {
         public var refreshTokenPath: String?
         public var authorizationPath = "/oauth/v2/authorize"
         public var authorization: Config.ClientAuthorization? = .basicHeader
+        public var encoding: ParameterEncoding?
         public var clientID: String?
         public var clientSecret: String?
         public var host: String?
