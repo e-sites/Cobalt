@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.1.3 (14-10-2022)
+- Added array support for logging options
+
 ## v8.1.2 (05-07-2022)
 - Fixed a bug that loses response data in underlying errors
 

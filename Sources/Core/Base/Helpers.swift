@@ -26,6 +26,9 @@ class Helpers {
             if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
                 continue
+            } else if let array = value as? [[String: Any]], case KeyLoggingOption.default = type {
+                logParameters[key] = array.map { _mask(parameters: $0, options: options, path: "\(path)\(key)[].") }
+                continue
             }
             guard let string = mask(string: value, type: type) else {
                 continue

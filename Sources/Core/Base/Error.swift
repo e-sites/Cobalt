@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import Alamofire
 
 public class Error: Swift.Error {
 
@@ -69,7 +70,7 @@ public class Error: Swift.Error {
         let apiError = Error(code: 601)
         apiError.underlyingError = error
         
-        if response != nil {
+        if let response {
             apiError.response = response
         }
         
@@ -99,22 +100,25 @@ public class Error: Swift.Error {
             case "invalid_grant":
                 _clone(from: Error.invalidGrant)
                 return
-
+                
             case "invalid_client":
                 _clone(from: Error.invalidClient)
                 return
-
+                
             default:
                 break
             }
             
-            _clone(from: Error.underlying(error, response: response))
+        } else if let afError = underlyingError as? AFError,
+                  case let .responseSerializationFailed(reason) = afError,
+                  case .inputDataNilOrZeroLength = reason {
+            _clone(from: Error.empty)
             return
         }
         
         _clone(from: Error.underlying(error, response: response))
     }
-
+    
     private func _clone(from error: Error) {
         self.code = error.code
         self.message = error.message

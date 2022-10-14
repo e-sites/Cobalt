@@ -97,36 +97,41 @@ open class Client {
         request.urlString = String.combined(host: host, path: request.path)
         
         // 1. We (optionally) (pre-)authorize the request
-        return authProvider.authorize(request: request)
-        .prefix(1)
-        // 2. We actually send the request with Alamofire
-        .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
-            guard let self = self else {
-                return AnyPublisher<CobaltResponse, Error>.never()
-            }
-            return self._request(newRequest)
-            
-        // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Cobalt.Error> in
-            return authProvider.recover(from: error, request: request)
-                .tryCatch { authError -> AnyPublisher<CobaltResponse, Cobalt.Error> in
-                    if request.requiresOAuthentication {
-                        queue.next()
-                    }
-                    throw authError
+        return Just(request)
+            .setFailureType(to: Cobalt.Error.self)
+            .subscribe(on: DispatchQueue.main)
+            .flatMap { [authProvider] aRequest in authProvider.authorize(request: aRequest) }
+            .prefix(1)
+            // 2. We actually send the request with Alamofire
+            .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
+                guard let self = self else {
+                    return AnyPublisher<CobaltResponse, Error>.never()
                 }
-                .mapError { Error(from: $0) }
-                .eraseToAnyPublisher()
-        
-        // 4. If any other requests are queued, fire up the next one
-        }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in
-            // When a request is finished, no matter if its succesful or not
-            // We try to clear th queue
-            if request.requiresOAuthentication {
-                queue.next()
+                return self._request(newRequest)
+                
+            // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
+            }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                return authProvider.recover(from: error, request: request)
+                    .tryCatch { authError -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                        if request.requiresOAuthentication {
+                            queue.next()
+                        }
+                        throw authError
+                    }
+                    .mapError { Error(from: $0) }
+                    .eraseToAnyPublisher()
+                
+            // 4. If any other requests are queued, fire up the next one
+            }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in
+                // When a request is finished, no matter if its succesful or not
+                // We try to clear th queue
+                if request.requiresOAuthentication {
+                    queue.next()
+                }
+                return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
-            return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
-        }.eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     open func startRequest(_ request: Request) {
@@ -321,6 +326,9 @@ extension Client {
             let type = options["\(path)\(key)"] ?? .default
             if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
+                continue
+            } else if let array = value as? [[String: Any]] {
+                logParameters[key] = array.map { _mask(parameters: $0, options: options, path: "\(path)\(key).") }
                 continue
             }
             guard let string = Client.mask(string: value, type: type) else {
