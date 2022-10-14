@@ -1,5 +1,40 @@
 # Changelog Cobalt
 
+## v8.1.3 (14-10-2022)
+- Added array support for logging options
+
+## v8.1.2 (05-07-2022)
+- Fixed a bug that loses response data in underlying errors
+
+## v8.1.1 (28-06-2022)
+- Half masked email addresses
+
+## v8.1.0 (27-06-2022)
+- Added headers logging options
+
+## v8.0.6 (13-05-2022)
+- Fixed a bug where the queue was not handled when a auth error occurred
+
+## v8.0.5 (10-05-2022)
+- Added `refreshTokenPath` to config
+
+## v8.0.4 (08-03-2022)
+- Removed timing
+
+## v8.0.3 (15-02-2022)
+- Fixed `isIgnoreAll`
+
+## v8.0.2 (05-01-2022)
+- `String` is now a `CobaltResponse` type
+- Define key when parsing an array or dictionary
+
+## v8.0.1 (28-12-2021)
+- Added timing
+
+## v8.0.0 (09-07-2021)
+- Replaced RxSwift with Combine
+- Removed SwiftyJSON dependency
+
 ## v7.3.3 (25-01-2022)
 - Preventing concurrency when refreshing the access token simultaneously for multiple requests
 

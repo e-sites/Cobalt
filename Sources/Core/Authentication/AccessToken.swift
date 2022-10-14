@@ -7,9 +7,24 @@
 //
 
 import Foundation
-#if !targetEnvironment(simulator)
 import KeychainAccess
+
+private extension Thread {
+    var isRunningXCTest: Bool {
+#if targetEnvironment(simulator)
+        for key in self.threadDictionary.allKeys {
+            guard let keyAsString = key as? String else {
+                continue
+            }
+            
+            if keyAsString.split(separator: ".").contains("xctest") {
+                return true
+            }
+        }
 #endif
+        return false
+    }
+}
 
 public class AccessToken: Decodable, CustomStringConvertible {
     fileprivate struct Constant {
@@ -28,9 +43,11 @@ public class AccessToken: Decodable, CustomStringConvertible {
         case host
     }
 
-    #if !targetEnvironment(simulator)
     private var keychain: Keychain!
-    #endif
+    
+    lazy private var isRunningUnitTests: Bool = {
+        return Thread.current.isRunningXCTest
+    }()
 
     public internal(set) var accessToken: String?
     public internal(set) var idToken: String?
@@ -53,9 +70,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
     }
 
     private func _setKeychain() {
-        #if !targetEnvironment(simulator)
         keychain = Keychain(server: host, protocolType: host.contains("https://") ? .https : .http)
-        #endif
     }
 
     static private func _transform(grantType: OAuthenticationGrantType?) -> OAuthenticationGrantType? {
@@ -94,34 +109,33 @@ public class AccessToken: Decodable, CustomStringConvertible {
             return
         }
 
-        #if targetEnvironment(simulator)
-        accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
-        idToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.idTokenKey)")
-        refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
-        if let rawValue = UserDefaults.standard.string(forKey: "\(host):\(Constant.grantTypeKey)") {
-            self.grantType = OAuthenticationGrantType(rawValue: rawValue)
-        }
-        let timeInterval = UserDefaults.standard.double(forKey: "\(host):\(Constant.expireDateKey)")
-        expireDate = Date(timeIntervalSince1970: timeInterval)
-
-        #else
-        idToken = keychain[Constant.idTokenKey]
-        accessToken = keychain[Constant.accessTokenKey]
-        refreshToken = keychain[Constant.refreshTokenKey]
-        if let timeString = keychain[Constant.expireDateKey], let timeInterval = TimeInterval(timeString) {
+        if isRunningUnitTests {
+            accessToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.accessTokenKey)")
+            idToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.idTokenKey)")
+            refreshToken = UserDefaults.standard.string(forKey: "\(host):\(Constant.refreshTokenKey)")
+            if let rawValue = UserDefaults.standard.string(forKey: "\(host):\(Constant.grantTypeKey)") {
+                self.grantType = OAuthenticationGrantType(rawValue: rawValue)
+            }
+            let timeInterval = UserDefaults.standard.double(forKey: "\(host):\(Constant.expireDateKey)")
             expireDate = Date(timeIntervalSince1970: timeInterval)
+        } else {
+            idToken = keychain[Constant.idTokenKey]
+            accessToken = keychain[Constant.accessTokenKey]
+            refreshToken = keychain[Constant.refreshTokenKey]
+            if let timeString = keychain[Constant.expireDateKey], let timeInterval = TimeInterval(timeString) {
+                expireDate = Date(timeIntervalSince1970: timeInterval)
+            }
+            if let grantType = keychain[Constant.grantTypeKey] {
+                self.grantType = OAuthenticationGrantType(rawValue: grantType)
+            }
         }
-        if let grantType = keychain[Constant.grantTypeKey] {
-            self.grantType = OAuthenticationGrantType(rawValue: grantType)
-        }
-        #endif
     }
 
     public var isExpired: Bool {
         guard let expireDate = self.expireDate else {
             return true
         }
-        return expireDate < Date()
+        return expireDate <= Date()
     }
 
     public required init(from decoder: Decoder) throws {
@@ -140,26 +154,25 @@ public class AccessToken: Decodable, CustomStringConvertible {
         } else {
             UserDefaults.standard.set(true, forKey: "\(host):\(Constant.stored)")
         }
-
-        #if targetEnvironment(simulator)
-        UserDefaults.standard.set(accessToken, forKey: "\(host):\(Constant.accessTokenKey)")
-        UserDefaults.standard.set(idToken, forKey: "\(host):\(Constant.idTokenKey)")
-        UserDefaults.standard.set(refreshToken, forKey: "\(host):\(Constant.refreshTokenKey)")
-        UserDefaults.standard.set(grantType?.rawValue, forKey: "\(host):\(Constant.grantTypeKey)")
-        UserDefaults.standard.set(expireDate?.timeIntervalSince1970, forKey: "\(host):\(Constant.expireDateKey)")
-        #else
-        keychain[Constant.accessTokenKey] = accessToken
-        keychain[Constant.refreshTokenKey] = refreshToken
-        keychain[Constant.idTokenKey] = idToken
-        if let expireDateInterval = expireDate?.timeIntervalSince1970 {
-            keychain[Constant.expireDateKey] = "\(Int(expireDateInterval))"
+        
+        if isRunningUnitTests {
+            UserDefaults.standard.set(accessToken, forKey: "\(host):\(Constant.accessTokenKey)")
+            UserDefaults.standard.set(idToken, forKey: "\(host):\(Constant.idTokenKey)")
+            UserDefaults.standard.set(refreshToken, forKey: "\(host):\(Constant.refreshTokenKey)")
+            UserDefaults.standard.set(grantType?.rawValue, forKey: "\(host):\(Constant.grantTypeKey)")
+            UserDefaults.standard.set(expireDate?.timeIntervalSince1970, forKey: "\(host):\(Constant.expireDateKey)")
+            _ = UserDefaults.standard.synchronize()
         } else {
-            keychain[Constant.expireDateKey] = nil
+            keychain[Constant.accessTokenKey] = accessToken
+            keychain[Constant.refreshTokenKey] = refreshToken
+            keychain[Constant.idTokenKey] = idToken
+            if let expireDateInterval = expireDate?.timeIntervalSince1970 {
+                keychain[Constant.expireDateKey] = "\(Int(expireDateInterval))"
+            } else {
+                keychain[Constant.expireDateKey] = nil
+            }
+            keychain[Constant.grantTypeKey] = grantType?.rawValue
         }
-        keychain[Constant.grantTypeKey] = grantType?.rawValue
-
-        #endif
-        _ = UserDefaults.standard.synchronize()
     }
 
     func clear() {

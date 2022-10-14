@@ -7,13 +7,11 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
-import SwiftyJSON
 import Alamofire
 import Logging
+import Combine
 
-open class Client: ReactiveCompatible {
+open class Client {
 
     // MARK: - Variables
     // --------------------------------------------------------
@@ -28,25 +26,9 @@ open class Client: ReactiveCompatible {
 
     fileprivate lazy var queue = RequestQueue(client: self)
 
-    lazy var authorizationGrantTypeSubject: BehaviorSubject<OAuthenticationGrantType?> = {
-        var value: OAuthenticationGrantType?
-        if let grantTypeRawValue = UserDefaults.standard.string(forKey: "OAuthenticationGrantType"),
-            let grantType = OAuthenticationGrantType(rawValue: grantTypeRawValue) {
-            value = grantType
-        }
-        
-        return BehaviorSubject<OAuthenticationGrantType?>(value: value)
-    }()
+    @Published public var authorizationGrantType: OAuthenticationGrantType?
 
-    private let disposeBag = DisposeBag()
-
-    var authorizationGrantType: OAuthenticationGrantType? {
-        do {
-            return try authorizationGrantTypeSubject.value()
-        } catch {
-            return nil
-        }
-    }
+    var cancellables = Set<AnyCancellable>()
 
     public var accessToken: AccessToken? {
         guard let host = authenticationHost else {
@@ -72,40 +54,21 @@ open class Client: ReactiveCompatible {
     required public init(config: Config) {
         self.config = config
         service.logger = logger
-        
-        authorizationGrantTypeSubject.subscribe(onNext: { grantType in
-            UserDefaults.standard.set(grantType?.rawValue, forKey: "OAuthenticationGrantType")
-            _ = UserDefaults.standard.synchronize()
-        }).disposed(by: disposeBag)
     }
 
     // MARK: - Request functions
     // --------------------------------------------------------
-
-    /// Make a request using a 'simple' `Result` handler closure
-    ///
-    /// - Parameters:
-    ///   - `request`: The `Request` object
-    ///   - `handler`: The closure to call when the request is finished
-    open func request(_ request: Request, handler: @escaping ((Result<JSON, Swift.Error>) -> Void)) {
-        self.request(request).subscribe(onSuccess: { json in
-            handler(.success(json))
-        }, onFailure: { error in
-            handler(.failure(error))
-        }).disposed(by: disposeBag)
-    }
-
-    /// Make a promise requst
+    
+    /// Make a combine request
     ///
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///
-    /// - Returns: `Promise<JSON>`
-    open func request(_ request: Request) -> Single<JSON> {
-        
+    /// - Returns: `AnyPublisher<CobaltResponse, Error>`
+    open func request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         // Strip slashes to form a valid urlString
         guard let host = (request.host ?? config.host) else {
-            return Single<JSON>.error(Error.invalidRequest("Missing 'host'").set(request: request))
+            return Error.invalidRequest("Missing 'host'").asPublisher(outputType: CobaltResponse.self)
         }
 
         // If the client is authenticating with OAuth.
@@ -113,11 +76,13 @@ open class Client: ReactiveCompatible {
         // So we add it to the `RequestQueue`
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
-            return queue.single(of: request) ?? Single<JSON>.error(Error.unknown().set(request: request))
+            guard let publisher = queue.publisher(of: request) else {
+                return Error.unknown().asPublisher(outputType: CobaltResponse.self)
+            }
+            
+            return publisher
         }
         
-        let urlString = String.combined(host: host, path: request.path)
-
         // Define encoding
         let encoding: ParameterEncoding
         if let requestEncoding = request.encoding {
@@ -129,33 +94,45 @@ open class Client: ReactiveCompatible {
         }
 
         request.useEncoding = encoding
-        request.urlString = urlString
+        request.urlString = String.combined(host: host, path: request.path)
         
         // 1. We (optionally) (pre-)authorize the request
-        return Single<Void>.just(()).flatMap { [authProvider] in 
-            return try authProvider.authorize(request: request)
 
-        // 2. We actually send the request with Alamofire
-        }.flatMap { [weak self] newRequest in
-            guard let self = self else {
-                return Single<JSON>.never()
+        return Just(request)
+            .setFailureType(to: Cobalt.Error.self)
+            .subscribe(on: DispatchQueue.main)
+            .flatMap { [authProvider] aRequest in authProvider.authorize(request: aRequest) }
+            .prefix(1)
+            // 2. We actually send the request with Alamofire
+            .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
+                guard let self = self else {
+                    return AnyPublisher<CobaltResponse, Error>.never()
+                }
+                return self._request(newRequest)
+                
+            // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
+            }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                return authProvider.recover(from: error, request: request)
+                    .tryCatch { authError -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                        if request.requiresOAuthentication {
+                            queue.next()
+                        }
+                        throw authError
+                    }
+                    .mapError { Error(from: $0) }
+                    .eraseToAnyPublisher()
+                
+            // 4. If any other requests are queued, fire up the next one
+            }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in
+                // When a request is finished, no matter if its succesful or not
+                // We try to clear th queue
+                if request.requiresOAuthentication {
+                    queue.next()
+                }
+                return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
-            return self._request(newRequest)
-
-        // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-        }.catch { [weak self, authProvider, logger] error -> Single<JSON> in
-            self?.queue.removeFirst()
-            return try authProvider.recover(from: error, request: request)
-
-        // 4. If any other requests are queued, fire up the next one
-        }.flatMap { [queue] json -> Single<JSON> in
-            // When a request is finished, no matter if its succesful or not
-            // We try to clear the queue
-            if request.requiresOAuthentication {
-                queue.next()
-            }
-            return Single.just(json)
-        }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     open func startRequest(_ request: Request) {
@@ -166,32 +143,22 @@ open class Client: ReactiveCompatible {
 
     }
 
-    private func _request(_ request: Request) -> Single<JSON> {
+    private func _request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
             self.requestID = 1
         }
-        var loggingOptions: [String: KeyLoggingOption] = [:]
+        var loggingOptions: [String: KeyLoggingOption] = request.loggingOption?.headers ?? [:]
         if config.logging.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
 
-        let ignoreLoggingRequest: Bool
-        if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
-            ignoreLoggingRequest = true
-        } else {
-            ignoreLoggingRequest = false
-        }
+        let ignoreLoggingRequest = request.loggingOption?.request?.isIgnoreAll == true
+        let ignoreLoggingHeaders = request.loggingOption?.headers?.isIgnoreAll == true
+        let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
 
-        let ignoreLoggingResponse: Bool
-        if let logRes = request.loggingOption?.response?["*"], case KeyLoggingOption.ignore = logRes {
-            ignoreLoggingResponse = true
-        } else {
-            ignoreLoggingResponse = false
-        }
-
-        if !request.useHeaders.isEmpty, !ignoreLoggingRequest {
+        if !request.useHeaders.isEmpty, !ignoreLoggingHeaders {
             let headersDictionary = Helpers.dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
             logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
         }
@@ -207,85 +174,85 @@ open class Client: ReactiveCompatible {
         service.currentRequest = request
 
         // Check to see if the cache engine should handle it
-        if !service.shouldPerformRequestAfterCacheCheck(), let json = service.json {
+        if !service.shouldPerformRequestAfterCacheCheck(), let response = service.response {
             if !ignoreLoggingResponse {
-                _responseParsing(json: json, request: request, requestID: requestID)
+                _responseParsing(response: response, request: request, requestID: requestID)
             }
-            return Single<JSON>.just(json)
+            return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
         
-        let session = self.session
-
-        return Single<JSON>.create { [weak self] observer in
-            let dataRequest: DataRequest
-            if let data = request.body {
-                var urlRequest = URLRequest(url: URL(string: request.urlString)!)
-                urlRequest.httpMethod = HTTPMethod.post.rawValue
-                request.headers?.forEach { header in
-                    urlRequest.setValue(header.value, forHTTPHeaderField: header.name)
+        return Deferred { [weak self, logger, service, session] in
+            Future { promise in
+                let dataRequest: DataRequest
+                if let data = request.body {
+                    var urlRequest = URLRequest(url: URL(string: request.urlString)!)
+                    urlRequest.httpMethod = HTTPMethod.post.rawValue
+                    
+                    if let cachePolicy = request.cachePolicy {
+                        urlRequest.cachePolicy = cachePolicy
+                    }
+                    request.headers?.dictionary.forEach { key, value in
+                        urlRequest.setValue(value, forHTTPHeaderField: key)
+                    }
+                    urlRequest.httpBody = data
+                    dataRequest = session.request(urlRequest)
+                } else {
+                    dataRequest = session.request(request.urlString,
+                                             method: request.httpMethod,
+                                             parameters: request.parameters,
+                                             encoding: request.useEncoding,
+                                             headers: request.useHeaders)
                 }
                 
-                if let cachePolicy = request.cachePolicy {
-                    urlRequest.cachePolicy = cachePolicy
+                dataRequest
+                    .validate()
+                    .responseData { dataResponse in
+                        let statusCode = dataResponse.response?.statusCode ?? 500
+                        self?.finishRequest(request, response: dataResponse.response)
+                        let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
+                        if !ignoreLoggingResponse {
+                            logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+                        }
+
+                        var response: CobaltResponse?
+                        if let data = dataResponse.data {
+                            response = data.asCobaltResponse()
+                            service.response = response
+                            service.optionallyWriteToCache()
+                            if !ignoreLoggingResponse {
+                                self?._responseParsing(response: response, request: request, requestID: requestID)
+                            }
+                        }
+
+                        if let error = dataResponse.error {
+                            let apiError = Error(from: error, response: response).set(request: request)
+                            if !ignoreLoggingResponse {
+                                logger?.error("#\(requestID) Original: \(error)")
+                                logger?.error("#\(requestID) Error: \(apiError)")
+                            }
+                            promise(.failure(apiError))
+                            return
+                        }
+
+                        guard let cobaltResponse = response else {
+                            promise(.failure(Error.empty))
+                            return
+                        }
+                        promise(.success(cobaltResponse))
                 }
-                
-                urlRequest.httpBody = data
-                dataRequest = session.request(urlRequest)
-            } else {
-                dataRequest = session.request(request.urlString,
-                                         method: request.httpMethod,
-                                         parameters: request.parameters,
-                                         encoding: request.useEncoding,
-                                         headers: request.useHeaders)
+
             }
-            
-            dataRequest.validate()
-                .responseJSON { response in
-                    let statusCode = response.response?.statusCode ?? 500
-                    self?.finishRequest(request, response: response.response)
-                    let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
-                    if !ignoreLoggingResponse {
-                        self?.logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
-                    }
-
-                    var json: JSON?
-                    if let data = response.data {
-                        json = JSON(data)
-                        self?.service.json = json
-                        self?.service.optionallyWriteToCache()
-                        if !ignoreLoggingResponse {
-                            self?._responseParsing(json: json, request: request, requestID: requestID)
-                        }
-                    }
-
-                    if let error = response.error {
-                        let apiError = Error(from: error, json: json).set(request: request)
-                        if !ignoreLoggingResponse {
-                            self?.logger?.error("#\(requestID) Original: \(error)")
-                            self?.logger?.error("#\(requestID) Error: \(apiError)")
-                        }
-                        observer(.failure(apiError))
-                        return
-                    }
-
-                    guard let responseJSON = json else {
-                        observer(.failure(Error.empty.set(request: request)))
-                        return
-                    }
-                    observer(.success(responseJSON))
-            }
-            return Disposables.create()
-        }
+        }.eraseToAnyPublisher()
     }
 
-    private func _responseParsing(json: JSON?, request: Request, requestID: Int) {
+    private func _responseParsing(response: CobaltResponse?, request: Request, requestID: Int) {
         var responseString: String?
-        if let dictionaryObject = json?.dictionaryObject {
-            let dictionary = Helpers.dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
+        if let dictionaryObject = response as? [String: Any] {
+            let dictionary = dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
             responseString = dictionary?.flatJSONString
             
         } else {
-            responseString = json?.flatString
+            responseString = response?.flatJSONString
         }
         
         logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue)  \(request.urlString) \(responseString ?? "")", metadata: [ "tag": "api"])
@@ -294,24 +261,20 @@ open class Client: ReactiveCompatible {
     // MARK: - Login
     // --------------------------------------------------------
 
-    open func login(username: String, password: String) -> Single<Void> {
+    open func login(username: String, password: String) -> AnyPublisher<Void, Error> {
         let parameters = [
             "username": username,
             "password": password
         ]
         
-        do {
-            return try authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
-        } catch {
-            return Single<Void>.error(error)
-        }
+        return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
     
-    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> Single<AuthorizationCodeRequest> {
+    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, Error> {
         return authProvider.createAuthorizationCodeRequest(scope: scope, redirectUri: redirectUri)
     }
     
-    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> Single<Void> {
+    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, Error> {
         return authProvider.requestTokenFromAuthorizationCode(initialRequest: request, code: code)
     }
     
@@ -337,8 +300,8 @@ open class Client: ReactiveCompatible {
     }
 
     public func clearAccessToken(forHost host: String? = nil) {
-        authorizationGrantTypeSubject.onNext(nil)
-        guard let host = (host ?? authenticationHost) else {
+        authorizationGrantType = nil
+        guard let host = (host ?? config.host) else {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
         AccessToken(host: host).clear()
@@ -348,8 +311,73 @@ open class Client: ReactiveCompatible {
 // MARK: - Helpers
 // --------------------------------------------------------
 
-extension Reactive where Base: Client {
-    public var authorizationGrantType: Observable<OAuthenticationGrantType?> {
-        return base.authorizationGrantTypeSubject.distinctUntilChanged().asObservable()
+extension Client {
+    func dictionaryForLogging(_ parameters: [String: Any]?,
+                              options: [String: KeyLoggingOption]?) -> [String: Any]? {
+        guard let theParameters = parameters, let options = options else {
+            return parameters
+        }
+        return _mask(parameters: theParameters, options: options)
+    }
+
+    fileprivate func _mask(parameters: [String: Any],
+                           options: [String: KeyLoggingOption],
+                           path: String = "") -> [String: Any] {
+        var logParameters: [String: Any] = [:]
+        for (key, value) in parameters {
+            let type = options["\(path)\(key)"] ?? .default
+            if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
+                logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
+                continue
+            } else if let array = value as? [[String: Any]] {
+                logParameters[key] = array.map { _mask(parameters: $0, options: options, path: "\(path)\(key).") }
+                continue
+            }
+            guard let string = Client.mask(string: value, type: type) else {
+                continue
+            }
+            logParameters[key] = string
+        }
+        return logParameters
+    }
+
+    class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
+        guard let value = value else {
+            return nil
+        }
+        switch type {
+        case .halfMasked:
+            guard let stringValue = value as? String, !stringValue.isEmpty else {
+                return value
+            }
+            let length = Int(floor(Double(stringValue.count) / 2.0))
+            let startIndex = stringValue.startIndex
+            let midIndex = stringValue.index(startIndex, offsetBy: length)
+            return String(describing: stringValue[startIndex..<midIndex]) + "***"
+
+        case .ignore:
+            return nil
+
+        case .replaced(let string):
+            return string
+
+        case .masked:
+            return "***"
+
+        case .shortened:
+            guard let stringValue = value as? String else {
+                fallthrough
+            }
+            if stringValue.count > 128 {
+                let startIndex = stringValue.startIndex
+                let endIndex = stringValue.index(startIndex, offsetBy: 128)
+                return String(describing: stringValue[startIndex..<endIndex]) + "..."
+            } else {
+                return value
+            }
+            
+        default:
+            return value
+        }
     }
 }

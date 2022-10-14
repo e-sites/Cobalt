@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 class Helpers {
     static func dictionaryForLogging(_ parameters: [String: Any]?,
@@ -27,6 +26,9 @@ class Helpers {
             if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
                 logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
                 continue
+            } else if let array = value as? [[String: Any]], case KeyLoggingOption.default = type {
+                logParameters[key] = array.map { _mask(parameters: $0, options: options, path: "\(path)\(key)[].") }
+                continue
             }
             guard let string = mask(string: value, type: type) else {
                 continue
@@ -34,6 +36,16 @@ class Helpers {
             logParameters[key] = string
         }
         return logParameters
+    }
+    
+    private class func halfMasked(string: String) -> String {
+        if string.isEmpty {
+            return "***"
+        }
+        let length = Int(floor(Double(string.count) / 2.0))
+        let startIndex = string.startIndex
+        let midIndex = string.index(startIndex, offsetBy: length)
+        return String(describing: string[startIndex..<midIndex]) + "***"
     }
 
     class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
@@ -45,10 +57,13 @@ class Helpers {
             guard let stringValue = value as? String, !stringValue.isEmpty else {
                 return value
             }
-            let length = Int(floor(Double(stringValue.count) / 2.0))
-            let startIndex = stringValue.startIndex
-            let midIndex = stringValue.index(startIndex, offsetBy: length)
-            return String(describing: stringValue[startIndex..<midIndex]) + "***"
+            
+            if stringValue.components(separatedBy: "@").count == 2 && stringValue.contains(".") {
+                let sep = stringValue.components(separatedBy: "@")
+                return halfMasked(string: sep[0]) + "@" + halfMasked(string: sep[1])
+            }
+            
+            return halfMasked(string: stringValue)
 
         case .ignore:
             return nil
@@ -63,8 +78,8 @@ class Helpers {
             let stringValue: String
             if let tmpValue = value as? String {
                 stringValue = tmpValue
-            } else if let tmpValue = JSON(value).rawString(.utf8, options: []) {
-                stringValue = tmpValue
+            } else if let tmpValue = value as? CobaltResponse, let jsonString = tmpValue.flatJSONString {
+                stringValue = jsonString
             } else {
                 stringValue = String(describing: value)
             }

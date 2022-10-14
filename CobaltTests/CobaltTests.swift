@@ -9,12 +9,12 @@
 import XCTest
 import Logging
 import Alamofire
-import RxSwift
-import RxCocoa
+import Combine
+import Nimble
 @testable import Cobalt
 
 class CobaltTests: XCTestCase {
-    lazy var disposeBag = DisposeBag()
+    var cancellables = Set<AnyCancellable>()
     lazy var config = Config {
         $0.authentication.clientID = "id"
         $0.authentication.clientSecret = "secret"
@@ -25,15 +25,22 @@ class CobaltTests: XCTestCase {
         $0.host = "https://reqres.in"
     }
     lazy var client = Cobalt.Client(config: self.config)
+    override func setUp() {
+        super.setUp()
+        Nimble.AsyncDefaults.timeout = .seconds(15)
+        Nimble.AsyncDefaults.pollInterval = .milliseconds(100)
+    }
     
     override func tearDown() {
         super.tearDown()
     }
     
     func waitUntil(expectedFulfillmentCount: Int = 1, _ handler: @escaping (((() -> Void)?) -> Void)) {
-        let expectation = self.expectation(description: "test")
+        let expectation = self.expectation(description: UUID().uuidString)
         expectation.expectedFulfillmentCount = expectedFulfillmentCount
-        handler({ expectation.fulfill() })
+        handler {
+            expectation.fulfill()
+        }
         waitForExpectations(timeout: 15, handler: nil)
     }
 }

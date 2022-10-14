@@ -7,14 +7,13 @@
 //
 
 import Foundation
+import Combine
 import Alamofire
-import SwiftyJSON
-
 
 public class Error: Swift.Error {
 
     private(set) public var code: Int = 0
-    private(set) public var json: JSON?
+    private(set) public var response: CobaltResponse?
     private(set) public var message: String?
     private(set) public var underlyingError: Swift.Error?
     
@@ -51,24 +50,28 @@ public class Error: Swift.Error {
         return Error(code: 205, message: "Authorization code request url is invalid")
     }
 
-    public static func unknown(_ json: JSON? = nil) -> Error {
-        return Error(code: 100, json: json)
+    public static func unknown(_ response: CobaltResponse? = nil) -> Error {
+        return Error(code: 100, response: response)
     }
     
     public static func invalidRequest(_ message: String) -> Error {
         return Error(code: 301, message: message)
     }
     
+    public static func parse(_ message: String) -> Error {
+        return Error(code: 801, message: message)
+    }
+    
     public static var concurrentAuthentication: Error {
         return Error(code: 401, message: "Concurrent authentication requests")
     }
 
-    public static func underlying(_ error: Swift.Error, json: JSON? = nil) -> Error {
+    public static func underlying(_ error: Swift.Error, response: CobaltResponse? = nil) -> Error {
         let apiError = Error(code: 601)
         apiError.underlyingError = error
         
-        if json != nil {
-            apiError.json = json
+        if let response {
+            apiError.response = response
         }
         
         return apiError
@@ -82,58 +85,58 @@ public class Error: Swift.Error {
     // MARK: - Constructor
     // --------------------------------------------------------
 
-    init(code: Int, json: JSON? = nil, message: String? = nil) {
+    init(code: Int, response: CobaltResponse? = nil, message: String? = nil) {
         self.code = code
-        self.json = json
+        self.response = response
         self.message = message
     }
 
-    init(from error: Swift.Error, json: JSON? = nil) {
-        if error is Error {
-            _clone(from: error as! Error)
+    init(from error: Swift.Error, response: CobaltResponse? = nil) {
+        if let cobaltError = error as? Error {
+            _clone(from: cobaltError)
             return
-        } else if let json = json, json != .null {
-            switch json["error"].stringValue {
+        } else if let dictionary = response as? [String: Any], let errorValue = dictionary["error"] as? String {
+            switch errorValue {
             case "invalid_grant":
                 _clone(from: Error.invalidGrant)
                 return
-
+                
             case "invalid_client":
                 _clone(from: Error.invalidClient)
                 return
-
+                
             default:
                 break
             }
             
-            _clone(from: Error.underlying(error, json: json))
+        } else if let afError = underlyingError as? AFError,
+                  case let .responseSerializationFailed(reason) = afError,
+                  case .inputDataNilOrZeroLength = reason {
+            _clone(from: Error.empty)
             return
         }
         
-        _clone(from: Error.underlying(error))
+        _clone(from: Error.underlying(error, response: response))
     }
-
+    
     private func _clone(from error: Error) {
         self.code = error.code
         self.message = error.message
         self.underlyingError = error.underlyingError
-        self.json = error.json
+        self.response = error.response
         self.request = error.request
     }
 }
 
 extension Error: CustomStringConvertible {
     public var description: String {
-        var jsonString = "(nil)"
+        let jsonString = response?.flatJSONString ?? "nil"
         
-        if let json = self.json {
-            jsonString = json.rawString(options: JSONSerialization.WritingOptions(rawValue: 0)) ?? "(nil)"
-        }
-        
-        return "<Error> [ code: \(code), " +
+        return "<Cobalt.Error> [ code: \(code), " +
+            "response: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
             "request: \(optionalDescription(request)), " +
-            "json: \(optionalDescription(jsonString)), " +
+            "json: \(jsonString), " +
             "underlying: \(optionalDescription(underlyingError)) " +
          "]"
     }
@@ -151,5 +154,11 @@ extension Error: Equatable {
 
     public static func == (lhs: Swift.Error, rhs: Error) -> Bool {
         return rhs == lhs
+    }
+}
+
+extension Error {
+    func asPublisher<T>(outputType: T.Type) -> AnyPublisher<T, Error> {
+        return Fail<T, Error>(error: self).eraseToAnyPublisher()
     }
 }

@@ -8,13 +8,12 @@
 
 import Foundation
 import Logging
-import SwiftyJSON
 
 class ClientService: NSObject {
     var logger: Logger?
 
     var currentRequest: Request?
-    var json: JSON?
+    var response: CobaltResponse?
 
     override init() {
         super.init()
@@ -28,13 +27,13 @@ class ClientService: NSObject {
 
     @objc
     dynamic func shouldPerformRequestAfterCacheCheck() -> Bool {
-        json = nil
+        response = nil
         return true
     }
 
     @objc
     dynamic func optionallyWriteToCache() {
         currentRequest = nil
-        json = nil
+        response = nil
     }
 }

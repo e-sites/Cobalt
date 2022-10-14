@@ -9,8 +9,7 @@
 
 import XCTest
 import Alamofire
-import RxSwift
-import RxCocoa
+import Combine
 import Foundation
 @testable import Cobalt
 
@@ -29,15 +28,21 @@ class CobaltTestsAuthentication: CobaltTests {
                 $0.path = "/prototypes/cobalt/users.php"
             }
 
-            self.client.request(request).subscribe { event in
-                switch event {
-                case .success(let json):
-                    XCTAssert(json["users"].arrayValue.count == 2)
-                case .failure(let error):
-                    XCTAssert(false, "\(error)")
-                }
-                done?()
-            }.disposed(by: self.disposeBag)
+            self.client.request(request)
+                .sink(receiveCompletion: { event in
+                    switch event {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        XCTAssert(false, "\(error)")
+                    }
+                    done?()
+                }, receiveValue: { response in
+                    guard let dic = response as? [String: Any], let users = dic["users"] as? [Any] else {
+                        return
+                    }
+                    XCTAssert(users.count == 2)
+                }).store(in: &self.cancellables)
         }
     }
 

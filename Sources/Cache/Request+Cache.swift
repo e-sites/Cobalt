@@ -11,7 +11,7 @@ import Foundation
 fileprivate var requestCachePolicyKey: UInt8 = 0
 
 extension Request {
-    public var cachePolicy: CachePolicy {
+    public var diskCachePolicy: CachePolicy {
         get {
             guard let policyRawValue = objc_getAssociatedObject(self, &requestCachePolicyKey) as? String else {
                 return .never

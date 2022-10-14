@@ -7,7 +7,12 @@
 //
 
 import Foundation
-import SwiftyJSON
+
+public enum CacheError: Swift.Error {
+    case neverCached
+    case expired
+    case notFound
+}
 
 public class CacheManager {
     private enum Constants {
@@ -61,12 +66,12 @@ public class CacheManager {
         }
     }
 
-    func getCachedJSON(for request: Request) -> JSON? {
+    func getCachedResponse(for request: Request) -> CobaltResponse? {
         let url = _url(for: request)
         do {
-            switch request.cachePolicy {
+            switch request.diskCachePolicy {
             case .never:
-                throw Error(from: SwiftyJSONError.unsupportedType).set(request: request)
+                throw CacheError.neverCached
 
             case .expires:
                 if !FileManager.default.fileExists(atPath: url.path) {
@@ -75,15 +80,15 @@ public class CacheManager {
 
                 // Check if the cache expired
                 if let date = _cachedMapping[url.absoluteString], date < Date() {
-                    throw Error(from: SwiftyJSONError.notExist).set(request: request)
+                    throw CacheError.expired
                 }
-
-                let jsonString = try String(contentsOfFile: url.path)
-                let json = JSON(parseJSON: jsonString)
-                if json == .null {
-                    throw Error(from: SwiftyJSONError.notExist).set(request: request)
+                
+                let data = try Data(contentsOf: url)
+                
+                guard let response = try JSONSerialization.jsonObject(with: data, options: []) as? CobaltResponse else {
+                    throw CacheError.notFound
                 }
-                return json
+                return response
             }
         } catch {
             //                print("Error retrieving cache: \(error)")
@@ -92,14 +97,14 @@ public class CacheManager {
         return nil
     }
 
-    func write(request: Request, response: JSON) {
-        switch request.cachePolicy {
+    func write(request: Request, response: CobaltResponse) {
+        switch request.diskCachePolicy {
         case .never:
             return
 
         case .expires(let interval):
             do {
-                let data = try response.rawData()
+                let data = try JSONSerialization.data(withJSONObject: response, options: [])
                 let url = _url(for: request)
                 _cachedMapping[url.absoluteString] = Date(timeIntervalSinceNow: interval)
                 //                print("Write cache to: \(url)")
