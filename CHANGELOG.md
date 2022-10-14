@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.1.4 (14-10-2022)
+- Fixed helpers
+
 ## v8.1.3 (14-10-2022)
 - Added array support for logging options
 

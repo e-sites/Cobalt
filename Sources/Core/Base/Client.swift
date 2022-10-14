@@ -248,7 +248,7 @@ open class Client {
     private func _responseParsing(response: CobaltResponse?, request: Request, requestID: Int) {
         var responseString: String?
         if let dictionaryObject = response as? [String: Any] {
-            let dictionary = dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
+            let dictionary = Helpers.dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
             responseString = dictionary?.flatJSONString
             
         } else {
@@ -305,79 +305,5 @@ open class Client {
             fatalError("No host given, nor a valid host set in the Cobalt.Config")
         }
         AccessToken(host: host).clear()
-    }
-}
-
-// MARK: - Helpers
-// --------------------------------------------------------
-
-extension Client {
-    func dictionaryForLogging(_ parameters: [String: Any]?,
-                              options: [String: KeyLoggingOption]?) -> [String: Any]? {
-        guard let theParameters = parameters, let options = options else {
-            return parameters
-        }
-        return _mask(parameters: theParameters, options: options)
-    }
-
-    fileprivate func _mask(parameters: [String: Any],
-                           options: [String: KeyLoggingOption],
-                           path: String = "") -> [String: Any] {
-        var logParameters: [String: Any] = [:]
-        for (key, value) in parameters {
-            let type = options["\(path)\(key)"] ?? .default
-            if let dictionary = value as? [String: Any], case KeyLoggingOption.default = type {
-                logParameters[key] = _mask(parameters: dictionary, options: options, path: "\(path)\(key).")
-                continue
-            } else if let array = value as? [[String: Any]] {
-                logParameters[key] = array.map { _mask(parameters: $0, options: options, path: "\(path)\(key).") }
-                continue
-            }
-            guard let string = Client.mask(string: value, type: type) else {
-                continue
-            }
-            logParameters[key] = string
-        }
-        return logParameters
-    }
-
-    class func mask(string value: Any?, type: KeyLoggingOption) -> Any? {
-        guard let value = value else {
-            return nil
-        }
-        switch type {
-        case .halfMasked:
-            guard let stringValue = value as? String, !stringValue.isEmpty else {
-                return value
-            }
-            let length = Int(floor(Double(stringValue.count) / 2.0))
-            let startIndex = stringValue.startIndex
-            let midIndex = stringValue.index(startIndex, offsetBy: length)
-            return String(describing: stringValue[startIndex..<midIndex]) + "***"
-
-        case .ignore:
-            return nil
-
-        case .replaced(let string):
-            return string
-
-        case .masked:
-            return "***"
-
-        case .shortened:
-            guard let stringValue = value as? String else {
-                fallthrough
-            }
-            if stringValue.count > 128 {
-                let startIndex = stringValue.startIndex
-                let endIndex = stringValue.index(startIndex, offsetBy: 128)
-                return String(describing: stringValue[startIndex..<endIndex]) + "..."
-            } else {
-                return value
-            }
-            
-        default:
-            return value
-        }
     }
 }

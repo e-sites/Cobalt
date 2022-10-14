@@ -19,12 +19,22 @@ class CobaltTestsLogging: CobaltTests {
                 [
                     "id": 1,
                     "name": "Bas",
-                    "email": "bas@e-sites.nl"
+                    "email": "bas@e-sites.nl",
+                    "address": [
+                        "street": "Reduitlaan",
+                        "houseNumber": 29,
+                        "country": "NL"
+                    ]
                 ],
                 [
                     "id": 2,
                     "name": "Thomas",
-                    "email": "thomas@e-sites.nl"
+                    "email": "thomas@e-sites.nl",
+                    "address": [
+                        "street": "Reduitlaan",
+                        "houseNumber": 29,
+                        "country": "NL"
+                    ]
                 ]
             ],
             "secret": "123"
@@ -33,6 +43,8 @@ class CobaltTestsLogging: CobaltTests {
         guard let logParams = Helpers.dictionaryForLogging(dictionary, options: [
             "users[].name": .masked,
             "users[].email": .halfMasked,
+            "users[].address.street": .masked,
+            "users[].address.houseNumber": .masked,
             "secret": .replaced("-secret-")
             ]) else {
                 XCTAssert(false, "'logParams' should not be nil")
@@ -46,11 +58,22 @@ class CobaltTestsLogging: CobaltTests {
             if let string = users.first?["email"] as? String {
                 XCTAssertEqual(string, "b***@e-sit***")
             }
+            
+            if let address = users.first?["address"] as? [String: Any],
+               let string = address["street"] as? String {
+                XCTAssertEqual(string, "***")
+            }
+            
             if let string = users.last?["name"] as? String {
                 XCTAssertEqual(string, "***")
             }
             if let string = users.last?["email"] as? String {
                 XCTAssertEqual(string, "tho***@e-sit***")
+            }
+            
+            if let address = users.last?["address"] as? [String: Any],
+               let string = address["street"] as? String {
+                XCTAssertEqual(string, "***")
             }
         } else {
             XCTAssert(false, "`users` is not an array")
