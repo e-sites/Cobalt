@@ -130,13 +130,13 @@ public class Error: Swift.Error {
 
 extension Error: CustomStringConvertible {
     public var description: String {
-        let jsonString = response?.flatJSONString ?? "nil"
+        let jsonString = Helpers.dictionaryForLogging(response as? [String: Any], options: request?.loggingOption?.response)?.flatJSONString ?? response?.flatJSONString
         
-        return "<Cobalt.Error> [ code: \(code), " +
+        return "<Cobalt.Error> [ " +
+            "code: \(code), " +
             "response: \(optionalDescription(jsonString)), " +
             "message: \(optionalDescription(message)), " +
             "request: \(optionalDescription(request)), " +
-            "json: \(jsonString), " +
             "underlying: \(optionalDescription(underlyingError)) " +
          "]"
     }

@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.1.5 (14-10-2022)
+- Mask cobalt.error response description
+
 ## v8.1.4 (14-10-2022)
 - Fixed helpers
 
