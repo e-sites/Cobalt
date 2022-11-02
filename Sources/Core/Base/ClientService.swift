@@ -14,7 +14,7 @@ public final class ClientService: NSObject {
     public internal(set) var logger: Logger?
     public internal(set) var currentRequest: CobaltRequest?
     public var response: CobaltResponse?
-    public var stubbedPublisher: AnyPublisher<CobaltResponse, CobaltError>?
+    var stubbedPublishers: [CobaltRequest: AnyPublisher<CobaltResponse, CobaltError>] = [:]
 
     override public init() {
         super.init()
@@ -26,9 +26,12 @@ public final class ClientService: NSObject {
         }
     }
     
+    public func addStubbedPublisher(request: CobaltRequest, publisher: AnyPublisher<CobaltResponse, CobaltError>) {
+        stubbedPublishers[request] = publisher
+    }
+    
     @objc
     dynamic public func shouldStub() -> Bool {
-        stubbedPublisher = nil
         return false
     }
 

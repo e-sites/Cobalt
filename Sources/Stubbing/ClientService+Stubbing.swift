@@ -43,8 +43,13 @@ extension ClientService {
         guard let currentRequest, stubbingManager.isEnabled else {
             return swizzledShouldStub()
         }
-        stubbedPublisher = stubbingManager.stub(request: currentRequest)
-        return stubbedPublisher != nil
+        
+        if let stubbedPublisher = stubbingManager.stub(request: currentRequest) {
+            addStubbedPublisher(request: currentRequest, publisher: stubbedPublisher)
+            return true
+        }
+        
+        return false
     }
 }
 

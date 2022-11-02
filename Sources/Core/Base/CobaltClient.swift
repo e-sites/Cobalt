@@ -252,9 +252,9 @@ open class CobaltClient {
     
     private func stub(request: CobaltRequest, requestID: Int, ignoreLoggingRequest: Bool, ignoreLoggingResponse: Bool) -> AnyPublisher<CobaltResponse, CobaltError>? {
         defer {
-            service.stubbedPublisher = nil
+            service.stubbedPublishers.removeValue(forKey: request)
         }
-        guard service.shouldStub(), let publisher = service.stubbedPublisher else {
+        guard service.shouldStub(), let publisher = service.stubbedPublishers[request] else {
             return nil
         }
         return publisher
@@ -329,8 +329,7 @@ open class CobaltClient {
             return .failure(apiError)
         }
         
-        guard let cobaltResponse = response else {
-            
+        guard let cobaltResponse = response else {            
             return .failure(CobaltError.empty)
         }
         return .success(cobaltResponse)
