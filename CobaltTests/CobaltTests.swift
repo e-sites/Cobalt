@@ -15,7 +15,7 @@ import Nimble
 
 class CobaltTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
-    lazy var config = Config {
+    lazy var config = CobaltConfig {
         $0.authentication.clientID = "id"
         $0.authentication.clientSecret = "secret"
         $0.authentication.authorization = .requestBody
@@ -24,7 +24,7 @@ class CobaltTests: XCTestCase {
         
         $0.host = "https://reqres.in"
     }
-    lazy var client = Cobalt.Client(config: self.config)
+    lazy var client = CobaltClient(config: self.config)
     override func setUp() {
         super.setUp()
         Nimble.AsyncDefaults.timeout = .seconds(15)

@@ -7,9 +7,11 @@
 //
 
 import Foundation
+import Cobalt
 
 fileprivate var _swizzled = false
 fileprivate var stubbingManagerKey: UInt8 = 0
+fileprivate var stubbingPublisherKey: UInt8 = 0
 
 extension ClientService {
     
@@ -25,7 +27,7 @@ extension ClientService {
             method_exchangeImplementations(originalMethod, swizzledMethod)
         }
     }
-
+    
     var stubbingManager: StubbingManager {
         guard let getAss = objc_getAssociatedObject(self, &stubbingManagerKey) as? StubbingManager else {
             let stubbingManager = StubbingManager()
@@ -38,9 +40,8 @@ extension ClientService {
 
     @objc
     dynamic func swizzledShouldStub() -> Bool {
-        _ = swizzledShouldStub()
         guard let currentRequest, stubbingManager.isEnabled else {
-            return false
+            return swizzledShouldStub()
         }
         stubbedPublisher = stubbingManager.stub(request: currentRequest)
         return stubbedPublisher != nil

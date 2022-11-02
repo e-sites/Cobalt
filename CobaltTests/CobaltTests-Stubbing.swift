@@ -13,6 +13,7 @@ import Alamofire
 import Foundation
 import Combine
 @testable import Cobalt
+@testable import CobaltStubbing
 
 class CobaltTestsStubbing: CobaltTests {
     
@@ -37,11 +38,11 @@ class CobaltTestsStubbing: CobaltTests {
         })
         
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
-                    "per_page": 6
+                    "per_page": 2
                 ]
             }
             
@@ -63,14 +64,48 @@ class CobaltTestsStubbing: CobaltTests {
         }
     }
     
-    func testErrorStubbing() {
+    func testStubbingRegex() {
+        let stubbedResponse = #"""
+{"data":{"id":2,"email":"janet.weaver@reqres.in","first_name":"Janet","last_name":"Weaver","avatar":"https://reqres.in/img/faces/2-image.jpg"},"support":{"url":"https://reqres.in/#support-heading","text":"To keep ReqRes free, contributions towards server costs are appreciated!"}}
+"""#
+        
         client.stubbing.add(Stub {
-            $0.path = "/api/users"
-            $0.error = Error.missingClientAuthentication
+            $0.path = "/api/users/([0-9]+)"
+            $0.data = stubbedResponse.data(using: .utf8)!
         })
         
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
+                $0.authentication = .client
+                $0.path = "/api/users/5"
+            }
+            
+            self.client.request(request).sink(receiveCompletion: { event in
+                switch event {
+                case .finished:
+                    break
+                case .failure(let error):
+                    XCTAssert(false, "\(error)")
+                }
+                done?()
+            }, receiveValue: { response in
+                if let dictionary = response as? [String: Any], let data = dictionary["data"] as? [String: Any] {
+                    expect(data["email"] as? String) == "janet.weaver@reqres.in"
+                } else {
+                    XCTAssert(false, "Response \(response) is not a dictionary")
+                }
+            }).store(in: &self.cancellables)
+        }
+    }
+    
+    func testErrorStubbing() {
+        client.stubbing.add(Stub {
+            $0.path = "/api/users"
+            $0.error = CobaltError.missingClientAuthentication
+        })
+        
+        waitUntil { done in
+            let request = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -83,7 +118,7 @@ class CobaltTestsStubbing: CobaltTests {
                 case .finished:
                     XCTAssert(false, "Should not reach this")
                 case .failure(let error):
-                    XCTAssertEqual(error.code, Error.missingClientAuthentication.code)
+                    XCTAssertEqual(error.code, CobaltError.missingClientAuthentication.code)
                 }
                 done?()
             }, receiveValue: { _ in

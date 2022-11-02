@@ -1,5 +1,5 @@
 //
-//  Cobalt.swift
+//  CobaltClient.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -11,14 +11,14 @@ import Alamofire
 import Logging
 import Combine
 
-open class Client {
+open class CobaltClient {
     
     // MARK: - Variables
     // --------------------------------------------------------
     
     fileprivate var requestID = 1
     
-    public let config: Config
+    public let config: CobaltConfig
     
     open var session: Session = Session.default
     
@@ -46,14 +46,14 @@ open class Client {
     }
     
     @objc
-    let service = ClientService()
+    public let service = ClientService()
     
     // MARK: - Constructor
     // --------------------------------------------------------
     
-    required public init(config: Config) {
+    required public init(config: CobaltConfig) {
         self.config = config
-        service.logger = logger
+        service.logger = config.logging.logger
     }
     
     // MARK: - Request functions
@@ -64,11 +64,11 @@ open class Client {
     /// - Parameters:
     ///   - `request`: The `Request` object
     ///
-    /// - Returns: `AnyPublisher<CobaltResponse, Error>`
-    open func request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
+    /// - Returns: `AnyPublisher<CobaltResponse, CobaltError>`
+    open func request(_ request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError> {
         // Strip slashes to form a valid urlString
         guard let host = (request.host ?? config.host) else {
-            return Error.invalidRequest("Missing 'host'").asPublisher(outputType: CobaltResponse.self)
+            return CobaltError.invalidRequest("Missing 'host'").asPublisher(outputType: CobaltResponse.self)
         }
         
         // If the client is authenticating with OAuth.
@@ -77,7 +77,7 @@ open class Client {
         if authProvider.isAuthenticating && request.requiresOAuthentication {
             queue.add(request)
             guard let publisher = queue.publisher(of: request) else {
-                return Error.unknown().asPublisher(outputType: CobaltResponse.self)
+                return CobaltError.unknown().asPublisher(outputType: CobaltResponse.self)
             }
             
             return publisher
@@ -99,51 +99,51 @@ open class Client {
         // 1. We (optionally) (pre-)authorize the request
         
         return Just(request)
-            .setFailureType(to: Cobalt.Error.self)
+            .setFailureType(to: CobaltError.self)
             .subscribe(on: DispatchQueue.main)
             .flatMap { [authProvider] aRequest in authProvider.authorize(request: aRequest) }
             .prefix(1)
         // 2. We actually send the request with Alamofire
-            .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, Error> in
+            .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, CobaltError> in
                 guard let self = self else {
-                    return AnyPublisher<CobaltResponse, Error>.never()
+                    return AnyPublisher<CobaltResponse, CobaltError>.never()
                 }
                 return self._request(newRequest)
                 
                 // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-            }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+            }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
                 return authProvider.recover(from: error, request: request)
-                    .tryCatch { authError -> AnyPublisher<CobaltResponse, Cobalt.Error> in
+                    .tryCatch { authError -> AnyPublisher<CobaltResponse, CobaltError> in
                         if request.requiresOAuthentication {
                             queue.next()
                         }
                         throw authError
                     }
-                    .mapError { Error(from: $0) }
+                    .mapError { CobaltError(from: $0) }
                     .eraseToAnyPublisher()
                 
                 // 4. If any other requests are queued, fire up the next one
-            }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, Error> in
+            }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, CobaltError> in
                 // When a request is finished, no matter if its succesful or not
                 // We try to clear th queue
                 if request.requiresOAuthentication {
                     queue.next()
                 }
-                return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
+                return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
-    open func startRequest(_ request: Request) {
+    open func startRequest(_ request: CobaltRequest) {
         
     }
     
-    open func finishRequest(_ request: Request, response: HTTPURLResponse?) {
+    open func finishRequest(_ request: CobaltRequest, response: HTTPURLResponse?) {
         
     }
     
-    private func _request(_ request: Request) -> AnyPublisher<CobaltResponse, Error> {
+    private func _request(_ request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError> {
         let requestID = self.requestID
         self.requestID += 1
         if self.requestID == 100 {
@@ -175,51 +175,27 @@ open class Client {
         
         service.currentRequest = request
         
-        if service.shouldStub(), let publisher = service.stubbedPublisher {
+        #if canImport(CobaltStubbing)
+        if let publisher = stub(
+            request: request,
+            requestID: requestID,
+            ignoreLoggingRequest: ignoreLoggingRequest,
+            ignoreLoggingResponse: ignoreLoggingResponse
+        ) {
             return publisher
-                .tryCatch { [weak self] error -> AnyPublisher<CobaltResponse, Error> in
-                    switch self?.handleResponse(
-                        request: request,
-                        statusCode: error.code,
-                        ignoreLoggingRequest: ignoreLoggingRequest,
-                        ignoreLoggingResponse: ignoreLoggingResponse,
-                        data: nil,
-                        error: error
-                    ) {
-                    case .failure(let newError):
-                        throw newError
-                    default:
-                        throw error
-                    }
-                }.tryMap { [weak self] response -> CobaltResponse in
-                    switch self?.handleResponse(
-                        request: request,
-                        statusCode: 200,
-                        ignoreLoggingRequest: ignoreLoggingRequest,
-                        ignoreLoggingResponse: ignoreLoggingResponse,
-                        data: response.data,
-                        error: nil
-                    ) {
-                    case .failure(let error):
-                        throw error
-                    case .success(let newResponse):
-                        return newResponse
-                    default:
-                        throw Error.empty
-                    }
-                }
-                .mapError { Error(from: $0) }
-                .eraseToAnyPublisher()
         }
+        #endif
         
+        #if canImport(CobaltCaching)
         // Check to see if the cache engine should handle it
         if !service.shouldPerformRequestAfterCacheCheck(), let response = service.response {
             if !ignoreLoggingResponse {
                 _responseParsing(response: response, request: request, requestID: requestID)
             }
             
-            return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
+            return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
         }
+        #endif
         
         return Deferred { [weak self, session] in
             Future { promise in
@@ -253,6 +229,7 @@ open class Client {
                         do {
                             switch self?.handleResponse(
                                 request: request,
+                                requestID: requestID,
                                 statusCode: dataResponse.response?.statusCode,
                                 ignoreLoggingRequest: ignoreLoggingRequest,
                                 ignoreLoggingResponse: ignoreLoggingResponse,
@@ -273,14 +250,60 @@ open class Client {
         }.eraseToAnyPublisher()
     }
     
+    private func stub(request: CobaltRequest, requestID: Int, ignoreLoggingRequest: Bool, ignoreLoggingResponse: Bool) -> AnyPublisher<CobaltResponse, CobaltError>? {
+        defer {
+            service.stubbedPublisher = nil
+        }
+        guard service.shouldStub(), let publisher = service.stubbedPublisher else {
+            return nil
+        }
+        return publisher
+            .tryCatch { [weak self] error -> AnyPublisher<CobaltResponse, CobaltError> in
+                switch self?.handleResponse(
+                    request: request,
+                    requestID: requestID,
+                    statusCode: error.code,
+                    ignoreLoggingRequest: ignoreLoggingRequest,
+                    ignoreLoggingResponse: ignoreLoggingResponse,
+                    data: nil,
+                    error: error
+                ) {
+                case .failure(let newError):
+                    throw newError
+                default:
+                    throw error
+                }
+            }.tryMap { [weak self] response -> CobaltResponse in
+                switch self?.handleResponse(
+                    request: request,
+                    requestID: requestID,
+                    statusCode: 200,
+                    ignoreLoggingRequest: ignoreLoggingRequest,
+                    ignoreLoggingResponse: ignoreLoggingResponse,
+                    data: response.data,
+                    error: nil
+                ) {
+                case .failure(let error):
+                    throw error
+                case .success(let newResponse):
+                    return newResponse
+                default:
+                    throw CobaltError.empty
+                }
+            }
+            .mapError { CobaltError(from: $0) }
+            .eraseToAnyPublisher()
+    }
+    
     private func handleResponse(
-        request: Request,
+        request: CobaltRequest,
+        requestID: Int,
         statusCode: Int?,
         ignoreLoggingRequest: Bool,
         ignoreLoggingResponse: Bool,
         data: Data?,
-        error: Swift.Error?
-    ) -> Result<CobaltResponse, Error> {
+        error: Error?
+    ) -> Result<CobaltResponse, CobaltError> {
         let statusCode = statusCode ?? 500
         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
         if !ignoreLoggingResponse {
@@ -298,7 +321,7 @@ open class Client {
         }
         
         if let error {
-            let apiError = Error(from: error, response: response).set(request: request)
+            let apiError = CobaltError(from: error, response: response).set(request: request)
             if !ignoreLoggingResponse {
                 logger?.error("#\(requestID) Original: \(error)")
                 logger?.error("#\(requestID) Error: \(apiError)")
@@ -308,12 +331,12 @@ open class Client {
         
         guard let cobaltResponse = response else {
             
-            return .failure(Error.empty)
+            return .failure(CobaltError.empty)
         }
         return .success(cobaltResponse)
     }
     
-    private func _responseParsing(response: CobaltResponse?, request: Request, requestID: Int) {
+    private func _responseParsing(response: CobaltResponse?, request: CobaltRequest, requestID: Int) {
         var responseString: String?
         if let dictionaryObject = response as? [String: Any] {
             let dictionary = Helpers.dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
@@ -329,7 +352,7 @@ open class Client {
     // MARK: - Login
     // --------------------------------------------------------
     
-    open func login(username: String, password: String) -> AnyPublisher<Void, Error> {
+    open func login(username: String, password: String) -> AnyPublisher<Void, CobaltError> {
         let parameters = [
             "username": username,
             "password": password
@@ -338,11 +361,11 @@ open class Client {
         return authProvider.sendOAuthRequest(grantType: .password, parameters: parameters)
     }
     
-    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, Error> {
+    open func startAuthorizationFlow(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, CobaltError> {
         return authProvider.createAuthorizationCodeRequest(scope: scope, redirectUri: redirectUri)
     }
     
-    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, Error> {
+    open func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, CobaltError> {
         return authProvider.requestTokenFromAuthorizationCode(initialRequest: request, code: code)
     }
     

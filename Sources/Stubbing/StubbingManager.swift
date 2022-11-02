@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import Cobalt
 
 public class StubbingManager {
     private(set) var isEnabled = false
@@ -33,30 +34,34 @@ public class StubbingManager {
         isEnabled = false
     }
     
-    func stub(request: Request) -> AnyPublisher<CobaltResponse, Error>? {
+    public init() {
+        
+    }
+    
+    public func stub(request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError>? {
         guard let stub = stubs.first(where: { willStub(stub: $0, request: request) }) else {
             return nil
-        }        
-        
+        }
+
         if let error = stub.error {
-            return Fail<CobaltResponse, Error>(error: error)
+            return Fail<CobaltResponse, CobaltError>(error: (error as? CobaltError) ?? .underlying(error))
                 .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
-        
+
         guard let cobaltResponse = stub.data.asCobaltResponse() else {
-            return Fail<CobaltResponse, Error>(error: .empty)
+            return Fail<CobaltResponse, CobaltError>(error: .empty)
                 .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
-        
+
         return Just(cobaltResponse)
-            .setFailureType(to: Error.self)
+            .setFailureType(to: CobaltError.self)
             .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
-    private func willStub(stub: Stub, request: Request) -> Bool {
+    private func willStub(stub: Stub, request: CobaltRequest) -> Bool {
         guard request.host == stub.host || stub.host == nil || request.host == nil,
               stub.httpMethod == request.httpMethod,
               request.path.range(of: stub.path, options: .regularExpression, range: nil, locale: nil) != nil else {

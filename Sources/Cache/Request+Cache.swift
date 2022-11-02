@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import Cobalt
+import CryptoKit
 
 fileprivate var requestCachePolicyKey: UInt8 = 0
 
-extension Request {
+extension CobaltRequest {
     public var diskCachePolicy: CachePolicy {
         get {
             guard let policyRawValue = objc_getAssociatedObject(self, &requestCachePolicyKey) as? String else {
@@ -25,13 +27,17 @@ extension Request {
     }
 
     var cacheKey: String {
-        return [
+        let string = [
             host ?? "",
             path,
             httpMethod.rawValue,
             (parameters ?? [:]).map { "\($0)=\($1)" }.sorted { $0 < $1 }.joined(separator: "")
         ]
         .joined(separator: "~")
-        .md5
+        
+        let digest = Insecure.MD5.hash(data: string.data(using: .utf8) ?? Data())
+        return digest.map {
+            String(format: "%02hhx", $0)
+        }.joined()
     }
 }

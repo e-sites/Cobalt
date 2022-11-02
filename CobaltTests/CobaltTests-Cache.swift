@@ -14,6 +14,7 @@ import Alamofire
 import Foundation
 import Combine
 @testable import Cobalt
+@testable import CobaltCache
 
 class CobaltTestsCache: CobaltTests {
     
@@ -24,7 +25,7 @@ class CobaltTestsCache: CobaltTests {
     
     func testCache() {
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -49,7 +50,7 @@ class CobaltTestsCache: CobaltTests {
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                    let request = Request {
+                    let request = CobaltRequest {
                         $0.authentication = .client
                         $0.path = "/api/users"
                         $0.parameters = [
@@ -80,7 +81,7 @@ class CobaltTestsCache: CobaltTests {
     
     func testNoCache() {
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -104,7 +105,7 @@ class CobaltTestsCache: CobaltTests {
                     XCTAssert(false, "Response \(response) is not a dictionary")
                 }
                 
-                let newRequest = Request {
+                let newRequest = CobaltRequest {
                     $0.authentication = .client
                     $0.path = "/api/users"
                     $0.parameters = [

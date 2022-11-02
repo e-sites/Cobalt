@@ -1,5 +1,5 @@
 //
-//  Config.swift
+//  CobaltConfig.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -10,7 +10,7 @@ import Foundation
 import Logging
 import Alamofire
 
-public class Config {
+public class CobaltConfig {
     
     public enum ClientAuthorization: String {
         case basicHeader
@@ -21,7 +21,7 @@ public class Config {
         public var path = "/oauth/v2/token"
         public var refreshTokenPath: String?
         public var authorizationPath = "/oauth/v2/authorize"
-        public var authorization: Config.ClientAuthorization? = .basicHeader
+        public var authorization: CobaltConfig.ClientAuthorization? = .basicHeader
         public var encoding: ParameterEncoding?
         public var clientID: String?
         public var clientSecret: String?
@@ -38,7 +38,7 @@ public class Config {
     public let logging = Logging()
     public var host: String?
 
-    public init(_ builder: ((Config) -> Void)) {
+    public init(_ builder: ((CobaltConfig) -> Void)) {
         builder(self)
     }
 }

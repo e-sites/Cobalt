@@ -14,7 +14,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.2.1")),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "4.1.0"))
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "4.1.0")),
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.0.0"))
     ],
     targets: [
         .target(
@@ -36,9 +37,20 @@ let package = Package(
         .target(
             name: "CobaltStubbing",
             dependencies: [
-                "Cobalt"
+                "Alamofire",
+                 "Cobalt"
             ],
             path: "Sources/Stubbing"
+        ),
+        .testTarget(
+            name: "CobaltTesting",
+            dependencies: [
+                "Nimble",
+                "Cobalt",
+                "CobaltStubbing",
+                "CobaltCache"
+            ],
+            path: "CobaltTests"
         )
     ],
     swiftLanguageVersions: [ .v5 ]

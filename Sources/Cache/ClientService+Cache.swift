@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Cobalt
 
 fileprivate var _swizzled = false
 fileprivate var cacheManagerKey: UInt8 = 0

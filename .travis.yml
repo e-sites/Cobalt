@@ -1,9 +1,9 @@
 language: objective-c
-osx_image: xcode12.5
+osx_image: xcode14
 
 branches:
   only:
   - master
 
 script:
-  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' clean build test
+  - xcodebuild -project Cobalt.xcodeproj -scheme Cobalt -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13' clean build test

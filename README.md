@@ -38,11 +38,11 @@ Extend the `Cobalt` class to use it in your own API client.
 ```swift
 import Cobalt
 
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
    static let `default` = APIClient()
     
    private init() {
-      let config = Cobalt.Config {
+      let config = CobaltConfig {
          $0.authentication.path = "/oauth/v2/token"
          $0.authentication.authorizationPath = "/oauth/v2/connect"
          $0.authentication.clientID = "my_oauth_client_id"
@@ -63,11 +63,11 @@ APIClient uses Swift's Combine framework internally for handling the responses f
 ### Combine
 
 ```swift
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
    // ...
    
-   func users() -> AnyPublisher<[User], Cobalt.Error> {
-      let request = Cobalt.Request {
+   func users() -> AnyPublisher<[User], CobaltError> {
+      let request = CobaltRequest {
          $0.path = "/users"
          $0.parameters = [
             "per_page": 10
@@ -92,11 +92,11 @@ pod 'Cobalt/Cache'
 And implement it like this:
 
 ```swift
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
    // ...
    
-   func users() -> AnyPublisher<[User], Cobalt.Error> {
-      let request = Cobalt.Request {
+   func users() -> AnyPublisher<[User], CobaltError> {
+      let request = CobaltRequest {
          $0.path = "/users"
          $0.parameters = [
             "per_page": 10
@@ -123,7 +123,7 @@ If you want to login a user using the OAuth2 protocol, use the `login()` functio
 Internally it will handle the retrieval and refreshing of the provided `access_token`:
 
 ```swift
-func login(email: String, password: String) -> AnyPublisher<Void, Cobalt.Error>
+func login(email: String, password: String) -> AnyPublisher<Void, CobaltError>
 ```
 
 You can also use other options of authentication
@@ -134,11 +134,11 @@ If you want to retrieve the user profile, you need the `.oauth2(.password)` auth
 If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token
 
 ```swift
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
    // ...
    
-   func profile() -> AnyPublisher<User, Cobalt.Error> {
-        let request = Cobalt.Request {
+   func profile() -> AnyPublisher<User, CobaltError> {
+        let request = CobaltRequest {
             $0.authentication = .oauth2(.password)
             $0.path = "/user/profile"
         }
@@ -158,7 +158,7 @@ This grant type requires the user to sign in in a webview or browser. To enable 
  If the access_token is expired, Cobalt will automatically refresh it, using the refresh_token.
 
 ```swift
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
     // ...
 
     func profile() -> Promise<User> {
@@ -246,11 +246,11 @@ class OAuthAuthenticator {
 You have to provide the `.oauth2(.clientCredentials)` authentication for the `Cobalt.Request`
 
 ```swift
-class APIClient: Cobalt.Client {
+class APIClient: CobaltClient {
    // ...
    
-   func register(email: String, password: String) -> AnyPublisher<Void, Cobalt.Error> {
-      let request = Cobalt.Request {
+   func register(email: String, password: String) -> AnyPublisher<Void, CobaltError> {
+      let request = CobaltRequest {
             $0.httpMethod = .post
             $0.path = "/register"
             $0.authentication = .oauth2(.clientCredentials)

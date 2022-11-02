@@ -8,9 +8,9 @@
 
 import XCTest
 import Nimble
-import Alamofire
 import Foundation
 import Combine
+import Alamofire
 @testable import Cobalt
 
 class CobaltTestsRequests: CobaltTests {
@@ -23,7 +23,7 @@ class CobaltTestsRequests: CobaltTests {
             accessToken.grantType = .clientCredentials
             accessToken.store()
             
-            let request1 = Request {
+            let request1 = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/some_strange_request"
                 $0.authentication = .oauth2(.clientCredentials)
@@ -42,7 +42,7 @@ class CobaltTestsRequests: CobaltTests {
                 
             }).store(in: &self.cancellables)
             
-            let request2 = Request {
+            let request2 = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -80,7 +80,7 @@ class CobaltTestsRequests: CobaltTests {
             accessToken.grantType = .password
             accessToken.store()
             
-            let request1 = Request {
+            let request1 = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -103,7 +103,7 @@ class CobaltTestsRequests: CobaltTests {
                 
             }).store(in: &self.cancellables)
             
-            let request2 = Request {
+            let request2 = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -130,7 +130,7 @@ class CobaltTestsRequests: CobaltTests {
     
     func testRequestGET() {
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.authentication = .client
                 $0.path = "/api/users"
                 $0.parameters = [
@@ -159,7 +159,7 @@ class CobaltTestsRequests: CobaltTests {
     
     func testRequestGET404() {
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.path = "/some_strange_request"
             }
             

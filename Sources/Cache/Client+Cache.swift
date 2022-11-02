@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import Cobalt
 
-extension Client {
+extension CobaltClient {
     /// The CacheManager
     public var cache: CacheManager {
         return service.cacheManager

@@ -1,10 +1,13 @@
 # Changelog Cobalt
 
+## v9.0.0 (02-11-2022)
+- Refactored a bunch of stuff
+
 ## v8.2.0 (02-11-2022)
 - Added stubbing
 
 ## v8.1.5 (14-10-2022)
-- Mask cobalt.error response description
+- Mask CobaltError response description
 
 ## v8.1.4 (14-10-2022)
 - Fixed helpers
@@ -202,7 +205,7 @@
 - Removed `SwiftyUserDefaults` dependency
 
 ## v5.2.0 (16-07-2018)
-- `Cobalt` -> `Cobalt.Client`
+- `Cobalt` -> `CobaltClient`
 
 ## v5.1.0 (12-07-2018)
 - Store `AccessToken` in individual keychains per host, this way you can use multiple `Cobalt` isntances for multiple API's.

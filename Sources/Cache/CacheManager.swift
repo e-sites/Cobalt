@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import Cobalt
 
-public enum CacheError: Swift.Error {
+public enum CacheError: Error {
     case neverCached
     case expired
     case notFound
@@ -66,7 +67,7 @@ public class CacheManager {
         }
     }
 
-    func getCachedResponse(for request: Request) -> CobaltResponse? {
+    func getCachedResponse(for request: CobaltRequest) -> CobaltResponse? {
         let url = _url(for: request)
         do {
             switch request.diskCachePolicy {
@@ -97,7 +98,7 @@ public class CacheManager {
         return nil
     }
 
-    func write(request: Request, response: CobaltResponse) {
+    func write(request: CobaltRequest, response: CobaltResponse) {
         switch request.diskCachePolicy {
         case .never:
             return
@@ -115,7 +116,7 @@ public class CacheManager {
         }
     }
 
-    private func _clear(for request: Request) {
+    private func _clear(for request: CobaltRequest) {
         let url = _url(for: request)
         //        print("Clear cache: \(url)")
         _cachedMapping.removeValue(forKey: url.absoluteString)
@@ -125,7 +126,7 @@ public class CacheManager {
         }
     }
 
-    private func _url(for request: Request) -> URL {
+    private func _url(for request: CobaltRequest) -> URL {
         var url = _cacheFolder
         let cacheKey = request.cacheKey
         url.appendPathComponent(cacheKey + ".cache")

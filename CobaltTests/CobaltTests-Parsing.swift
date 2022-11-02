@@ -8,7 +8,6 @@
 
 import XCTest
 import Nimble
-import Alamofire
 import Foundation
 import Combine
 @testable import Cobalt
@@ -39,10 +38,10 @@ class CobaltTestsParsing: CobaltTests {
             _ = try array.map(key: "objects", to: [SomeObject].self)
             XCTAssert(false, "Should not parse")
         } catch {
-            if let error = error as? Cobalt.Error {
+            if let error = error as? CobaltError {
                 XCTAssertEqual(error.code, 801)
             } else {
-                XCTAssert(false, "\(error) is not Cobalt.Error")
+                XCTAssert(false, "\(error) is not CobaltError")
             }
         }
     }

@@ -27,7 +27,7 @@ extension CobaltResponse {
 }
 
 extension Data {
-    func asCobaltResponse() -> CobaltResponse? {
+    public func asCobaltResponse() -> CobaltResponse? {
         guard let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []) else {
             if let string = String(data: self, encoding: .utf8) {
                 return string
@@ -55,7 +55,7 @@ public extension CobaltResponse {
         var obj: Any = self
         if let key = key {
             guard let dict = obj as? [String: Any], let dictObj = dict[key] else {
-                throw Error.parse("Error parsing. Key '\(key)' not found in response")
+                throw CobaltError.parse("Error parsing. Key '\(key)' not found in response")
             }
             obj = dictObj
         }

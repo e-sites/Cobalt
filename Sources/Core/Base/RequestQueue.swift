@@ -10,23 +10,23 @@ import Foundation
 import Combine
 
 class RequestQueue {
-    private weak var apiClient: Client!
-    private(set) var requests: [Request] = []
-    private var _map: [Request: PassthroughSubject<CobaltResponse, Error>] = [:]
+    private weak var apiClient: CobaltClient!
+    private(set) var requests: [CobaltRequest] = []
+    private var _map: [CobaltRequest: PassthroughSubject<CobaltResponse, CobaltError>] = [:]
 
     var count: Int {
         return requests.count
     }
 
-    init(client: Client) {
+    init(client: CobaltClient) {
         self.apiClient = client
     }
 
-    func add(_ request: Request) {
+    func add(_ request: CobaltRequest) {
         if requests.contains(request) {
             return
         }
-        _map[request] = PassthroughSubject<CobaltResponse, Error>()
+        _map[request] = PassthroughSubject<CobaltResponse, CobaltError>()
         requests.append(request)
         apiClient.logger?.notice("Added to queue [\(count)]: \(request)")
     }
@@ -50,11 +50,11 @@ class RequestQueue {
         requests.removeAll()
     }
 
-    func publisher(of request: Request) -> AnyPublisher<CobaltResponse, Error>? {
+    func publisher(of request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError>? {
         return _map[request]?.eraseToAnyPublisher()
     }
 
-    func handle(request: Request) {
+    func handle(request: CobaltRequest) {
         let subject = _map[request]
         removeFirst()
         if subject == nil {

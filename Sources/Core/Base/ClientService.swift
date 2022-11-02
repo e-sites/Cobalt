@@ -10,14 +10,13 @@ import Foundation
 import Logging
 import Combine
 
-class ClientService: NSObject {
-    var logger: Logger?
+public final class ClientService: NSObject {
+    public internal(set) var logger: Logger?
+    public internal(set) var currentRequest: CobaltRequest?
+    public var response: CobaltResponse?
+    public var stubbedPublisher: AnyPublisher<CobaltResponse, CobaltError>?
 
-    var currentRequest: Request?
-    var response: CobaltResponse?
-    var stubbedPublisher: AnyPublisher<CobaltResponse, Error>?
-
-    override init() {
+    override public init() {
         super.init()
 
         let selectors: [Selector] = [ "swizzleCache", "swizzleStubbing" ].map { Selector($0) }
@@ -28,19 +27,19 @@ class ClientService: NSObject {
     }
     
     @objc
-    dynamic func shouldStub() -> Bool {
+    dynamic public func shouldStub() -> Bool {
         stubbedPublisher = nil
         return false
     }
 
     @objc
-    dynamic func shouldPerformRequestAfterCacheCheck() -> Bool {
+    dynamic public func shouldPerformRequestAfterCacheCheck() -> Bool {
         response = nil
         return true
     }
 
     @objc
-    dynamic func optionallyWriteToCache() {
+    dynamic public func optionallyWriteToCache() {
         currentRequest = nil
         response = nil
     }

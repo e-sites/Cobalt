@@ -12,10 +12,10 @@ import Combine
 import CommonCrypto
 
 class AuthenticationProvider {
-    private weak var client: Client!
+    private weak var client: CobaltClient!
     private(set) var isAuthenticating = false
     
-    required init(client: Client) {
+    required init(client: CobaltClient) {
         self.client = client
     }
 
@@ -24,8 +24,8 @@ class AuthenticationProvider {
     /// - Parameters:
     ///   - request: `Request`
     ///
-    /// - Returns: `Promise<Request>`
-    func authorize(request: Request) -> AnyPublisher<Request, Error> {
+    /// - Returns: `AnyPublisher<CobaltRequest, CobaltError>`
+    func authorize(request: CobaltRequest) -> AnyPublisher<CobaltRequest, CobaltError> {
         // Define headers
         if let headers = request.headers {
             request.useHeaders = headers
@@ -36,7 +36,7 @@ class AuthenticationProvider {
         case .client:
             // Regular client_id / client_secret
             guard let clientID = client.config.authentication.clientID, let clientSecret = client.config.authentication.clientSecret else {
-                return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
+                return CobaltError.missingClientAuthentication.asPublisher(outputType: CobaltRequest.self)
             }
 
             switch client.config.authentication.authorization {
@@ -45,7 +45,7 @@ class AuthenticationProvider {
             case .basicHeader:
                 // Just add an `Authorization` header
                 guard let base64 = "\(clientID):\(clientSecret)".data(using: .utf8)?.base64EncodedString() else {
-                    return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
+                    return CobaltError.missingClientAuthentication.asPublisher(outputType: CobaltRequest.self)
                 }
                 request.useHeaders["Authorization"] = "Basic \(base64)"
 
@@ -89,7 +89,7 @@ class AuthenticationProvider {
             break
         }
 
-        return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
+        return Just(request).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
     }
 
     /// Here we're going to do either of the following:
@@ -97,8 +97,8 @@ class AuthenticationProvider {
     /// 1. If the user has a valid access-token and it's not expired, use it.
     /// 2. If the user has an expired `password` access-token, refresh it
     /// 3. If you need a `client_credentials` grantType and the access-token is expired. Create a new one
-    private func _authorizeOAuth(request: Request,
-                                 grantType: OAuthenticationGrantType) -> AnyPublisher<Request, Error> {
+    private func _authorizeOAuth(request: CobaltRequest,
+                                 grantType: OAuthenticationGrantType) -> AnyPublisher<CobaltRequest, CobaltError> {
         var parameters: Parameters = [:]
         var grantType = grantType
 
@@ -112,7 +112,7 @@ class AuthenticationProvider {
                     client.logger?.notice("[?] Access token expires in: \(expiresIn)s")
                 }
                 request.useHeaders["Authorization"] = "Bearer " + accessToken
-                return Just(request).setFailureType(to: Error.self).eraseToAnyPublisher()
+                return Just(request).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
             }
 
             if request.loggingOption?.request?.isIgnoreAll != true {
@@ -125,22 +125,22 @@ class AuthenticationProvider {
         }
 
         if grantType.refreshUsingRefreshToken {
-            return Error.missingClientAuthentication.asPublisher(outputType: Request.self)
+            return CobaltError.missingClientAuthentication.asPublisher(outputType: CobaltRequest.self)
         }
 
         return sendOAuthRequest(initialRequest: request, grantType: grantType, parameters: parameters)
-            .flatMap { [weak self] _ -> AnyPublisher<Request, Error> in
+            .flatMap { [weak self] _ -> AnyPublisher<CobaltRequest, CobaltError> in
                 guard let self = self else {
-                    return AnyPublisher<Request, Error>.never()
+                    return AnyPublisher<CobaltRequest, CobaltError>.never()
                 }
                 return self._authorizeOAuth(request: request, grantType: grantType)
             }.eraseToAnyPublisher()
     }
 
-    func sendOAuthRequest(initialRequest: Request? = nil, grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, Error> {
+    func sendOAuthRequest(initialRequest: CobaltRequest? = nil, grantType: OAuthenticationGrantType, parameters: Parameters? = nil) -> AnyPublisher<Void, CobaltError> {
         if isAuthenticating && initialRequest?.requiresOAuthentication == true {
             client.logger?.trace("Already authenticating, stopping the concurrent request")
-            return Error.concurrentAuthentication.asPublisher(outputType: Void.self)
+            return CobaltError.concurrentAuthentication.asPublisher(outputType: Void.self)
         }
 
         isAuthenticating = true
@@ -148,7 +148,7 @@ class AuthenticationProvider {
         var parameters = parameters ?? [:]
         parameters["grant_type"] = grantType.rawValue
         
-        let request = Request {
+        let request = CobaltRequest {
             $0.path = client.config.authentication.path
             if grantType == .refreshToken, let path = client.config.authentication.refreshTokenPath {
                 $0.path = path
@@ -179,11 +179,11 @@ class AuthenticationProvider {
             client?.authorizationGrantType = accessToken.grantType
             self?.isAuthenticating = false
             return ()
-        }.tryCatch { [weak self, client] error -> AnyPublisher<Void, Error> in
+        }.tryCatch { [weak self, client] error -> AnyPublisher<Void, CobaltError> in
             defer {
                 self?.isAuthenticating = false
             }
-            guard error == Error.invalidGrant, grantType == .refreshToken else {
+            guard error == CobaltError.invalidGrant, grantType == .refreshToken else {
                 throw error
             }
             // If the server responds with 'invalid_grant' for a refresh_token grantType
@@ -192,31 +192,31 @@ class AuthenticationProvider {
             client?.logger?.warning("Clearing access-token; invalid refresh-token")
             client?.clearAccessToken()
             
-            throw Error.refreshTokenInvalidated
+            throw CobaltError.refreshTokenInvalidated
         }.mapError { error in
-            return Error(from: error).set(request: request)
+            return CobaltError(from: error).set(request: request)
         }.eraseToAnyPublisher()
     }
     
     /// Create an authorization code request to request an access token
-    /// - Returns: `AnyPublisher<AuthorizationCodeRequest, Error>`
-    func createAuthorizationCodeRequest(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, Error> {
+    /// - Returns: `AnyPublisher<AuthorizationCodeRequest, CobaltError>`
+    func createAuthorizationCodeRequest(scope: [String], redirectUri: String) -> AnyPublisher<AuthorizationCodeRequest, CobaltError> {
         return Deferred { [weak self] in
             Future { promise in
-                guard let self = self else {
-                    promise(.failure(Error.unknown()))
+                guard let strongSelf = self else {
+                    promise(.failure(CobaltError.unknown()))
                     return
                 }
                 
-                guard let host = self.client.config.authentication.host,
-                      let clientId = self.client.config.authentication.clientID else {
-                    promise(.failure(Error.invalidRequest("Missing 'host' and/or 'clientId'")))
+                guard let host = strongSelf.client.config.authentication.host,
+                      let clientId = strongSelf.client.config.authentication.clientID else {
+                    promise(.failure(CobaltError.invalidRequest("Missing 'host' and/or 'clientId'")))
                     return
                 }
                 
                 let state = UUID().uuidString
                 let scopes = scope.joined(separator: " ").urlEncoded
-                let urlString = String.combined(host: host, path: self.client.config.authentication.authorizationPath)
+                let urlString = String.combined(host: host, path: strongSelf.client.config.authentication.authorizationPath)
                 
                 var authURLString = urlString +
                     "?client_id=\(clientId)" +
@@ -226,9 +226,9 @@ class AuthenticationProvider {
                     "&redirect_uri=\(redirectUri.urlEncoded)"
                 
                 var codeVerifier: String? = nil
-                if self.client.config.authentication.pkceEnabled {
-                    codeVerifier = self._createCodeVerifier()
-                    let codeChallenge = self._createCodeChallenge(from: codeVerifier!)
+                if strongSelf.client.config.authentication.pkceEnabled {
+                    codeVerifier = strongSelf._createCodeVerifier()
+                    let codeChallenge = strongSelf._createCodeChallenge(from: codeVerifier!)
                     
                     authURLString += "&code_challenge=\(codeChallenge)&code_challenge_method=S256"
                 }
@@ -236,7 +236,7 @@ class AuthenticationProvider {
                 print("authUrl: \(authURLString)")
                 
                 guard let authURL = URL(string: authURLString) else {
-                    promise(.failure(Error.invalidUrl))
+                    promise(.failure(CobaltError.invalidUrl))
                     return
                 }
                 
@@ -253,7 +253,7 @@ class AuthenticationProvider {
         }.eraseToAnyPublisher()
     }
     
-    func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, Error> {
+    func requestTokenFromAuthorizationCode(initialRequest request: AuthorizationCodeRequest, code: String) -> AnyPublisher<Void, CobaltError> {
         var parameters = [
             "redirect_uri": request.redirectUri,
             "code": code,
@@ -318,11 +318,11 @@ class AuthenticationProvider {
     // MARK: - Recover
     // --------------------------------------------------------
 
-    func recover(from error: Swift.Error, request: Request) -> AnyPublisher<CobaltResponse, Error> {
+    func recover(from error: Error, request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError> {
         // If we receive an 'invalid_grant' error and we tried to do a refresh_token authentication
         // The access-token and underlying refresh-token is invalid
         // So we can revoke the access-token
-        if error == Error.invalidGrant,
+        if error == CobaltError.invalidGrant,
             case let .oauth2(grantType) = request.authentication,
             grantType != .refreshToken {
 
@@ -335,11 +335,11 @@ class AuthenticationProvider {
             accessToken.invalidate()
             return client.request(request)
 
-        } else if error == Error.concurrentAuthentication {
+        } else if error == CobaltError.concurrentAuthentication {
             // Retry the request, which will probably add it to the queue because there's an authentication request pending
             return client.request(request)
         }
-        return Fail(error: Error(from: error)).eraseToAnyPublisher()
+        return Fail(error: CobaltError(from: error)).eraseToAnyPublisher()
     }
 }
 

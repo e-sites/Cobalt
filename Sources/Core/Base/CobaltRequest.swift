@@ -1,5 +1,5 @@
 //
-//  Request.swift
+//  CobaltRequest.swift
 //  Cobalt
 //
 //  Created by Bas van Kuijck on 01/05/2018.
@@ -9,7 +9,7 @@
 import Foundation
 import Alamofire
 
-public class Request {
+public class CobaltRequest {
     fileprivate let uuid = UUID().uuidString
 
     public var path: String = "/"
@@ -31,7 +31,7 @@ public class Request {
 
     }
 
-    public init(_ builder: ((Request) -> Void)) {
+    public init(_ builder: ((CobaltRequest) -> Void)) {
         builder(self)
     }
 
@@ -43,27 +43,27 @@ public class Request {
     }
 }
 
-extension Request: CustomStringConvertible {
-    public var description: String {
+extension CobaltRequest: CustomDebugStringConvertible {
+    public var debugDescription: String {
         var parametersDescription = optionalDescription(nil)
         if let parameters = self.parameters,
            let dictionary = Helpers.dictionaryForLogging(parameters, options: loggingOption?.request) {
             parametersDescription = String(describing: dictionary)
         }
-        return "<Request> [ path: \(path), " +
+        return "<CobaltRequest> [ path: \(path), " +
             "httpMethod: \(httpMethod.rawValue), " +
             "parameters: \(parametersDescription), " +
         "authentication: \(authentication) ]"
     }
 }
 
-extension Request: Hashable {
+extension CobaltRequest: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(uuid)
     }
 
-    public static func == (lhs: Request, rhs: Request) -> Bool {
+    public static func == (lhs: CobaltRequest, rhs: CobaltRequest) -> Bool {
         return lhs.uuid == rhs.uuid
     }
 }

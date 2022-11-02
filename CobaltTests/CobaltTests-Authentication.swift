@@ -8,7 +8,6 @@
 
 
 import XCTest
-import Alamofire
 import Combine
 import Foundation
 @testable import Cobalt
@@ -23,7 +22,7 @@ class CobaltTestsAuthentication: CobaltTests {
     
     func testsAuthenticate() {
         waitUntil { done in
-            let request = Request {
+            let request = CobaltRequest {
                 $0.authentication = .oauth2(.clientCredentials)
                 $0.path = "/prototypes/cobalt/users.php"
             }
