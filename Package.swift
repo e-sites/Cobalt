@@ -8,7 +8,8 @@ let package = Package(
     ],
     products: [
         .library(name: "Cobalt", targets: ["Cobalt"]),
-        .library(name: "CobaltCache", targets: ["CobaltCache"])
+        .library(name: "CobaltCache", targets: ["CobaltCache"]),
+        .library(name: "CobaltStubbing", targets: ["CobaltStubbing"])
     ],
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.2.1")),
@@ -31,6 +32,13 @@ let package = Package(
                 "Cobalt"
             ],
             path: "Sources/Cache"
+        ),
+        .target(
+            name: "CobaltStubbing",
+            dependencies: [
+                "Cobalt"
+            ],
+            path: "Sources/Stubbing"
         )
     ],
     swiftLanguageVersions: [ .v5 ]

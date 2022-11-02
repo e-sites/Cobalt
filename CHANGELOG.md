@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v8.2.0 (02-11-2022)
+- Added stubbing
+
 ## v8.1.5 (14-10-2022)
 - Mask cobalt.error response description
 

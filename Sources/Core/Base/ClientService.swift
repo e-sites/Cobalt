@@ -8,21 +8,29 @@
 
 import Foundation
 import Logging
+import Combine
 
 class ClientService: NSObject {
     var logger: Logger?
 
     var currentRequest: Request?
     var response: CobaltResponse?
+    var stubbedPublisher: AnyPublisher<CobaltResponse, Error>?
 
     override init() {
         super.init()
 
-        let selectors: [Selector] = [ "swizzleCache" ].map { Selector($0) }
+        let selectors: [Selector] = [ "swizzleCache", "swizzleStubbing" ].map { Selector($0) }
         
         for selector in selectors where responds(to: selector) {
             perform(selector)
         }
+    }
+    
+    @objc
+    dynamic func shouldStub() -> Bool {
+        stubbedPublisher = nil
+        return false
     }
 
     @objc

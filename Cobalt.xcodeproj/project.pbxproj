@@ -38,6 +38,11 @@
 		C3E44C5926982C96001FF6E2 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C3E44C5826982C96001FF6E2 /* Alamofire */; };
 		C3E44C5E26982CB4001FF6E2 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E44C5D26982CB4001FF6E2 /* Helpers.swift */; };
 		C3E44C6026982D4B001FF6E2 /* AuthorizationCodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E44C5F26982D4B001FF6E2 /* AuthorizationCodeRequest.swift */; };
+		C3E548822912646E00C232BA /* ClientService+Stubbing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E548812912646E00C232BA /* ClientService+Stubbing.swift */; };
+		C3E54884291264F700C232BA /* Stub.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E54883291264F700C232BA /* Stub.swift */; };
+		C3E54886291265BB00C232BA /* Client+Stubbing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E54885291265BB00C232BA /* Client+Stubbing.swift */; };
+		C3E54888291265D500C232BA /* StubbingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E54887291265D500C232BA /* StubbingManager.swift */; };
+		C3E5488A2912697400C232BA /* CobaltTests-Stubbing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E548892912697400C232BA /* CobaltTests-Stubbing.swift */; };
 		DFDA21FF1D6741AE00683D7D /* Cobalt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFDA21F41D6741AD00683D7D /* Cobalt.framework */; };
 		DFDA22041D6741AE00683D7D /* CobaltTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDA22031D6741AE00683D7D /* CobaltTests.swift */; };
 /* End PBXBuildFile section */
@@ -80,6 +85,11 @@
 		C3B5C5D022A16796004331A9 /* LoggingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingOption.swift; sourceTree = "<group>"; };
 		C3E44C5D26982CB4001FF6E2 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		C3E44C5F26982D4B001FF6E2 /* AuthorizationCodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizationCodeRequest.swift; sourceTree = "<group>"; };
+		C3E548812912646E00C232BA /* ClientService+Stubbing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ClientService+Stubbing.swift"; sourceTree = "<group>"; };
+		C3E54883291264F700C232BA /* Stub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stub.swift; sourceTree = "<group>"; };
+		C3E54885291265BB00C232BA /* Client+Stubbing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Client+Stubbing.swift"; sourceTree = "<group>"; };
+		C3E54887291265D500C232BA /* StubbingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubbingManager.swift; sourceTree = "<group>"; };
+		C3E548892912697400C232BA /* CobaltTests-Stubbing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CobaltTests-Stubbing.swift"; sourceTree = "<group>"; };
 		DFDA21F41D6741AD00683D7D /* Cobalt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Cobalt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA21FE1D6741AE00683D7D /* CobaltTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobaltTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFDA22031D6741AE00683D7D /* CobaltTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobaltTests.swift; sourceTree = "<group>"; };
@@ -185,6 +195,17 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
+		C3E548802912630A00C232BA /* Stubbing */ = {
+			isa = PBXGroup;
+			children = (
+				C3E548812912646E00C232BA /* ClientService+Stubbing.swift */,
+				C3E54883291264F700C232BA /* Stub.swift */,
+				C3E54885291265BB00C232BA /* Client+Stubbing.swift */,
+				C3E54887291265D500C232BA /* StubbingManager.swift */,
+			);
+			path = Stubbing;
+			sourceTree = "<group>";
+		};
 		DFDA21EA1D6741AD00683D7D = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +234,7 @@
 				C37A6B8920F75BA400A4034E /* CobaltTests-Authentication.swift */,
 				C3502680213FFEBF00FDB0CA /* CobaltTests-Logging.swift */,
 				C3427AE4230FCDFD004865D2 /* CobaltTests-Cache.swift */,
+				C3E548892912697400C232BA /* CobaltTests-Stubbing.swift */,
 				DFDA22051D6741AE00683D7D /* Info.plist */,
 			);
 			path = CobaltTests;
@@ -221,6 +243,7 @@
 		DFDA220E1D6741C200683D7D /* Cobalt */ = {
 			isa = PBXGroup;
 			children = (
+				C3E548802912630A00C232BA /* Stubbing */,
 				DFDA22131D6741C200683D7D /* Info.plist */,
 				C37900322181E26200926793 /* Cobalt.h */,
 				C3427AD1230FC47E004865D2 /* Cache */,
@@ -357,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C316AF9F230FF03C0036E295 /* CachePolicy.swift in Sources */,
+				C3E54884291264F700C232BA /* Stub.swift in Sources */,
 				C3E44C5E26982CB4001FF6E2 /* Helpers.swift in Sources */,
 				C37900302181DD1F00926793 /* Request.swift in Sources */,
 				C379002E2181DD1F00926793 /* RequestQueue.swift in Sources */,
@@ -371,7 +395,10 @@
 				C37900262181DD1F00926793 /* Optional.swift in Sources */,
 				C316AF9E230FF03C0036E295 /* Request+Cache.swift in Sources */,
 				C37900292181DD1F00926793 /* AccessToken.swift in Sources */,
+				C3E548822912646E00C232BA /* ClientService+Stubbing.swift in Sources */,
+				C3E54888291265D500C232BA /* StubbingManager.swift in Sources */,
 				C316AFA2230FF03C0036E295 /* CacheManager.swift in Sources */,
+				C3E54886291265BB00C232BA /* Client+Stubbing.swift in Sources */,
 				C316AFA1230FF03C0036E295 /* Client+Cache.swift in Sources */,
 				C3427AD9230FC74E004865D2 /* ClientService.swift in Sources */,
 				C379002D2181DD1F00926793 /* Config.swift in Sources */,
@@ -384,6 +411,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C387777124E68DB000FAD2D8 /* CobaltTests-Logging.swift in Sources */,
+				C3E5488A2912697400C232BA /* CobaltTests-Stubbing.swift in Sources */,
 				C387777024E68D9800FAD2D8 /* CobaltTests-Authentication.swift in Sources */,
 				C387776F24E68BEF00FAD2D8 /* CobaltTests-Requests.swift in Sources */,
 				C305D62E2785C78600DC60D9 /* CobaltTests-Parsing.swift in Sources */,

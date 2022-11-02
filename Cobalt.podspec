@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Cobalt"
-  s.version      = "8.1.5"
+  s.version      = "8.2.0"
   s.author       = { "Bas van Kuijck" => "bas@e-sites.nl" }
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.homepage     = "http://www.e-sites.nl"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.source_files = "Sources/*.h"
   s.platform     = :ios, '13.0'
   s.requires_arc  = true
-  s.swift_versions = [ '5.3' ]
+  s.swift_versions = [ '5.3', '5.4', '5.5', '5.6', '5.7' ]
 
   s.subspec 'Core' do |ss|
     ss.source_files = "Sources/Core/**/*.{h,swift}"
@@ -20,6 +20,11 @@ Pod::Spec.new do |s|
 
   s.subspec 'Cache' do |ss|
     ss.source_files = "Sources/Cache/**/*.{h,swift}"
+    ss.dependency 'Cobalt/Core'
+  end
+
+  s.subspec 'Stubbing' do |ss|
+    ss.source_files = "Sources/Stubbing/**/*.{h,swift}"
     ss.dependency 'Cobalt/Core'
   end
 

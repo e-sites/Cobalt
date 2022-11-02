@@ -20,6 +20,10 @@ extension CobaltResponse {
         }
         return String(data: data, encoding: .utf8)
     }
+    
+    var data: Data? {
+        return flatJSONString?.data(using: .utf8)
+    }
 }
 
 extension Data {
