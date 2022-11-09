@@ -21,9 +21,9 @@ class CobaltTests: XCTestCase {
         $0.authentication.authorization = .requestBody
         $0.logging.logger = Logger(label: "com.esites.cobalt-test")
         $0.logging.logger?.logLevel = .trace
-        
         $0.host = "https://reqres.in"
     }
+    
     lazy var client = CobaltClient(config: self.config)
     override func setUp() {
         super.setUp()

@@ -42,22 +42,21 @@ public class StubbingManager {
         guard let stub = stubs.first(where: { willStub(stub: $0, request: request) }) else {
             return nil
         }
-
         if let error = stub.error {
             return Fail<CobaltResponse, CobaltError>(error: (error as? CobaltError) ?? .underlying(error))
-                .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
+                .delay(for: .milliseconds(Int(stub.delay * 1000)), scheduler: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
 
         guard let cobaltResponse = stub.data.asCobaltResponse() else {
             return Fail<CobaltResponse, CobaltError>(error: .empty)
-                .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
+                .delay(for: .milliseconds(Int(stub.delay * 1000)), scheduler: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
 
         return Just(cobaltResponse)
             .setFailureType(to: CobaltError.self)
-            .delay(for: .milliseconds(Int(stub.delay * 100)), scheduler: DispatchQueue.main)
+            .delay(for: .milliseconds(Int(stub.delay * 1000)), scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
