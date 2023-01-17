@@ -134,9 +134,12 @@ public class AccessToken: Decodable, CustomStringConvertible {
         expireDate = Date(timeIntervalSinceNow: TimeInterval(expiresIn))
     }
 
-    public func store(host aHost: String? = nil) {
+    public func store(host aHost: String? = nil, grantType aGrantType: OAuthenticationGrantType? = nil) {
         if host.isEmpty, let aHost {
             host = aHost
+        }
+        if let aGrantType {
+            grantType = aGrantType
         }
         if accessToken == nil {
             UserDefaults.standard.removeObject(forKey: "\(host):\(Constant.stored)")
