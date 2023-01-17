@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v7.3.4 (25-01-2022)
+- AccessToken public
+
 ## v7.3.3 (25-01-2022)
 - Preventing concurrency when refreshing the access token simultaneously for multiple requests
 
