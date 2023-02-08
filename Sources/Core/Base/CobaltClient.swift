@@ -144,10 +144,10 @@ open class CobaltClient {
     }
     
     private func _request(_ request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError> {
-        let requestID = self.requestID
-        self.requestID += 1
-        if self.requestID == 100 {
-            self.requestID = 1
+        let useRequestID = requestID
+        requestID += 1
+        if requestID == 100 {
+            requestID = 1
         }
         var loggingOptions: [String: KeyLoggingOption] = request.loggingOption?.headers ?? [:]
         if config.logging.maskTokens {
@@ -160,7 +160,7 @@ open class CobaltClient {
         
         if !request.useHeaders.isEmpty, !ignoreLoggingHeaders {
             let headersDictionary = Helpers.dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
-            logger?.notice("#\(requestID) Headers: \(headersDictionary ?? [:])")
+            logger?.notice("#\(useRequestID) Headers: \(headersDictionary ?? [:])")
         }
         
         if !ignoreLoggingRequest {
@@ -169,7 +169,7 @@ open class CobaltClient {
                 options: request.loggingOption?.request
             )
             
-            logger?.trace("[REQ] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+            logger?.trace("[REQ] #\(useRequestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
         }
         startRequest(request)
         
@@ -178,7 +178,7 @@ open class CobaltClient {
         #if canImport(CobaltStubbing)
         if let publisher = stub(
             request: request,
-            requestID: requestID,
+            requestID: useRequestID,
             ignoreLoggingRequest: ignoreLoggingRequest,
             ignoreLoggingResponse: ignoreLoggingResponse
         ) {
@@ -190,7 +190,7 @@ open class CobaltClient {
         // Check to see if the cache engine should handle it
         if !service.shouldPerformRequestAfterCacheCheck(), let response = service.response {
             if !ignoreLoggingResponse {
-                _responseParsing(response: response, request: request, requestID: requestID)
+                _responseParsing(response: response, request: request, requestID: useRequestID)
             }
             
             return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
@@ -229,7 +229,7 @@ open class CobaltClient {
                         do {
                             switch self?.handleResponse(
                                 request: request,
-                                requestID: requestID,
+                                requestID: useRequestID,
                                 statusCode: dataResponse.response?.statusCode,
                                 ignoreLoggingRequest: ignoreLoggingRequest,
                                 ignoreLoggingResponse: ignoreLoggingResponse,
@@ -250,7 +250,7 @@ open class CobaltClient {
         }.eraseToAnyPublisher()
     }
     
-    private func stub(request: CobaltRequest, requestID: Int, ignoreLoggingRequest: Bool, ignoreLoggingResponse: Bool) -> AnyPublisher<CobaltResponse, CobaltError>? {
+    private func stub(request: CobaltRequest, requestID useRequestID: Int, ignoreLoggingRequest: Bool, ignoreLoggingResponse: Bool) -> AnyPublisher<CobaltResponse, CobaltError>? {
         defer {
             service.stubbedPublishers.removeValue(forKey: request)
         }
@@ -261,7 +261,7 @@ open class CobaltClient {
             .tryCatch { [weak self] error -> AnyPublisher<CobaltResponse, CobaltError> in
                 switch self?.handleResponse(
                     request: request,
-                    requestID: requestID,
+                    requestID: useRequestID,
                     statusCode: error.code,
                     ignoreLoggingRequest: ignoreLoggingRequest,
                     ignoreLoggingResponse: ignoreLoggingResponse,
@@ -276,7 +276,7 @@ open class CobaltClient {
             }.tryMap { [weak self] response -> CobaltResponse in
                 switch self?.handleResponse(
                     request: request,
-                    requestID: requestID,
+                    requestID: useRequestID,
                     statusCode: 200,
                     ignoreLoggingRequest: ignoreLoggingRequest,
                     ignoreLoggingResponse: ignoreLoggingResponse,
@@ -297,7 +297,7 @@ open class CobaltClient {
     
     private func handleResponse(
         request: CobaltRequest,
-        requestID: Int,
+        requestID useRequestID: Int,
         statusCode: Int?,
         ignoreLoggingRequest: Bool,
         ignoreLoggingResponse: Bool,
@@ -307,7 +307,7 @@ open class CobaltClient {
         let statusCode = statusCode ?? 500
         let statusString = HTTPURLResponse.localizedString(forStatusCode: statusCode)
         if !ignoreLoggingResponse {
-            logger?.notice("#\(requestID) HTTP Status: \(statusCode) ('\(statusString)')")
+            logger?.notice("#\(useRequestID) HTTP Status: \(statusCode) ('\(statusString)')")
         }
         
         var response: CobaltResponse?
@@ -316,15 +316,15 @@ open class CobaltClient {
             service.response = response
             service.optionallyWriteToCache()
             if !ignoreLoggingResponse {
-                _responseParsing(response: response, request: request, requestID: requestID)
+                _responseParsing(response: response, request: request, requestID: useRequestID)
             }
         }
         
         if let error {
             let apiError = CobaltError(from: error, response: response).set(request: request)
             if !ignoreLoggingResponse {
-                logger?.error("#\(requestID) Original: \(error)")
-                logger?.error("#\(requestID) Error: \(apiError)")
+                logger?.error("#\(useRequestID) Original: \(error)")
+                logger?.error("#\(useRequestID) Error: \(apiError)")
             }
             return .failure(apiError)
         }
@@ -335,7 +335,7 @@ open class CobaltClient {
         return .success(cobaltResponse)
     }
     
-    private func _responseParsing(response: CobaltResponse?, request: CobaltRequest, requestID: Int) {
+    private func _responseParsing(response: CobaltResponse?, request: CobaltRequest, requestID useRequestID: Int) {
         var responseString: String?
         if let dictionaryObject = response as? [String: Any] {
             let dictionary = Helpers.dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
@@ -345,7 +345,7 @@ open class CobaltClient {
             responseString = response?.flatJSONString
         }
         
-        logger?.trace("[RES] #\(requestID) \(request.httpMethod.rawValue) \(request.urlString) \(responseString ?? "")", metadata: [ "tag": "api"])
+        logger?.trace("[RES] #\(useRequestID) \(request.httpMethod.rawValue) \(request.urlString) \(responseString ?? "")", metadata: [ "tag": "api"])
     }
     
     // MARK: - Login
