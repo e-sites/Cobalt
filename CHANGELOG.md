@@ -1,6 +1,6 @@
 # Changelog Cobalt
 
-## v9.0.1 (08-02-2023)
+## v9.0.2 (08-02-2023)
 - Fixed requestID logging
 
 ## v9.0.0 (02-11-2022)
