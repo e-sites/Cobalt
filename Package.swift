@@ -15,7 +15,8 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.2.1")),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
         .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .upToNextMajor(from: "4.1.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.0.0"))
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.0.0")),
+        .package(url: "https://github.com/UnlockAgency/DebugMasking.git", .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
         .target(
@@ -23,7 +24,8 @@ let package = Package(
             dependencies: [
                 "Alamofire",
                 "KeychainAccess",
-                "Logging"
+                "Logging",
+                "DebugMasking"
             ],
             path: "Sources/Core"
         ),

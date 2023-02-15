@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.0.0 (15-02-2023)
+- Use `DebugMasking` dependency
+
 ## v9.0.2 (08-02-2023)
 - Fixed requestID logging
 

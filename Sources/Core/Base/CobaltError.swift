@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import DebugMasking
 import Alamofire
 
 public class CobaltError: Error {
@@ -130,7 +131,10 @@ public class CobaltError: Error {
 
 extension CobaltError: CustomDebugStringConvertible {
     public var debugDescription: String {
-        let jsonString = Helpers.dictionaryForLogging(response as? [String: Any], options: request?.loggingOption?.response)?.flatJSONString ?? response?.flatJSONString
+        let jsonString = DebugMasking().mask(
+            dictionary: (response as? [String: Any]) ?? [:],
+            options: request?.loggingOption?.response ?? [:]
+        ).flatJSONString ?? response?.flatJSONString
 
         return "<CobaltError> [ " +
             "code: \(code), " +

@@ -8,6 +8,7 @@
 
 import Foundation
 import KeychainAccess
+import DebugMasking
 
 private extension Thread {
     var isRunningXCTest: Bool {
@@ -194,10 +195,13 @@ public class AccessToken: Decodable, CustomStringConvertible {
         if let expireDate = expireDate {
             expiresIn = Int(expireDate.timeIntervalSinceNow)
         }
+        
+        let debugMasking = DebugMasking()
+        
         return "<AccessToken> [ server: \(host), " +
-            "idToken: \(optionalDescription(Helpers.mask(string: idToken, type: .halfMasked))), " +
-            "accessToken: \(optionalDescription(Helpers.mask(string: accessToken, type: .halfMasked))), " +
-            "refreshToken: \(optionalDescription(Helpers.mask(string: refreshToken, type: .halfMasked))), " +
+        "idToken: \(optionalDescription(debugMasking.mask( idToken, type: .halfMasked))), " +
+            "accessToken: \(optionalDescription(debugMasking.mask(accessToken, type: .halfMasked))), " +
+            "refreshToken: \(optionalDescription(debugMasking.mask(refreshToken, type: .halfMasked))), " +
         "grantType: \(optionalDescription(grantType)), expires in: \(expiresIn)s ]"
     }
 }

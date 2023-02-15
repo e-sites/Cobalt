@@ -10,6 +10,7 @@ import Foundation
 import Alamofire
 import Combine
 import CommonCrypto
+import DebugMasking
 
 class AuthenticationProvider {
     private weak var client: CobaltClient!
@@ -67,7 +68,7 @@ class AuthenticationProvider {
                 }
                 
                 if client.config.logging.maskTokens {
-                    var parametersLoggingOptions: [String: KeyLoggingOption] = request.loggingOption?.request ?? [:]
+                    var parametersLoggingOptions: [String: DebugMasking.MaskOption] = request.loggingOption?.request ?? [:]
                     
                     if parametersLoggingOptions["client_secret"] == nil {
                         parametersLoggingOptions["client_secret"] = .halfMasked
@@ -327,7 +328,7 @@ class AuthenticationProvider {
             grantType != .refreshToken {
 
             let accessToken = AccessToken(host: (client.config.authentication.host ?? (request.host ?? client.config.host)) ?? "")
-            if let logReq = request.loggingOption?.request?["*"], case KeyLoggingOption.ignore = logReq {
+            if let logReq = request.loggingOption?.request?["*"], case DebugMasking.MaskOption.ignore = logReq {
             } else {
                 client.logger?.warning("Access-token expired; invalidating access-token")
             }

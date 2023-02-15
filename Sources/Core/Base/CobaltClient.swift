@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import Logging
+import DebugMasking
 import Combine
 
 open class CobaltClient {
@@ -17,6 +18,8 @@ open class CobaltClient {
     // --------------------------------------------------------
     
     fileprivate var requestID = 1
+    
+    fileprivate let debugMasking = DebugMasking()
     
     public let config: CobaltConfig
     
@@ -149,7 +152,7 @@ open class CobaltClient {
         if requestID == 100 {
             requestID = 1
         }
-        var loggingOptions: [String: KeyLoggingOption] = request.loggingOption?.headers ?? [:]
+        var loggingOptions: [String: DebugMasking.MaskOption] = request.loggingOption?.headers ?? [:]
         if config.logging.maskTokens {
             loggingOptions["Authorization"] = .halfMasked
         }
@@ -159,17 +162,17 @@ open class CobaltClient {
         let ignoreLoggingResponse = request.loggingOption?.response?.isIgnoreAll == true
         
         if !request.useHeaders.isEmpty, !ignoreLoggingHeaders {
-            let headersDictionary = Helpers.dictionaryForLogging(request.useHeaders.dictionary, options: loggingOptions)
-            logger?.notice("#\(useRequestID) Headers: \(headersDictionary ?? [:])")
+            let headersDictionary = debugMasking.mask(dictionary: request.useHeaders.dictionary, options: loggingOptions)
+            logger?.notice("#\(useRequestID) Headers: \(headersDictionary)")
         }
         
         if !ignoreLoggingRequest {
-            let loggingParameters = Helpers.dictionaryForLogging(
-                request.parameters,
-                options: request.loggingOption?.request
-            )
+            let loggingParametersString = debugMasking.mask(
+                dictionary: request.parameters ?? [:],
+                options: request.loggingOption?.request ?? [:]
+            ).flatJSONString ?? ""
             
-            logger?.trace("[REQ] #\(useRequestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParameters?.flatJSONString ?? "")",  metadata: [ "tag": "api" ])
+            logger?.trace("[REQ] #\(useRequestID) \(request.httpMethod.rawValue) \(request.urlString) \(loggingParametersString)",  metadata: [ "tag": "api" ])
         }
         startRequest(request)
         
@@ -338,8 +341,7 @@ open class CobaltClient {
     private func _responseParsing(response: CobaltResponse?, request: CobaltRequest, requestID useRequestID: Int) {
         var responseString: String?
         if let dictionaryObject = response as? [String: Any] {
-            let dictionary = Helpers.dictionaryForLogging(dictionaryObject, options: request.loggingOption?.response)
-            responseString = dictionary?.flatJSONString
+            responseString = debugMasking.mask(dictionary: dictionaryObject, options: request.loggingOption?.response ?? [:]).flatJSONString
             
         } else {
             responseString = response?.flatJSONString

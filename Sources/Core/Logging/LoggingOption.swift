@@ -7,25 +7,17 @@
 //
 
 import Foundation
-
-public enum KeyLoggingOption {
-    case masked
-    case replaced(String)
-    case halfMasked
-    case shortened
-    case `default`
-    case ignore
-}
+import DebugMasking
 
 public class LoggingOption {
-    internal(set) public var response: [String: KeyLoggingOption]?
-    internal(set) public var request: [String: KeyLoggingOption]?
-    internal(set) public var headers: [String: KeyLoggingOption]?
+    internal(set) public var response: [String: DebugMasking.MaskOption]?
+    internal(set) public var request: [String: DebugMasking.MaskOption]?
+    internal(set) public var headers: [String: DebugMasking.MaskOption]?
     
     public init(
-        request: [String: KeyLoggingOption]? = nil,
-        response: [String: KeyLoggingOption]? = nil,
-        headers: [String: KeyLoggingOption]? = nil
+        request: [String: DebugMasking.MaskOption]? = nil,
+        response: [String: DebugMasking.MaskOption]? = nil,
+        headers: [String: DebugMasking.MaskOption]? = nil
     ) {
         self.request = request
         self.response = response
@@ -33,9 +25,9 @@ public class LoggingOption {
     }
 }
 
-extension Dictionary where Key == String, Value == KeyLoggingOption {
+extension Dictionary where Key == String, Value == DebugMasking.MaskOption {
     var isIgnoreAll: Bool {
-        if let logReq = self["*"], case KeyLoggingOption.ignore = logReq {
+        if let logReq = self["*"], case DebugMasking.MaskOption.ignore = logReq {
             return true
         }
         return false

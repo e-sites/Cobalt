@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "DebugMasking",
+        "repositoryURL": "https://github.com/UnlockAgency/DebugMasking.git",
+        "state": {
+          "branch": null,
+          "revision": "ef039d2db6c5a81a0d360854040c59037a9c5ca7",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "KeychainAccess",
         "repositoryURL": "https://github.com/kishikawakatsumi/KeychainAccess.git",
         "state": {
