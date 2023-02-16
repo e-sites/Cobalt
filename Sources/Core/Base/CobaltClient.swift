@@ -178,7 +178,6 @@ open class CobaltClient {
         
         service.currentRequest = request
         
-        #if canImport(CobaltStubbing)
         if let publisher = stub(
             request: request,
             requestID: useRequestID,
@@ -187,9 +186,7 @@ open class CobaltClient {
         ) {
             return publisher
         }
-        #endif
         
-        #if canImport(CobaltCaching)
         // Check to see if the cache engine should handle it
         if !service.shouldPerformRequestAfterCacheCheck(), let response = service.response {
             if !ignoreLoggingResponse {
@@ -198,7 +195,6 @@ open class CobaltClient {
             
             return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
         }
-        #endif
         
         return Deferred { [weak self, session] in
             Future { promise in
@@ -293,6 +289,10 @@ open class CobaltClient {
                 default:
                     throw CobaltError.empty
                 }
+            }
+            .map { response in
+                print("~> \(response)")
+                return response
             }
             .mapError { CobaltError(from: $0) }
             .eraseToAnyPublisher()

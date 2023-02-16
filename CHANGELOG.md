@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.0.1 (16-02-2023)
+- Fixed stubbing
+
 ## v10.0.0 (15-02-2023)
 - Use `DebugMasking` dependency
 
