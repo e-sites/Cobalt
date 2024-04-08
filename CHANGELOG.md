@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.0.2 (08-04-2024)
+- AccessToken public functions
+
 ## v10.0.1 (16-02-2023)
 - Fixed stubbing
 

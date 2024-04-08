@@ -93,7 +93,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         return accessToken
     }
     
-    init(grantType: OAuthenticationGrantType, accessToken: String, refreshToken: String, expireDate: Date, host: String) {
+    public init(grantType: OAuthenticationGrantType, accessToken: String, refreshToken: String, expireDate: Date, host: String) {
         self.grantType = grantType
         self.accessToken = accessToken
         self.refreshToken = refreshToken
@@ -149,7 +149,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         expireDate = Date(timeIntervalSinceNow: TimeInterval(expiresIn))
     }
 
-    func store() {
+    public func store() {
         if accessToken == nil {
             UserDefaults.standard.removeObject(forKey: "\(host):\(Constant.stored)")
         } else {
@@ -176,7 +176,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         }
     }
 
-    func clear() {
+    public func clear() {
         accessToken = nil
         refreshToken = nil
         expireDate = nil
@@ -185,7 +185,7 @@ public class AccessToken: Decodable, CustomStringConvertible {
         store()
     }
 
-    func invalidate() {
+    public func invalidate() {
         expireDate = Date(timeIntervalSince1970: 0)
         store()
     }
