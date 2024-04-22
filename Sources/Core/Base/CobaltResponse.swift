@@ -53,11 +53,23 @@ extension Data {
 public extension CobaltResponse {
     func map<T: Decodable>(key: String? = nil, to type: T.Type, with builder: ((JSONDecoder) -> Void)? = nil) throws -> T {
         var obj: Any = self
-        if let key = key {
-            guard let dict = obj as? [String: Any], let dictObj = dict[key] else {
-                throw CobaltError.parse("Error parsing. Key '\(key)' not found in response")
+        if let key {
+            let keys = key.components(separatedBy: ".")
+            for keyPart in keys {
+                if keyPart.hasSuffix("[]") {
+                    guard let subObj = (obj as? [String: [Any]])?[keyPart.replacingOccurrences(of: "[]", with: "")]?.first else {
+                        logger?.error("Cannot find key \(keyPart) in response")
+                        throw CobaltError.parse("Error parsing. Key '\(keyPart)' not found in response")
+                    }
+                    obj = subObj
+                } else {
+                    guard let subObj = (obj as? [String: Any])?[keyPart] else {
+                        logger?.error("Cannot find key \(keyPart) in response")
+                        throw CobaltError.parse("Error parsing. Key '\(keyPart)' not found in response")
+                    }
+                    obj = subObj
+                }
             }
-            obj = dictObj
         }
         let jsonDecoder = JSONDecoder()
         jsonDecoder.dateDecodingStrategy = .iso8601

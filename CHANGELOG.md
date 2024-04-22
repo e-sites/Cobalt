@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.0.3 (22-04-2024)
+- Improved 'map(to:)'
+
 ## v10.0.2 (08-04-2024)
 - AccessToken public functions
 
