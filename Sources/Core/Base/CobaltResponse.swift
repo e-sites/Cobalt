@@ -58,13 +58,11 @@ public extension CobaltResponse {
             for keyPart in keys {
                 if keyPart.hasSuffix("[]") {
                     guard let subObj = (obj as? [String: [Any]])?[keyPart.replacingOccurrences(of: "[]", with: "")]?.first else {
-                        logger?.error("Cannot find key \(keyPart) in response")
                         throw CobaltError.parse("Error parsing. Key '\(keyPart)' not found in response")
                     }
                     obj = subObj
                 } else {
                     guard let subObj = (obj as? [String: Any])?[keyPart] else {
-                        logger?.error("Cannot find key \(keyPart) in response")
                         throw CobaltError.parse("Error parsing. Key '\(keyPart)' not found in response")
                     }
                     obj = subObj
