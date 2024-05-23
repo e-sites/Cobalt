@@ -198,30 +198,7 @@ open class CobaltClient {
         
         return Deferred { [weak self, session] in
             Future { promise in
-                let dataRequest: DataRequest
-                if let data = request.body {
-                    var urlRequest = URLRequest(url: URL(string: request.urlString)!)
-                    urlRequest.httpMethod = HTTPMethod.post.rawValue
-                    
-                    if let cachePolicy = request.cachePolicy {
-                        urlRequest.cachePolicy = cachePolicy
-                    }
-                    request.headers?.dictionary.forEach { key, value in
-                        urlRequest.setValue(value, forHTTPHeaderField: key)
-                    }
-                    urlRequest.httpBody = data
-                    dataRequest = session.request(urlRequest)
-                } else {
-                    dataRequest = session.request(
-                        request.urlString,
-                        method: request.httpMethod,
-                        parameters: request.parameters,
-                        encoding: request.useEncoding,
-                        headers: request.useHeaders
-                    )
-                }
-                
-                dataRequest
+                session.request(request.generateURLRequest())
                     .validate()
                     .responseData { dataResponse in
                         self?.finishRequest(request, response: dataResponse.response)

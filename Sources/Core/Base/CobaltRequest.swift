@@ -10,7 +10,7 @@ import Foundation
 import Alamofire
 import DebugMasking
 
-public class CobaltRequest {
+open class CobaltRequest {
     fileprivate let uuid = UUID().uuidString
     public var path: String = "/"
     public var host: String?
@@ -33,6 +33,31 @@ public class CobaltRequest {
     
     public init(_ builder: ((CobaltRequest) -> Void)) {
         builder(self)
+    }
+    
+    open func generateURLRequest() -> URLRequest {
+        guard let url = URL(string: urlString) else {
+            fatalError("Invalid url: \(urlString)")
+        }
+        var urlRequest = URLRequest(url: url)
+        
+        if let cachePolicy = cachePolicy {
+            urlRequest.cachePolicy = cachePolicy
+        }
+        headers?.dictionary.forEach { key, value in
+            urlRequest.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        if let data = body {
+            urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = HTTPMethod.post.rawValue
+            urlRequest.httpBody = data
+        } else {
+            urlRequest = (try? useEncoding.encode(urlRequest, with: parameters)) ?? urlRequest
+            urlRequest.httpMethod = httpMethod.rawValue
+        }
+        
+        return urlRequest
     }
     
     var requiresOAuthentication: Bool {

@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.1.0 (23-05-2024)
+- Created `generateURLRequest` in `CobaltRequest`
+
 ## v10.0.3 (22-04-2024)
 - Improved 'map(to:)'
 
