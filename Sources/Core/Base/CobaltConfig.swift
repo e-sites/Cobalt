@@ -27,6 +27,7 @@ public class CobaltConfig {
         public var clientSecret: String?
         public var host: String?
         public var pkceEnabled: Bool = false
+        public var allowConcurrentCalls = true
     }
     
     public class Logging {

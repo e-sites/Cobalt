@@ -77,7 +77,7 @@ open class CobaltClient {
         // If the client is authenticating with OAuth.
         // We need to wait for it to finish, and then continue with the original requests
         // So we add it to the `RequestQueue`
-        if authProvider.isAuthenticating && request.requiresOAuthentication {
+        if (authProvider.isAuthenticating || !config.authentication.allowConcurrentCalls) && request.requiresOAuthentication {
             queue.add(request)
             guard let publisher = queue.publisher(of: request) else {
                 return CobaltError.unknown().asPublisher(outputType: CobaltResponse.self)

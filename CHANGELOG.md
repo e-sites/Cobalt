@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.1.2 (24-05-2024)
+- `allowConcurrentCalls`
+
 ## v10.1.1 (24-05-2024)
 - `tryMap`
 
