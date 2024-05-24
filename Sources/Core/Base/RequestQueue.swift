@@ -17,6 +17,10 @@ class RequestQueue {
     var count: Int {
         return requests.count
     }
+    
+    var isEmpty: Bool {
+        return count == 0
+    }
 
     init(client: CobaltClient) {
         self.apiClient = client

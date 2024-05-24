@@ -25,6 +25,8 @@ open class CobaltClient {
     
     open var session: Session = Session.default
     
+    private var isRequesting = false
+    
     fileprivate lazy var authProvider = AuthenticationProvider(client: self)
     
     fileprivate lazy var queue = RequestQueue(client: self)
@@ -77,7 +79,7 @@ open class CobaltClient {
         // If the client is authenticating with OAuth.
         // We need to wait for it to finish, and then continue with the original requests
         // So we add it to the `RequestQueue`
-        if (authProvider.isAuthenticating || !config.authentication.allowConcurrentCalls) && request.requiresOAuthentication {
+        if (authProvider.isAuthenticating || (!config.authentication.allowConcurrentCalls && isRequesting)) && request.requiresOAuthentication {
             queue.add(request)
             guard let publisher = queue.publisher(of: request) else {
                 return CobaltError.unknown().asPublisher(outputType: CobaltResponse.self)
@@ -85,6 +87,7 @@ open class CobaltClient {
             
             return publisher
         }
+        isRequesting = true
         
         // Define encoding
         let encoding: ParameterEncoding
@@ -119,7 +122,8 @@ open class CobaltClient {
                     .eraseToAnyPublisher()
                 // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
             }
-            .catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
+            .catch { [queue, weak self, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
+                self?.isRequesting = false
                 return authProvider.recover(from: error, request: request)
                     .tryCatch { authError -> AnyPublisher<CobaltResponse, CobaltError> in
                         if request.requiresOAuthentication {
@@ -131,7 +135,8 @@ open class CobaltClient {
                     .eraseToAnyPublisher()
                 
                 // 4. If any other requests are queued, fire up the next one
-            }.flatMap { [queue] response -> AnyPublisher<CobaltResponse, CobaltError> in
+            }.flatMap { [queue, weak self] response -> AnyPublisher<CobaltResponse, CobaltError> in
+                self?.isRequesting = false
                 // When a request is finished, no matter if its succesful or not
                 // We try to clear th queue
                 if request.requiresOAuthentication {
