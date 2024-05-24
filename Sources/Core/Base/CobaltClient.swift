@@ -108,13 +108,18 @@ open class CobaltClient {
             .prefix(1)
         // 2. We actually send the request with Alamofire
             .flatMap { [weak self] newRequest -> AnyPublisher<CobaltResponse, CobaltError> in
-                guard let self = self else {
+                guard let strongSelf = self else {
                     return AnyPublisher<CobaltResponse, CobaltError>.never()
                 }
-                return self._request(newRequest)
-                
+                return strongSelf._request(newRequest)
+                    .tryMap { [weak self] response -> any CobaltResponse in
+                        return (try self?.tryMap(newRequest, response: response)) ?? response
+                    }
+                    .mapError { ($0 as? CobaltError) ?? CobaltError(from: $0) }
+                    .eraseToAnyPublisher()
                 // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
-            }.catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
+            }
+            .catch { [queue, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
                 return authProvider.recover(from: error, request: request)
                     .tryCatch { authError -> AnyPublisher<CobaltResponse, CobaltError> in
                         if request.requiresOAuthentication {
@@ -144,6 +149,10 @@ open class CobaltClient {
     
     open func finishRequest(_ request: CobaltRequest, response: HTTPURLResponse?) {
         
+    }
+    
+    open func tryMap(_ request: CobaltRequest, response: any CobaltResponse) throws -> any CobaltResponse {
+        return response
     }
     
     private func _request(_ request: CobaltRequest) -> AnyPublisher<CobaltResponse, CobaltError> {

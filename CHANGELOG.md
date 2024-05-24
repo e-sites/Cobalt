@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.1.1 (24-05-2024)
+- `tryMap`
+
 ## v10.1.0 (23-05-2024)
 - Created `generateURLRequest` in `CobaltRequest`
 
