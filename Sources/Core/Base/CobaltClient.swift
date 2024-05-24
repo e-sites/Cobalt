@@ -25,7 +25,7 @@ open class CobaltClient {
     
     open var session: Session = Session.default
     
-    private var isRequesting = false
+    private var isAuthRequesting = false
     
     fileprivate lazy var authProvider = AuthenticationProvider(client: self)
     
@@ -79,7 +79,9 @@ open class CobaltClient {
         // If the client is authenticating with OAuth.
         // We need to wait for it to finish, and then continue with the original requests
         // So we add it to the `RequestQueue`
-        if (authProvider.isAuthenticating || (!config.authentication.allowConcurrentCalls && isRequesting)) && request.requiresOAuthentication {
+        if (authProvider.isAuthenticating ||
+            (!config.authentication.allowConcurrentCalls && (isAuthRequesting || !queue.isEmpty))) &&
+            request.requiresOAuthentication {
             queue.add(request)
             guard let publisher = queue.publisher(of: request) else {
                 return CobaltError.unknown().asPublisher(outputType: CobaltResponse.self)
@@ -87,7 +89,9 @@ open class CobaltClient {
             
             return publisher
         }
-        isRequesting = true
+        if request.requiresOAuthentication {
+            isAuthRequesting = true
+        }
         
         // Define encoding
         let encoding: ParameterEncoding
@@ -123,10 +127,10 @@ open class CobaltClient {
                 // 3. If for some reason an error occurs, we check with the auth-provider if we need to retry
             }
             .catch { [queue, weak self, authProvider] error -> AnyPublisher<CobaltResponse, CobaltError> in
-                self?.isRequesting = false
                 return authProvider.recover(from: error, request: request)
                     .tryCatch { authError -> AnyPublisher<CobaltResponse, CobaltError> in
                         if request.requiresOAuthentication {
+                            self?.isAuthRequesting = false
                             queue.next()
                         }
                         throw authError
@@ -136,10 +140,10 @@ open class CobaltClient {
                 
                 // 4. If any other requests are queued, fire up the next one
             }.flatMap { [queue, weak self] response -> AnyPublisher<CobaltResponse, CobaltError> in
-                self?.isRequesting = false
                 // When a request is finished, no matter if its succesful or not
                 // We try to clear th queue
                 if request.requiresOAuthentication {
+                    self?.isAuthRequesting = false
                     queue.next()
                 }
                 return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
