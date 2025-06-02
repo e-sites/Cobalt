@@ -214,9 +214,24 @@ open class CobaltClient {
             return Just(response).setFailureType(to: CobaltError.self).eraseToAnyPublisher()
         }
         
+        let authorizationHeaderPreservingRedirectHandler: Redirector = {
+            let behavior = Redirector.Behavior.modify { task, request, response in
+                var redirectedRequest = request
+                if let originalRequest = task.originalRequest,
+                   let headers = originalRequest.allHTTPHeaderFields,
+                   let authorizationHeaderValue = headers["Authorization"] {
+                    redirectedRequest.setValue(authorizationHeaderValue, forHTTPHeaderField: "Authorization")
+                }
+                
+                return redirectedRequest
+            }
+            return Redirector(behavior: behavior)
+        }()
+        
         return Deferred { [weak self, session] in
             Future { promise in
                 session.request(request.generateURLRequest())
+                    .redirect(using: authorizationHeaderPreservingRedirectHandler)
                     .validate()
                     .responseData { dataResponse in
                         self?.finishRequest(request, response: dataResponse.response)

@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.1.5 (02-06-2025)
+- Redirect Authorization headers
+
 ## v10.1.3 (24-05-2024)
 - `isRequesting`
 
