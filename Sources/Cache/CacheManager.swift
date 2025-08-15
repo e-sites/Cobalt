@@ -86,7 +86,7 @@ public class CacheManager {
                 
                 let data = try Data(contentsOf: url)
                 
-                guard let response = try JSONSerialization.jsonObject(with: data, options: []) as? CobaltResponse else {
+                guard let response = data.asCobaltResponse() else {
                     throw CacheError.notFound
                 }
                 return response

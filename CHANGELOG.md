@@ -1,5 +1,8 @@
 # Changelog Cobalt
 
+## v10.1.6 (15-08-2025)
+- Fixed cache cobalt response
+
 ## v10.1.5 (02-06-2025)
 - Redirect Authorization headers
 
